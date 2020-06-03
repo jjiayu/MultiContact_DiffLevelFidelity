@@ -47,7 +47,7 @@ G = 9.80665 #kg/m^2
 TerrainNorm = [0,0,1] 
 TerrainTangentX = [1,0,0]
 TerrainTangentY = [0,1,0]
-miu = 0.6
+miu = 0.3
 #-----------------------------------------------------------------------------------------------------------------------
 #Kinematics Constraint for Talos
 kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -72,12 +72,20 @@ q_rf_in_lf = relativeConstraints[1][1] #named lf in rf, but representing rf in l
 #Set up Initial Condition
 #-----------------------------------------------------------------------------------------------------------------------
 x_init = 0
-#y_init = 0
+y_init = -0.1
 z_init = 0.6
 
 xdot_init = 0
 ydot_init = 0
 zdot_init = 0
+
+Lx_init = 0
+Ly_init = 0
+Lz_init = 0
+
+Ldotx_init = 0
+Ldoty_init = 0
+Ldotz_init = 0
 
 PLx_init = 0.1
 PLy_init = 0
@@ -85,17 +93,26 @@ PLz_init = 0
 PL_init = np.array([PLx_init,PLy_init,PLz_init])
 
 PRx_init = -0.1
-PRy_init = -0.3
+PRy_init = -0.25
 PRz_init = 0
 PR_init = np.array([PRx_init,PRy_init,PRz_init])
 
 x_end = 0.3
-#y_end = 0
+y_end = -0.1
 z_end = 0.6
 
 xdot_end = 0
 ydot_end = 0
 zdot_end = 0
+
+Lx_end = 0
+Ly_end = 0
+Lz_end = 0
+
+Ldotx_end = 0
+Ldoty_end = 0
+Ldotz_end = 0
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 #Define Variables and Bounds
@@ -109,44 +126,70 @@ y_lb = np.array([[-1]*(y.shape[0]*y.shape[1])]) #particular way of generating li
 y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
 #   CoM Position z-axis
 z = ca.SX.sym('z',N_K)
-z_lb = np.array([[0]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
+z_lb = np.array([[z_end-0.05]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+z_ub = np.array([[z_end+0.05]*(z.shape[0]*z.shape[1])])
 #   CoM Velocity x-axis
 xdot = ca.SX.sym('xdot',N_K)
-xdot_lb = np.array([[-2.5]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-xdot_ub = np.array([[2.5]*(xdot.shape[0]*xdot.shape[1])])
+xdot_lb = np.array([[-0.5]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+xdot_ub = np.array([[0.5]*(xdot.shape[0]*xdot.shape[1])])
 #   CoM Velocity y-axis
 ydot = ca.SX.sym('ydot',N_K)
-ydot_lb = np.array([[-2.5]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-ydot_ub = np.array([[2.5]*(ydot.shape[0]*ydot.shape[1])])
+ydot_lb = np.array([[-0.5]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+ydot_ub = np.array([[0.5]*(ydot.shape[0]*ydot.shape[1])])
 #   CoM Velocity z-axis
 zdot = ca.SX.sym('zdot',N_K)
-zdot_lb = np.array([[-2.5]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-zdot_ub = np.array([[2.5]*(zdot.shape[0]*zdot.shape[1])])
+zdot_lb = np.array([[-0.5]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+zdot_ub = np.array([[0.5]*(zdot.shape[0]*zdot.shape[1])])
+#   Angular Momentum x-axis
+Lx = ca.SX.sym('Lx',N_K)
+Lx_lb = np.array([[-1]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Lx_ub = np.array([[1]*(Lx.shape[0]*Lx.shape[1])])
+#   Angular Momentum y-axis
+Ly = ca.SX.sym('Ly',N_K)
+Ly_lb = np.array([[-1]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Ly_ub = np.array([[1]*(Ly.shape[0]*Ly.shape[1])])
+#   Angular Momntum y-axis
+Lz = ca.SX.sym('Lz',N_K)
+Lz_lb = np.array([[-1]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Lz_ub = np.array([[1]*(Lz.shape[0]*Lz.shape[1])])
+#   Angular Momentum rate x-axis
+Ldotx = ca.SX.sym('Ldotx',N_K)
+Ldotx_lb = np.array([[-1]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Ldotx_ub = np.array([[1]*(Ldotx.shape[0]*Ldotx.shape[1])])
+#   Angular Momentum y-axis
+Ldoty = ca.SX.sym('Ldoty',N_K)
+Ldoty_lb = np.array([[-1]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Ldoty_ub = np.array([[1]*(Ldoty.shape[0]*Ldoty.shape[1])])
+#   Angular Momntum z-axis
+Ldotz = ca.SX.sym('Ldotz',N_K)
+Ldotz_lb = np.array([[-1]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+Ldotz_ub = np.array([[1]*(Ldotz.shape[0]*Ldotz.shape[1])])
+#left Foot Forces
+#Contact Point 1 x-axis
 #   Left Contact Force x-axis
 FLx = ca.SX.sym('FLx',N_K)
-FLx_lb = np.array([[-1500]*(FLx.shape[0]*FLx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FLx_ub = np.array([[1500]*(FLx.shape[0]*FLx.shape[1])])
+FLx_lb = np.array([[-1200]*(FLx.shape[0]*FLx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FLx_ub = np.array([[1200]*(FLx.shape[0]*FLx.shape[1])])
 #   Left Contact Force y-axis
 FLy = ca.SX.sym('FLy',N_K)
-FLy_lb = np.array([[-1500]*(FLy.shape[0]*FLy.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FLy_ub = np.array([[1500]*(FLy.shape[0]*FLy.shape[1])])
+FLy_lb = np.array([[-1200]*(FLy.shape[0]*FLy.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FLy_ub = np.array([[1200]*(FLy.shape[0]*FLy.shape[1])])
 #   Left Contact Force z-axis
 FLz = ca.SX.sym('FLz',N_K)
-FLz_lb = np.array([[-1500]*(FLz.shape[0]*FLz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FLz_ub = np.array([[1500]*(FLz.shape[0]*FLz.shape[1])])
+FLz_lb = np.array([[-1200]*(FLz.shape[0]*FLz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FLz_ub = np.array([[1200]*(FLz.shape[0]*FLz.shape[1])])
 #   Right Contact Force x-axis
 FRx = ca.SX.sym('FRx',N_K)
-FRx_lb = np.array([[-1500]*(FRx.shape[0]*FRx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FRx_ub = np.array([[1500]*(FRx.shape[0]*FRx.shape[1])])
+FRx_lb = np.array([[-1200]*(FRx.shape[0]*FRx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FRx_ub = np.array([[1200]*(FRx.shape[0]*FRx.shape[1])])
 #   Right Contact Force y-axis
 FRy = ca.SX.sym('FRy',N_K)
-FRy_lb = np.array([[-1500]*(FRy.shape[0]*FRy.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FRy_ub = np.array([[1500]*(FRy.shape[0]*FRy.shape[1])])
+FRy_lb = np.array([[-1200]*(FRy.shape[0]*FRy.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FRy_ub = np.array([[1200]*(FRy.shape[0]*FRy.shape[1])])
 #   Right Contact Force z-axis
 FRz = ca.SX.sym('FRz',N_K)
-FRz_lb = np.array([[-1500]*(FRz.shape[0]*FRz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-FRz_ub = np.array([[1500]*(FRz.shape[0]*FRz.shape[1])])
+FRz_lb = np.array([[-1200]*(FRz.shape[0]*FRz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+FRz_ub = np.array([[1200]*(FRz.shape[0]*FRz.shape[1])])
 #   Contact Location Sequence
 px = []
 py = []
@@ -160,7 +203,7 @@ pz_ub = []
 for stepIdx in range(Nstep):
     pxtemp = ca.SX.sym('px'+str(stepIdx+1))
     px.append(pxtemp)
-    px_lb.append(np.array([-1]))
+    px_lb.append(np.array([-0.5]))
     px_ub.append(np.array([1.5]))
 
     pytemp = ca.SX.sym('py'+str(stepIdx+1))
@@ -186,15 +229,15 @@ for n_phase in range(Nphase):
 
 
 #   Collect all Decision Variables
-DecisionVars = ca.vertcat(x,y,z,xdot,ydot,zdot,FLx,FLy,FLz,FRx,FRy,FRz,*px,*py,*pz,*Ts)
+DecisionVars = ca.vertcat(x,y,z,xdot,ydot,zdot,Lx,Ly,Lz,Ldotx,Ldoty,Ldotz,FLx,FLy,FLz,FRx,FRy,FRz,*px,*py,*pz,*Ts)
 #DecisionVars = ca.vertcat(x,xdot)
 #print(DecisionVars)
 #   
 DecisionVarsShape = DecisionVars.shape
 
 #   Collect all lower bound and upper bound
-DecisionVars_lb = np.concatenate(((x_lb,y_lb,z_lb,xdot_lb,ydot_lb,zdot_lb,FLx_lb,FLy_lb,FLz_lb,FRx_lb,FRy_lb,FRz_lb,px_lb,py_lb,pz_lb,Ts_lb)),axis=None)
-DecisionVars_ub = np.concatenate(((x_ub,y_ub,z_ub,xdot_ub,ydot_ub,zdot_ub,FLx_ub,FLy_ub,FLz_ub,FRx_ub,FRy_ub,FRz_ub,px_ub,py_ub,pz_ub,Ts_ub)),axis=None)
+DecisionVars_lb = np.concatenate(((x_lb,y_lb,z_lb,xdot_lb,ydot_lb,zdot_lb,Lx_lb,Ly_lb,Lz_lb,Ldotx_lb,Ldoty_lb,Ldotz_lb,FLx_lb,FLy_lb,FLz_lb,FRx_lb,FRy_lb,FRz_lb,px_lb,py_lb,pz_lb,Ts_lb)),axis=None)
+DecisionVars_ub = np.concatenate(((x_ub,y_ub,z_ub,xdot_ub,ydot_ub,zdot_ub,Lx_ub,Ly_ub,Lz_ub,Ldotx_ub,Ldoty_ub,Ldotz_ub,FLx_ub,FLy_ub,FLz_ub,FRx_ub,FRy_ub,FRz_ub,px_ub,py_ub,pz_ub,Ts_ub)),axis=None)
 
 #Time Span Setup
 tau_upper_limit = 1
@@ -220,9 +263,9 @@ glb.append(np.array([0]))
 gub.append(np.array([0]))
 
 #   Initial CoM y-axis
-#g.append(y[0]-y_init)
-#glb.append(np.array([0]))
-#gub.append(np.array([0]))
+g.append(y[0]-y_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
 
 #   Initial CoM z-axis
 g.append(z[0]-z_init)
@@ -244,15 +287,45 @@ g.append(zdot[0]-zdot_init)
 glb.append(np.array([0]))
 gub.append(np.array([0]))
 
+#   Initial Angular Momentum x-axis
+g.append(Lx[0]-Lx_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Initial Angular Momentum y-axis
+g.append(Ly[0]-Ly_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Initial Angular Momentum z-axis
+g.append(Lz[0]-Lz_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Initial Angular Momentum rate x-axis
+g.append(Ldotx[0]-Ldotx_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Initial Angular Momentum rate y-axis
+g.append(Ldoty[0]-Ldoty_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Initial Angular Momentum rate z-axis
+g.append(Ldotz[0]-Ldotz_init)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
 #   Terminal CoM x-axis
 g.append(x[-1]-x_end)
 glb.append(np.array([0]))
 gub.append(np.array([0]))
 
 #   Terminal CoM y-axis
-#g.append(y[-1]-y_end)
-#glb.append(np.array([0]))
-#gub.append(np.array([0]))
+g.append(y[-1]-y_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
 
 #   Terminal CoM z-axis
 g.append(z[-1]-z_end)
@@ -271,6 +344,36 @@ gub.append(np.array([0]))
 
 #   Terminal CoM Velocity z-axis
 g.append(zdot[-1]-zdot_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum x-axis
+g.append(Lx[-1]-Lx_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum y-axis
+g.append(Ly[-1]-Ly_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum z-axis
+g.append(Lz[-1]-Lz_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum Rate x-axis
+g.append(Ldotx[-1]-Ldotx_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum Rate y-axis
+g.append(Ldoty[-1]-Ldoty_end)
+glb.append(np.array([0]))
+gub.append(np.array([0]))
+
+#   Terminal Angular Momentum Rate z-axis
+g.append(Ldotz[-1]-Ldotz_end)
 glb.append(np.array([0]))
 gub.append(np.array([0]))
 
@@ -297,6 +400,9 @@ for Nph in range(Nphase):
         FL_k = ca.vertcat(FLx[k],FLy[k],FLz[k])
         FR_k = ca.vertcat(FRx[k],FRy[k],FRz[k])
         CoM_k = ca.vertcat(x[k],y[k],z[k])
+        if k<N_K-1:
+            Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
+            Ldot_next = ca.vertcat(Ldotz[k+1],Ldotz[k+1],Ldotz[k+1])
         #print(CoM_k)
 
         #Phase dependent Constraints and Time Step length
@@ -315,9 +421,14 @@ for Nph in range(Nphase):
             glb.append(np.full((len(k_CoM_Right),),-np.inf))
             gub.append(k_CoM_Right)
             #Angular Dynamics
-            g.append(ca.cross((PL_init-CoM_k),FL_k)+ca.cross((PR_init-CoM_k),FR_k))
-            glb.append(np.array([0,0,0]))
-            gub.append(np.array([0,0,0]))
+            if k<N_K-1:
+                g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init-CoM_k),FL_k)+ca.cross((PR_init-CoM_k),FR_k)))
+                glb.append(np.array([0,0,0]))
+                gub.append(np.array([0,0,0]))
+
+            #g.append(ca.cross((PL_init-CoM_k),FL_k)+ca.cross((PR_init-CoM_k),FR_k))
+            #glb.append(np.array([-1,-1,-1]))
+            #gub.append(np.array([1,1,1]))
 
         elif GaitPattern[Nph]=='LeftSupport':
             
@@ -351,9 +462,13 @@ for Nph in range(Nphase):
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(k_CoM_Left)
                 #Angular Dynamics (Left Support)
-                g.append(ca.cross((PL_init-CoM_k),FL_k))
-                glb.append(np.array([0,0,0]))
-                gub.append(np.array([0,0,0]))
+                if k<N_K-1:
+                    g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init-CoM_k),FL_k)))
+                    glb.append(np.array([0,0,0]))
+                    gub.append(np.array([0,0,0]))
+                #g.append(ca.cross((PL_init-CoM_k),FL_k))
+                #glb.append(np.array([-1,-1,-1]))
+                #gub.append(np.array([1,1,1]))
  #           else:
  #               print('No implementation yet')
 
@@ -389,9 +504,13 @@ for Nph in range(Nphase):
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(k_CoM_Right)
                 #Angular Dynamics (Right Support)
-                g.append(ca.cross((PR_init-CoM_k),FR_k))
-                glb.append(np.array([0,0,0]))
-                gub.append(np.array([0,0,0]))
+                if k<N_K-1:
+                    g.append(Ldot_next-Ldot_current-h*(ca.cross((PR_init-CoM_k),FR_k)))
+                    glb.append(np.array([0,0,0]))
+                    gub.append(np.array([0,0,0]))
+                #g.append(ca.cross((PR_init-CoM_k),FR_k))
+                #glb.append(np.array([-1,-1,-1]))
+                #gub.append(np.array([1,1,1]))
             else:
                 print('No implementation yet')
 
@@ -419,9 +538,13 @@ for Nph in range(Nphase):
                     glb.append(np.full((len(k_CoM_Right),),-np.inf))
                     gub.append(k_CoM_Right)
                     #Angular Dynamics (Left Support)
-                    g.append(ca.cross((PL_init-CoM_k),FL_k) + ca.cross((PR_k-CoM_k),FR_k))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    if k<N_K-1:
+                        g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init-CoM_k),FL_k) + ca.cross((PR_k-CoM_k),FR_k)))
+                        glb.append(np.array([0,0,0]))
+                        gub.append(np.array([0,0,0]))
+                    #g.append(ca.cross((PL_init-CoM_k),FL_k) + ca.cross((PR_k-CoM_k),FR_k))
+                    #glb.append(np.array([-1,-1,-1]))
+                    #gub.append(np.array([1,1,1]))
 
                 elif GaitPattern[Nph-1]=='RightSupport':
                     #   CoM in the Right foot
@@ -434,11 +557,18 @@ for Nph in range(Nphase):
                     glb.append(np.full((len(k_CoM_Left),),-np.inf))
                     gub.append(k_CoM_Left)
                     #Angular Dynamics (Right Support)
-                    g.append(ca.cross((PL_k-CoM_k),FL_k) + ca.cross((PR_init - CoM_k),FR_k))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    if k<N_K-1:
+                        g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init-CoM_k),FL_k) + ca.cross((PR_k-CoM_k),FR_k)))
+                        glb.append(np.array([0,0,0]))
+                        gub.append(np.array([0,0,0]))
+                    #g.append(ca.cross((PL_k-CoM_k),FL_k) + ca.cross((PR_init - CoM_k),FR_k))
+                    #glb.append(np.array([-1,-1,-1]))
+                    #gub.append(np.array([1,1,1]))
             else:
                 print('No implementation yet')
+            
+        if k < N_K - 1:
+            J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 #+ h*xdot[k]**2 + h*ydot[k]**2 + h*zdot[k]**2
 
         #Unilateral Forces
         g.append(FL_k.T@TerrainNorm)
@@ -496,6 +626,21 @@ for Nph in range(Nphase):
 
             #First-order Dynamics z-axis
             g.append(z[k+1] - z[k] - h*zdot[k])
+            glb.append(np.array([0]))
+            gub.append(np.array([0]))
+
+            #First-order Angular Momentum Dynamics x-axis
+            g.append(Lx[k+1] - Lx[k] - h*Ldotx[k])
+            glb.append(np.array([0]))
+            gub.append(np.array([0]))
+
+            #First-order Angular Momentum Dynamics y-axis
+            g.append(Ly[k+1] - Ly[k] - h*Ldoty[k])
+            glb.append(np.array([0]))
+            gub.append(np.array([0]))
+
+            #First-order Angular Momentum Dynamics z-axis
+            g.append(Lz[k+1] - Lz[k] - h*Ldotz[k])
             glb.append(np.array([0]))
             gub.append(np.array([0]))
 
@@ -557,19 +702,19 @@ for PhaseCnt in range(Nphase):
 for phase_cnt in range(Nphase):
     if GaitPattern[phase_cnt] == 'InitialDouble':
         g.append(Ts[phase_cnt])
-        glb.append(np.array([0.2]))
+        glb.append(np.array([0.1]))
         gub.append(np.array([0.3]))
     elif GaitPattern[phase_cnt] == 'LeftSupport':
         g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
         glb.append(np.array([0.5]))
-        gub.append(np.array([0.8]))
+        gub.append(np.array([0.9]))
     elif GaitPattern[phase_cnt] == 'RightSupport':
         g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
         glb.append(np.array([0.5]))
-        gub.append(np.array([0.8]))
+        gub.append(np.array([0.9]))
     elif GaitPattern[phase_cnt] == 'DoubleSupport':
         g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-        glb.append(np.array([0.2]))
+        glb.append(np.array([0.1]))
         gub.append(np.array([0.3]))
 
 #   reshape all constraints
@@ -599,6 +744,7 @@ gub = np.concatenate(gub)
 #       Shuffle the Random Seed Generator
 np.random.seed()
 DecisionVars_init = DecisionVars_lb + np.multiply(np.random.rand(DecisionVarsShape[0],DecisionVarsShape[1]).flatten(),(DecisionVars_ub-DecisionVars_lb))#   Fixed Value Initial Guess
+#DecisionVars_init=np.ones((DecisionVarsShape[0],DecisionVarsShape[1]))
 # x_init = np.array([[1.5]*N_K])
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -639,7 +785,31 @@ zdot_index = (ydot_index[1]+1,ydot_index[1]+Nk_Local*Nphase+1)
 zdot_res = x_opt[zdot_index[0]:zdot_index[1]+1]
 zdot_res = np.array(zdot_res)
 print('zdot_res: ',zdot_res)
-FLx_index = (zdot_index[1]+1,zdot_index[1]+Nk_Local*Nphase+1)
+Lx_index = (zdot_index[1]+1,zdot_index[1]+Nk_Local*Nphase+1)
+Lx_res = x_opt[Lx_index[0]:Lx_index[1]+1]
+Lx_res = np.array(Lx_res)
+print('Lx_res: ',Lx_res)
+Ly_index = (Lx_index[1]+1,Lx_index[1]+Nk_Local*Nphase+1)
+Ly_res = x_opt[Ly_index[0]:Ly_index[1]+1]
+Ly_res = np.array(Ly_res)
+print('Ly_res: ',Ly_res)
+Lz_index = (Ly_index[1]+1,Ly_index[1]+Nk_Local*Nphase+1)
+Lz_res = x_opt[Lz_index[0]:Lz_index[1]+1]
+Lz_res = np.array(Lz_res)
+print('Lz_res: ',Lz_res)
+Ldotx_index = (Lz_index[1]+1,Lz_index[1]+Nk_Local*Nphase+1)
+Ldotx_res = x_opt[Ldotx_index[0]:Ldotx_index[1]+1]
+Ldotx_res = np.array(Ldotx_res)
+print('Ldotx_res: ',Ldotx_res)
+Ldoty_index = (Ldotx_index[1]+1,Ldotx_index[1]+Nk_Local*Nphase+1)
+Ldoty_res = x_opt[Ldoty_index[0]:Ldoty_index[1]+1]
+Ldoty_res = np.array(Ldoty_res)
+print('Ldoty_res: ',Ldoty_res)
+Ldotz_index = (Ldoty_index[1]+1,Ldoty_index[1]+Nk_Local*Nphase+1)
+Ldotz_res = x_opt[Ldotz_index[0]:Ldotz_index[1]+1]
+Ldotz_res = np.array(Ldotz_res)
+print('Ldotz_res: ',Ldotz_res)
+FLx_index = (Ldotz_index[1]+1,Ldotz_index[1]+Nk_Local*Nphase+1)
 FLx_res = x_opt[FLx_index[0]:FLx_index[1]+1]
 FLx_res = np.array(FLx_res)
 print('FLx_res: ',FLx_res)
@@ -718,6 +888,6 @@ for PhaseCnt in range(Nphase):
 ax.view_init(elev=8.776933438381377, azim=-99.32358055821186)
 plt.show()
 
-plt.plot(FLz_res[0:-1])
+plt.plot(FRz_res[0:-1])
 plt.show()
 
