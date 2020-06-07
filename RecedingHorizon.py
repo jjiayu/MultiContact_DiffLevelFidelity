@@ -4,7 +4,7 @@ import casadi as ca #Casadi
 from Humanoid_NLP_Constructor import *
 
 #Build the problem
-solver, DecisionVars_init, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = False)
+solver, DecisionVars_init, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True)
 
 #Receding Horizon
 #Define Problem Parameters
@@ -103,6 +103,7 @@ ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,
 res = solver(x0=x_opt_left, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_left = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -136,6 +137,7 @@ ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,
 res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_right = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -145,7 +147,7 @@ CostComputation(Nphase=3,Nk_Local=5,x_opt=x_opt,var_index=var_index,G = 9.80665,
 res_fig = PlotNLPStep(x_opt=x_opt,fig=None,var_index=var_index,PL_init=np.array([PLx_init,PLy_init,PLz_init]),PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag)
 
 #Fifth Step 
-#   Swing Right Foot
+#   Swing Left Foot
 LeftSwingFlag = 1
 RightSwingFlag = 0
 
@@ -166,9 +168,10 @@ PRz_init = pz_res[-1]
 
 ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,PLz_init,PRx_init,PRy_init,PRz_init,x_end,y_end,z_end]
 
-res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
+res = solver(x0=x_opt_left, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_left = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -202,6 +205,7 @@ ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,
 res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_right = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -211,7 +215,7 @@ CostComputation(Nphase=3,Nk_Local=5,x_opt=x_opt,var_index=var_index,G = 9.80665,
 res_fig = PlotNLPStep(x_opt=x_opt,fig=None,var_index=var_index,PL_init=np.array([PLx_init,PLy_init,PLz_init]),PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag)
 
 #Seventh Step 
-#   Swing Right Foot
+#   Swing Left Foot
 LeftSwingFlag = 1
 RightSwingFlag = 0
 
@@ -232,9 +236,10 @@ PRz_init = pz_res[-1]
 
 ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,PLz_init,PRx_init,PRy_init,PRz_init,x_end,y_end,z_end]
 
-res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
+res = solver(x0=x_opt_left, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_left = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -268,6 +273,7 @@ ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,
 res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_right = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -277,7 +283,7 @@ CostComputation(Nphase=3,Nk_Local=5,x_opt=x_opt,var_index=var_index,G = 9.80665,
 res_fig = PlotNLPStep(x_opt=x_opt,fig=None,var_index=var_index,PL_init=np.array([PLx_init,PLy_init,PLz_init]),PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag)
 
 #Ninth Step 
-#   Swing Right Foot
+#   Swing Left Foot
 LeftSwingFlag = 1
 RightSwingFlag = 0
 
@@ -298,9 +304,10 @@ PRz_init = pz_res[-1]
 
 ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,PLz_init,PRx_init,PRy_init,PRz_init,x_end,y_end,z_end]
 
-res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
+res = solver(x0=x_opt_left, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_left = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -334,6 +341,7 @@ ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,
 res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
+x_opt_right = x_opt
 
 x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
 print('x_result',x_res)
@@ -343,7 +351,7 @@ CostComputation(Nphase=3,Nk_Local=5,x_opt=x_opt,var_index=var_index,G = 9.80665,
 res_fig = PlotNLPStep(x_opt=x_opt,fig=None,var_index=var_index,PL_init=np.array([PLx_init,PLy_init,PLz_init]),PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag)
 
 #Eleventh Step 
-#   Swing Right Foot
+#   Swing Left Foot
 LeftSwingFlag = 1
 RightSwingFlag = 0
 
@@ -364,7 +372,7 @@ PRz_init = pz_res[-1]
 
 ParaList = [LeftSwingFlag,RightSwingFlag,x_init,y_init,z_init,PLx_init,PLy_init,PLz_init,PRx_init,PRy_init,PRz_init,x_end,y_end,z_end]
 
-res = solver(x0=x_opt_right, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
+res = solver(x0=x_opt_left, p = ParaList, lbx=DecisionVars_lb, ubx=DecisionVars_ub, lbg=glb, ubg=gub)
 x_opt = res['x']
 x_opt = x_opt.full().flatten()
 

@@ -6,7 +6,8 @@ x = ca.MX.sym('x',3);
 p = ca.MX.sym('p',3);
 
 # short-circuiting if_else / conditional in your expression graph
-g = ca.if_else(p[0], x-1, 0)
+#g = ca.if_else(p[0], x-1, 0)
+g = x-1
 
 # build nlp problem
 nlp = {'x':ca.vertcat(x), 'f':x[0]**2, 'g':g, 'p':p }

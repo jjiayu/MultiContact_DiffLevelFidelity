@@ -332,7 +332,7 @@ def Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True):
     tauStepLength = tau_upper_limit/(N_K-1) #Get the interval length, total number of knots - 1
 
     #-----------------------------------------------------------------------------------------------------------------------
-    #Define Constrains
+    #Define Constrains and Running Cost
     g = []
     glb = []
     gub = []
@@ -500,7 +500,6 @@ def Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True):
 
             #Phase dependent Constraints
             if GaitPattern[Nph]=='InitialDouble':
-                #Missing relative foot location constraint
                 #Kinematics Constraint
                 #   CoM in the Left foot
                 #g.append(K_CoM_Left@(CoM_k-ca.DM(PL_init)))
@@ -646,7 +645,7 @@ def Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True):
             #Add Cost Terms
             if k < N_K - 1:
                 J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-
+            
             #Unilateral Forces
             #Left Foot 1
             g.append(FL1_k.T@TerrainNorm)
@@ -902,11 +901,7 @@ def Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True):
             g.append(Ts[phase_cnt])
             glb.append(np.array([0.1]))
             gub.append(np.array([0.25]))
-        elif GaitPattern[phase_cnt] == 'LeftSupport':
-            g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.5]))
-            gub.append(np.array([0.9]))
-        elif GaitPattern[phase_cnt] == 'RightSupport':
+        elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
             glb.append(np.array([0.5]))
             gub.append(np.array([0.9]))
@@ -1160,46 +1155,129 @@ def Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True):
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index
-    x_index = (0,Nk_Local*Nphase) #First set of variables start counting from 0
-    y_index = (x_index[1]+1,x_index[1]+Nk_Local*Nphase+1)
-    z_index = (y_index[1]+1,y_index[1]+Nk_Local*Nphase+1)
-    xdot_index = (z_index[1]+1,z_index[1]+Nk_Local*Nphase+1)
-    ydot_index = (xdot_index[1]+1,xdot_index[1]+Nk_Local*Nphase+1)
-    zdot_index = (ydot_index[1]+1,ydot_index[1]+Nk_Local*Nphase+1)
-    Lx_index = (zdot_index[1]+1,zdot_index[1]+Nk_Local*Nphase+1)
-    Ly_index = (Lx_index[1]+1,Lx_index[1]+Nk_Local*Nphase+1)
-    Lz_index = (Ly_index[1]+1,Ly_index[1]+Nk_Local*Nphase+1)
-    Ldotx_index = (Lz_index[1]+1,Lz_index[1]+Nk_Local*Nphase+1)
-    Ldoty_index = (Ldotx_index[1]+1,Ldotx_index[1]+Nk_Local*Nphase+1)
-    Ldotz_index = (Ldoty_index[1]+1,Ldoty_index[1]+Nk_Local*Nphase+1)
-    FL1x_index = (Ldotz_index[1]+1,Ldotz_index[1]+Nk_Local*Nphase+1)
-    FL1y_index = (FL1x_index[1]+1,FL1x_index[1]+Nk_Local*Nphase+1)
-    FL1z_index = (FL1y_index[1]+1,FL1y_index[1]+Nk_Local*Nphase+1)
-    FL2x_index = (FL1z_index[1]+1,FL1z_index[1]+Nk_Local*Nphase+1)
-    FL2y_index = (FL2x_index[1]+1,FL2x_index[1]+Nk_Local*Nphase+1)
-    FL2z_index = (FL2y_index[1]+1,FL2y_index[1]+Nk_Local*Nphase+1)
-    FL3x_index = (FL2z_index[1]+1,FL2z_index[1]+Nk_Local*Nphase+1)
-    FL3y_index = (FL3x_index[1]+1,FL3x_index[1]+Nk_Local*Nphase+1)
-    FL3z_index = (FL3y_index[1]+1,FL3y_index[1]+Nk_Local*Nphase+1)
-    FL4x_index = (FL3z_index[1]+1,FL3z_index[1]+Nk_Local*Nphase+1)
-    FL4y_index = (FL4x_index[1]+1,FL4x_index[1]+Nk_Local*Nphase+1)
-    FL4z_index = (FL4y_index[1]+1,FL4y_index[1]+Nk_Local*Nphase+1)
-    FR1x_index = (FL4z_index[1]+1,FL4z_index[1]+Nk_Local*Nphase+1)
-    FR1y_index = (FR1x_index[1]+1,FR1x_index[1]+Nk_Local*Nphase+1)
-    FR1z_index = (FR1y_index[1]+1,FR1y_index[1]+Nk_Local*Nphase+1)
-    FR2x_index = (FR1z_index[1]+1,FR1z_index[1]+Nk_Local*Nphase+1)
-    FR2y_index = (FR2x_index[1]+1,FR2x_index[1]+Nk_Local*Nphase+1)
-    FR2z_index = (FR2y_index[1]+1,FR2y_index[1]+Nk_Local*Nphase+1)
-    FR3x_index = (FR2z_index[1]+1,FR2z_index[1]+Nk_Local*Nphase+1)
-    FR3y_index = (FR3x_index[1]+1,FR3x_index[1]+Nk_Local*Nphase+1)
-    FR3z_index = (FR3y_index[1]+1,FR3y_index[1]+Nk_Local*Nphase+1)
-    FR4x_index = (FR3z_index[1]+1,FR3z_index[1]+Nk_Local*Nphase+1)
-    FR4y_index = (FR4x_index[1]+1,FR4x_index[1]+Nk_Local*Nphase+1)
-    FR4z_index = (FR4y_index[1]+1,FR4y_index[1]+Nk_Local*Nphase+1)
+    #Old Code
+    #x_index = (0,Nk_Local*Nphase) #First set of variables start counting from 0
+    #y_index = (x_index[1]+1,x_index[1]+Nk_Local*Nphase+1)
+    #z_index = (y_index[1]+1,y_index[1]+Nk_Local*Nphase+1)
+    #xdot_index = (z_index[1]+1,z_index[1]+Nk_Local*Nphase+1)
+    #ydot_index = (xdot_index[1]+1,xdot_index[1]+Nk_Local*Nphase+1)
+    #zdot_index = (ydot_index[1]+1,ydot_index[1]+Nk_Local*Nphase+1)
+    #Lx_index = (zdot_index[1]+1,zdot_index[1]+Nk_Local*Nphase+1)
+    #Ly_index = (Lx_index[1]+1,Lx_index[1]+Nk_Local*Nphase+1)
+    #Lz_index = (Ly_index[1]+1,Ly_index[1]+Nk_Local*Nphase+1)
+    #Ldotx_index = (Lz_index[1]+1,Lz_index[1]+Nk_Local*Nphase+1)
+    #Ldoty_index = (Ldotx_index[1]+1,Ldotx_index[1]+Nk_Local*Nphase+1)
+    #Ldotz_index = (Ldoty_index[1]+1,Ldoty_index[1]+Nk_Local*Nphase+1)
+    #FL1x_index = (Ldotz_index[1]+1,Ldotz_index[1]+Nk_Local*Nphase+1)
+    #FL1y_index = (FL1x_index[1]+1,FL1x_index[1]+Nk_Local*Nphase+1)
+    #FL1z_index = (FL1y_index[1]+1,FL1y_index[1]+Nk_Local*Nphase+1)
+    #FL2x_index = (FL1z_index[1]+1,FL1z_index[1]+Nk_Local*Nphase+1)
+    #FL2y_index = (FL2x_index[1]+1,FL2x_index[1]+Nk_Local*Nphase+1)
+    #FL2z_index = (FL2y_index[1]+1,FL2y_index[1]+Nk_Local*Nphase+1)
+    #FL3x_index = (FL2z_index[1]+1,FL2z_index[1]+Nk_Local*Nphase+1)
+    #FL3y_index = (FL3x_index[1]+1,FL3x_index[1]+Nk_Local*Nphase+1)
+    #FL3z_index = (FL3y_index[1]+1,FL3y_index[1]+Nk_Local*Nphase+1)
+    #FL4x_index = (FL3z_index[1]+1,FL3z_index[1]+Nk_Local*Nphase+1)
+    #FL4y_index = (FL4x_index[1]+1,FL4x_index[1]+Nk_Local*Nphase+1)
+    #FL4z_index = (FL4y_index[1]+1,FL4y_index[1]+Nk_Local*Nphase+1)
+    #FR1x_index = (FL4z_index[1]+1,FL4z_index[1]+Nk_Local*Nphase+1)
+    #FR1y_index = (FR1x_index[1]+1,FR1x_index[1]+Nk_Local*Nphase+1)
+    #FR1z_index = (FR1y_index[1]+1,FR1y_index[1]+Nk_Local*Nphase+1)
+    #FR2x_index = (FR1z_index[1]+1,FR1z_index[1]+Nk_Local*Nphase+1)
+    #FR2y_index = (FR2x_index[1]+1,FR2x_index[1]+Nk_Local*Nphase+1)
+    #FR2z_index = (FR2y_index[1]+1,FR2y_index[1]+Nk_Local*Nphase+1)
+    #FR3x_index = (FR2z_index[1]+1,FR2z_index[1]+Nk_Local*Nphase+1)
+    #FR3y_index = (FR3x_index[1]+1,FR3x_index[1]+Nk_Local*Nphase+1)
+    #FR3z_index = (FR3y_index[1]+1,FR3y_index[1]+Nk_Local*Nphase+1)
+    #FR4x_index = (FR3z_index[1]+1,FR3z_index[1]+Nk_Local*Nphase+1)
+    #FR4y_index = (FR4x_index[1]+1,FR4x_index[1]+Nk_Local*Nphase+1)
+    #FR4z_index = (FR4y_index[1]+1,FR4y_index[1]+Nk_Local*Nphase+1)
+    #px_index = (FR4z_index[1]+1,FR4z_index[1]+Nstep)
+    #py_index = (px_index[1]+1,px_index[1]+Nstep)
+    #pz_index = (py_index[1]+1,py_index[1]+Nstep)
+    #Ts_index = (pz_index[1]+1,pz_index[1]+Nphase)
+
+    #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
+    x_index = (0,N_K-1) #First set of variables start counting from 0, The enumeration of the last knot is N_K-1
+    print(DecisionVars[x_index[0]:x_index[1]+1])
+    y_index = (x_index[1]+1,x_index[1]+N_K)
+    print(DecisionVars[y_index[0]:y_index[1]+1])
+    z_index = (y_index[1]+1,y_index[1]+N_K)
+    print(DecisionVars[z_index[0]:z_index[1]+1])
+    xdot_index = (z_index[1]+1,z_index[1]+N_K)
+    print(DecisionVars[xdot_index[0]:xdot_index[1]+1])
+    ydot_index = (xdot_index[1]+1,xdot_index[1]+N_K)
+    print(DecisionVars[ydot_index[0]:ydot_index[1]+1])
+    zdot_index = (ydot_index[1]+1,ydot_index[1]+N_K)
+    print(DecisionVars[zdot_index[0]:zdot_index[1]+1])
+    Lx_index = (zdot_index[1]+1,zdot_index[1]+N_K)
+    print(DecisionVars[Lx_index[0]:Lx_index[1]+1])
+    Ly_index = (Lx_index[1]+1,Lx_index[1]+N_K)
+    print(DecisionVars[Ly_index[0]:Ly_index[1]+1])
+    Lz_index = (Ly_index[1]+1,Ly_index[1]+N_K)
+    print(DecisionVars[Lz_index[0]:Lz_index[1]+1])
+    Ldotx_index = (Lz_index[1]+1,Lz_index[1]+N_K)
+    print(DecisionVars[Ldotx_index[0]:Ldotx_index[1]+1])
+    Ldoty_index = (Ldotx_index[1]+1,Ldotx_index[1]+N_K)
+    print(DecisionVars[Ldoty_index[0]:Ldoty_index[1]+1])
+    Ldotz_index = (Ldoty_index[1]+1,Ldoty_index[1]+N_K)
+    print(DecisionVars[Ldotz_index[0]:Ldotz_index[1]+1])
+    FL1x_index = (Ldotz_index[1]+1,Ldotz_index[1]+N_K)
+    print(DecisionVars[FL1x_index[0]:FL1x_index[1]+1])
+    FL1y_index = (FL1x_index[1]+1,FL1x_index[1]+N_K)
+    print(DecisionVars[FL1y_index[0]:FL1y_index[1]+1])
+    FL1z_index = (FL1y_index[1]+1,FL1y_index[1]+N_K)
+    print(DecisionVars[FL1z_index[0]:FL1z_index[1]+1])
+    FL2x_index = (FL1z_index[1]+1,FL1z_index[1]+N_K)
+    print(DecisionVars[FL2x_index[0]:FL2x_index[1]+1])
+    FL2y_index = (FL2x_index[1]+1,FL2x_index[1]+N_K)
+    print(DecisionVars[FL2y_index[0]:FL2y_index[1]+1])
+    FL2z_index = (FL2y_index[1]+1,FL2y_index[1]+N_K)
+    print(DecisionVars[FL2z_index[0]:FL2z_index[1]+1])
+    FL3x_index = (FL2z_index[1]+1,FL2z_index[1]+N_K)
+    print(DecisionVars[FL3x_index[0]:FL3x_index[1]+1])
+    FL3y_index = (FL3x_index[1]+1,FL3x_index[1]+N_K)
+    print(DecisionVars[FL3y_index[0]:FL3y_index[1]+1])
+    FL3z_index = (FL3y_index[1]+1,FL3y_index[1]+N_K)
+    print(DecisionVars[FL3z_index[0]:FL3z_index[1]+1])
+    FL4x_index = (FL3z_index[1]+1,FL3z_index[1]+N_K)
+    print(DecisionVars[FL4x_index[0]:FL4x_index[1]+1])
+    FL4y_index = (FL4x_index[1]+1,FL4x_index[1]+N_K)
+    print(DecisionVars[FL4y_index[0]:FL4y_index[1]+1])
+    FL4z_index = (FL4y_index[1]+1,FL4y_index[1]+N_K)
+    print(DecisionVars[FL4z_index[0]:FL4z_index[1]+1])
+    FR1x_index = (FL4z_index[1]+1,FL4z_index[1]+N_K)
+    print(DecisionVars[FR1x_index[0]:FR1x_index[1]+1])
+    FR1y_index = (FR1x_index[1]+1,FR1x_index[1]+N_K)
+    print(DecisionVars[FR1y_index[0]:FR1y_index[1]+1])
+    FR1z_index = (FR1y_index[1]+1,FR1y_index[1]+N_K)
+    print(DecisionVars[FR1z_index[0]:FR1z_index[1]+1])
+    FR2x_index = (FR1z_index[1]+1,FR1z_index[1]+N_K)
+    print(DecisionVars[FR2x_index[0]:FR2x_index[1]+1])
+    FR2y_index = (FR2x_index[1]+1,FR2x_index[1]+N_K)
+    print(DecisionVars[FR2y_index[0]:FR2y_index[1]+1])
+    FR2z_index = (FR2y_index[1]+1,FR2y_index[1]+N_K)
+    print(DecisionVars[FR2z_index[0]:FR2z_index[1]+1])
+    FR3x_index = (FR2z_index[1]+1,FR2z_index[1]+N_K)
+    print(DecisionVars[FR3x_index[0]:FR3x_index[1]+1])
+    FR3y_index = (FR3x_index[1]+1,FR3x_index[1]+N_K)
+    print(DecisionVars[FR3y_index[0]:FR3y_index[1]+1])
+    FR3z_index = (FR3y_index[1]+1,FR3y_index[1]+N_K)
+    print(DecisionVars[FR3z_index[0]:FR3z_index[1]+1])
+    FR4x_index = (FR3z_index[1]+1,FR3z_index[1]+N_K)
+    print(DecisionVars[FR4x_index[0]:FR4x_index[1]+1])
+    FR4y_index = (FR4x_index[1]+1,FR4x_index[1]+N_K)
+    print(DecisionVars[FR4y_index[0]:FR4y_index[1]+1])
+    FR4z_index = (FR4y_index[1]+1,FR4y_index[1]+N_K)
+    print(DecisionVars[FR4z_index[0]:FR4z_index[1]+1])
     px_index = (FR4z_index[1]+1,FR4z_index[1]+Nstep)
+    print(DecisionVars[px_index[0]:px_index[1]+1])
     py_index = (px_index[1]+1,px_index[1]+Nstep)
+    print(DecisionVars[py_index[0]:py_index[1]+1])
     pz_index = (py_index[1]+1,py_index[1]+Nstep)
+    print(DecisionVars[pz_index[0]:pz_index[1]+1])
     Ts_index = (pz_index[1]+1,pz_index[1]+Nphase)
+    print(DecisionVars[Ts_index[0]:Ts_index[1]+1])
 
     var_index = {"x":x_index,
                  "y":y_index,
