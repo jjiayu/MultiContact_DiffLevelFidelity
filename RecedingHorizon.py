@@ -4,7 +4,7 @@ import casadi as ca #Casadi
 from Humanoid_NLP_Constructor import *
 
 #Build the problem
-solver, DecisionVars_init, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = True)
+solver, DecisionVars_init, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = Humanoid_NLP_MultiFidelity_Constructor(withSecondLevel = False)
 
 #Receding Horizon
 #Define Problem Parameters
