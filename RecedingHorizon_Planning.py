@@ -24,31 +24,31 @@ Patch2 = np.array([[5, 0.5, 0.15], [0.5, 0.5, 0.15], [0.5, -0.5, 0.15], [5, -0.5
 #Collect all patches for the final printing of the terrain
 AllPatches = [Patch1,Patch2]
 #Collect patche sequences, number of rows equals number of rounds
-ContactSeqs = [[Patch1,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2],
-               [Patch2,Patch2,Patch2,Patch2,Patch2]]
+#ContactSeqs = [[Patch1,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2],
+#               [Patch2,Patch2,Patch2,Patch2,Patch2]]
 
-#ContactSeqs = [[Patch1,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2],
-#               [Patch2,Patch2]]
+ContactSeqs = [[Patch1,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2],
+               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 0
-SwingRightFirst = 1
+SwingLeftFirst = 1
+SwingRightFirst = 0
 
 #   Number of Rounds
 #Nrounds = 15
@@ -73,7 +73,7 @@ PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.7
+z_end = 0.6
 
 xdot_end = 0
 ydot_end = 0
@@ -101,11 +101,11 @@ StopRound = Nrounds
 Nstep_lookahead = len(ContactSeqs[0])
 
 #   Build Solver
-solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
+solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
 
 #   Generate Initial Guess
 #   Random Initial Guess

@@ -116,7 +116,7 @@ assert c.reduce_h_ != old
 # testing problem data
 c = ProblemData()
 
-nv = array([0., 0., 10.])
+nv = array([0., 0., 100])
 old = c.c0_
 c.c0_ = nv
 assert (c.c0_ != old).any()

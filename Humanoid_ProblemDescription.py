@@ -147,16 +147,16 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #z_ub = np.array([[0.65]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)
-    xdot_lb = np.array([[-0.5]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.5]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.5]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.5]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.5]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.5]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
     Lx_lb = np.array([[-0.5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
@@ -893,7 +893,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             gub.append(np.array([0.3]))
         elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.4])) #0.3 is better
+            glb.append(np.array([0.5])) #0.3 is better
             gub.append(np.array([0.9])) #0.4 - 0.9
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
@@ -1102,16 +1102,16 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)
-    xdot_lb = np.array([[-0.5]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.5]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.5]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.5]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.5]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.5]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
     Lx_lb = np.array([[-0.5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
@@ -1937,11 +1937,11 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
         if GaitPattern[phase_cnt] == 'Swing':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
-                glb.append(np.array([0.3]))
+                glb.append(np.array([0.5]))
                 gub.append(np.array([0.9]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-                glb.append(np.array([0.4]))
+                glb.append(np.array([0.5]))
                 gub.append(np.array([0.9]))
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
@@ -2460,16 +2460,16 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)#0.75 old
-    xdot_lb = np.array([[-0.5]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.5]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.5]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.5]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.5]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.5]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
 
     #Left Foot Force
     #Left Foot x-axis
@@ -2943,16 +2943,16 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         if GaitPattern[phase_cnt] == "Swing":
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
-                glb.append(np.array([0.2]))
+                glb.append(np.array([0.5]))
                 gub.append(np.array([0.9]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-                glb.append(np.array([0.2]))
+                glb.append(np.array([0.5]))
                 gub.append(np.array([0.9]))
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
             glb.append(np.array([0.1]))
-            gub.append(np.array([0.5]))
+            gub.append(np.array([0.3]))
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
