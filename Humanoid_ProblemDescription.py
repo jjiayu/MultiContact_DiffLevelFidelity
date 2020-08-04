@@ -9,7 +9,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # Import SL1M modules
 from sl1m.constants_and_tools import *
 from sl1m.planner import *
-from constraints import *
+from constraints import * 
 
 #FUNCTION: Build a single step NLP problem
 #Parameters:
