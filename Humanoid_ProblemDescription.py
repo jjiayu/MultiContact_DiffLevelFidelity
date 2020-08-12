@@ -14,11 +14,16 @@ from constraints import *
 #FUNCTION: Build a single step NLP problem
 #Parameters:
 #   m: robot mass, default value set as the one of Talos
-def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterList = None):
+def NLP_SingleStep(FirstRoundFlag = None, m = 95, StandAlong = True, ConservativeEnd = True, ParameterList = None):
+    #Check First Round Flag is Empty or not
+    assert FirstRoundFlag != None, "First Round Flag is Empty"
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
-    GaitPattern = ['InitialDouble','Swing','DoubleSupport'] #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
+    if FirstRoundFlag == True:
+        GaitPattern = ['InitialDouble','Swing','DoubleSupport'] #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
+    elif FirstRoundFlag ==False:
+        GaitPattern = ['Swing','DoubleSupport']
     #   Number of Phases
     Nphase = len(GaitPattern)
     #   Number of Steps
@@ -126,8 +131,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #   FirstSurfe, the vector fo inquality constraint
     FirstSurfe = FirstSurfPara[-1]
 
-    #First Round Flag (If yes, we have an initial double support phase, if not, we don't have an initial double support phase)
-    ParaFirstRoundFlag = ParameterList["FirstRoundFlag"]
+    ##First Round Flag (If yes, we have an initial double support phase, if not, we don't have an initial double support phase)
+    #ParaFirstRoundFlag = ParameterList["FirstRoundFlag"]
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Variables and Bounds, Parameters
@@ -159,28 +164,28 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-0.5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[0.5]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[-50]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[50]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-0.5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[0.5]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[-50]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[50]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-0.5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[0.5]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[-50]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[50]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-1]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[1]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[-50]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[50]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-1]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[1]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[-50]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[50]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-1]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[1]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[-50]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[50]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -404,16 +409,16 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     glb.append(np.array([0]))
     gub.append(np.array([0]))
 
-    if StandAlong == True:
-        #   Terminal CoM y-axis
-        g.append(y[-1]-y_end)
-        glb.append(np.array([0]))
-        gub.append(np.array([0]))
+    #if StandAlong == True:
+    #    #   Terminal CoM y-axis
+    #    g.append(y[-1]-y_end)
+    #    glb.append(np.array([0]))
+    #    gub.append(np.array([0]))
 
-        #   Terminal CoM z-axis
-        g.append(z[-1]-z_end)
-        glb.append(np.array([0]))
-        gub.append(np.array([0]))
+    #    #   Terminal CoM z-axis
+    #    g.append(z[-1]-z_end)
+    #    glb.append(np.array([0]))
+    #    gub.append(np.array([0]))
 
     if ConservativeEnd == True:
         #   Terminal CoM Velocity x-axis
@@ -433,33 +438,33 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
 
     #   Terminal Angular Momentum x-axis
     g.append(Lx[-1]-Lx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum y-axis
     g.append(Ly[-1]-Ly_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum z-axis
     g.append(Lz[-1]-Lz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate x-axis
     g.append(Ldotx[-1]-Ldotx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate y-axis
     g.append(Ldoty[-1]-Ldoty_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate z-axis
     g.append(Ldotz[-1]-Ldotz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -505,17 +510,17 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             if GaitPattern[Nph]=='InitialDouble':
                 #Kinematics Constraint
                 #   CoM in the Left foot
-                g.append(ca.if_else(ParaFirstRoundFlag,K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left),np.full((len(k_CoM_Left),),-1)))
+                g.append(K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left))
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(np.full((len(k_CoM_Left),),0))
 
                 #   CoM in the Right foot
-                g.append(ca.if_else(ParaFirstRoundFlag,K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right),np.full((len(k_CoM_Right),),-1)))
+                g.append(K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right))
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
                 #Angular Dynamics
                 if k<N_K-1: #double check the knot number is valid
-                    g.append(ca.if_else(ParaFirstRoundFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
+                    g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
                     glb.append(np.array([0,0,0]))
                     gub.append(np.array([0,0,0]))
                 else:
@@ -797,7 +802,6 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             glb.append(np.array([0]))
             gub.append([np.inf])
 
-
             #-------------------------------------
             #Dynamics Constraint
             if k < N_K - 1: #N_k - 1 the enumeration of the last knot, -1 the knot before the last knot
@@ -910,15 +914,15 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     for phase_cnt in range(Nphase):
         if GaitPattern[phase_cnt] == 'InitialDouble':
             g.append(Ts[phase_cnt])
-            glb.append(np.array([0.1]))
+            glb.append(np.array([0.05]))
             gub.append(np.array([0.3]))
         elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.5])) #0.3 is better
+            glb.append(np.array([0.05])) #0.3 is better
             gub.append(np.array([0.9])) #0.4 - 0.9
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.1]))
+            glb.append(np.array([0.05]))
             gub.append(np.array([0.3])) #0.1 - 0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
@@ -1135,28 +1139,28 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-0.5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[0.5]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[-50]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[50]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-0.5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[0.5]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[-50]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[50]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-0.5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[0.5]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[-50]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[50]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-1]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[1]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[-50]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[50]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-1]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[1]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[-50]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[50]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-1]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[1]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[-50]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[50]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -1308,7 +1312,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
         Tstemp = ca.SX.sym('Ts'+str(n_phase+1)) #0 + 1 + ....
         Ts.append(Tstemp)
         Ts_lb.append(np.array([0.05]))
-        Ts_ub.append(np.array([1.5*(Nphase+1)]))
+        Ts_ub.append(np.array([2.0*(Nphase+1)]))
 
     #   Collect all Decision Variables
     DecisionVars = ca.vertcat(x,y,z,xdot,ydot,zdot,Lx,Ly,Lz,Ldotx,Ldoty,Ldotz,FL1x,FL1y,FL1z,FL2x,FL2y,FL2z,FL3x,FL3y,FL3z,FL4x,FL4y,FL4z,FR1x,FR1y,FR1z,FR2x,FR2y,FR2z,FR3x,FR3y,FR3z,FR4x,FR4y,FR4z,px_init,py_init,pz_init,*px,*py,*pz,*Ts)
@@ -1332,15 +1336,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
 
     #Initial and Terminal Condition
 
-    #   Terminal CoM y-axis
-    g.append(y[-1]-y_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    ##   Terminal CoM y-axis
+    #g.append(y[-1]-y_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
-    #   Terminal CoM z-axis
-    g.append(z[-1]-z_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    ##   Terminal CoM z-axis
+    #g.append(z[-1]-z_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #if StaticStop == True:
     #    #   Terminal Zero CoM velocity x-axis
@@ -1360,33 +1364,33 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
 
     #   Terminal Angular Momentum x-axis
     g.append(Lx[-1]-Lx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum y-axis
     g.append(Ly[-1]-Ly_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum z-axis
     g.append(Lz[-1]-Lz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate x-axis
     g.append(Ldotx[-1]-Ldotx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate y-axis
     g.append(Ldoty[-1]-Ldoty_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #   Terminal Angular Momentum Rate z-axis
     g.append(Ldotz[-1]-Ldotz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    glb.append(np.array([-5]))
+    gub.append(np.array([5]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -1958,15 +1962,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
         if GaitPattern[phase_cnt] == 'Swing':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
-                glb.append(np.array([0.5]))
+                glb.append(np.array([0.05]))
                 gub.append(np.array([0.9]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-                glb.append(np.array([0.5]))
+                glb.append(np.array([0.05]))
                 gub.append(np.array([0.9]))
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.1]))
+            glb.append(np.array([0.05]))
             gub.append(np.array([0.3])) #0.1 - 0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
@@ -2315,16 +2319,16 @@ def Pure_Kinematics_Check(Nsteps = 8, StandAlong = False, ParameterList = None):
 
     #Initial and Terminal Constraints
     #No matter second level or first Level, the terminal constraint for y and z axis should present
-    #   Terminal Condition
-    #   y-axis
-    g.append(y[-1]-y_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    ##   Terminal Condition
+    ##   y-axis
+    #g.append(y[-1]-y_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
-    #   z-axis
-    g.append(z[-1]-z_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    ##   z-axis
+    #g.append(z[-1]-z_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #If it is playing the first level as a standalong layer, then we need to give initial conditions
     if StandAlong == True:
@@ -2598,16 +2602,16 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     gub = []
     J = 0
 
-    #Initial and Termianl Conditions
-    #   Terminal CoM y-axis
-    g.append(y[-1]-y_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    ##Initial and Termianl Conditions
+    ##   Terminal CoM y-axis
+    #g.append(y[-1]-y_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
-    #   Terminal CoM z-axis
-    g.append(z[-1]-z_end)
-    glb.append(np.array([0]))    
-    gub.append(np.array([0]))
+    ##   Terminal CoM z-axis
+    #g.append(z[-1]-z_end)
+    #glb.append(np.array([0]))    
+    #gub.append(np.array([0]))
 
     #if StaticStop == True:
         #   Terminal CoM Velocity x-axis
@@ -3021,7 +3025,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #Build Solver in accordance to the set up of first level second levels
-def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, m = 95, NumSurfaces = None):
+def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, m = 95, NumSurfaces = None, FirstRoundFlag = None):
     #Check if the First Level is selected properly
     assert FirstLevel != None, "First Level is Not Selected."
     assert NumSurfaces != None, "No Surface Vector Defined."
@@ -3061,8 +3065,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         SurfTemp = ca.SX.sym('S'+str(surfNum),3*4+3+5)
         SurfParas.append(SurfTemp)
     SurfParas = ca.vertcat(*SurfParas)
-    #   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
-    FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
+    ##   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
+    #FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
     #   Collect all Parameters
     ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
                 "RightSwingFlag":ParaRightSwingFlag,
@@ -3084,9 +3088,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                 "xdot_end":xdot_end,
                 "ydot_end":ydot_end,
                 "zdot_end":zdot_end,
-                "SurfParas":SurfParas,
-                "FirstRoundFlag":FirstRoundFlag,
+                "SurfParas":SurfParas
     }
+    #            "FirstRoundFlag":FirstRoundFlag,
     #Collect all Parameters
     paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
                        x_init,y_init,z_init,
@@ -3094,7 +3098,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                        PLx_init,PLy_init,PLz_init,
                        PRx_init,PRy_init,PRz_init,
                        x_end,y_end,z_end,
-                       xdot_end,ydot_end,zdot_end,SurfParas,FirstRoundFlag)
+                       xdot_end,ydot_end,zdot_end,SurfParas)
 
     #-----------------------------------------------------------------------------------------------------------------
     #Identify the Fidelity Type of the whole framework, Used to tell the First Level to set Constraints Accordingly
@@ -3105,9 +3109,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
 
     #Bulding the First Level
     if FirstLevel == "NLP_SingleStep":
-        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = NLP_SingleStep(m = m, StandAlong = SingleFidelity, ConservativeEnd = ConservativeFirstStep, ParameterList = ParaList)
-    elif FirstLevel == "Pure_Kinematics_Check":
-        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = Pure_Kinematics_Check(StandAlong = SingleFidelity, ParameterList = ParaList)
+        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = NLP_SingleStep(m = m, StandAlong = SingleFidelity, ConservativeEnd = ConservativeFirstStep, ParameterList = ParaList, FirstRoundFlag = FirstRoundFlag)
+    #elif FirstLevel == "Pure_Kinematics_Check":
+    #    var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = Pure_Kinematics_Check(StandAlong = SingleFidelity, ParameterList = ParaList)
     else:
         print("Print Not implemented or Wrong Solver Build Enumeration")        
     
@@ -3133,8 +3137,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         xdot_Level1 = var_Level1[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
         ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
         zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
-        #J = J + 100*(x_Level1[-1]-x_end)**2 + 100*(y_Level1[-1]-y_end)**2 + 100*(z_Level1[-1]-z_end)**2
-        J = J + 100*(x_Level1[-1]-x_end)**2
+        J = J + 100*(x_Level1[-1]-x_end)**2 + 100*(y_Level1[-1]-y_end)**2 + 100*(z_Level1[-1]-z_end)**2
+        #J = J + 100*(x_Level1[-1]-x_end)**2
     else:#With Second level
         #Summation of the all running cost
         J = J_Level1 + J_Level2
@@ -3147,7 +3151,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
             zdot_Level2 = var_Level2[var_index_Level2["zdot"][0]:var_index_Level2["zdot"][1]+1]
         #Add terminal cost
         #J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2 + 100*(xdot_Level2[-1])**2 + 100*(ydot_Level2[-1])**2 + 100*(zdot_Level2[-1])**2
-        J = J + 100*(x_Level2[-1]-x_end)**2
+        J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2
+        #J = J + 100*(x_Level2[-1]-x_end)**2
         
         #Deal with Connections between the first level and the second level
         gConnect = []

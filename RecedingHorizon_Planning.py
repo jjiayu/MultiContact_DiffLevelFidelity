@@ -20,7 +20,7 @@ np.set_printoptions(precision=4)
 #Define Patches
 #NOTE: The rectangle always stat from Top Right Corner, and the vertex move counterclockwise, it should be a list of numpy arrays
 Patch1 = np.array([[0.5, 0.5, 0.], [-0.1, 0.5, 0.], [-0.1, -0.5, 0.], [0.5, -0.5, 0.]])
-Patch2 = np.array([[5, 0.5, 0.], [0., 0.5, 0.], [0., -0.5, 0.], [5, -0.5, 0.]])
+Patch2 = np.array([[5, 0.5, 0.], [-5, 0.5, 0.], [-5, -0.5, 0.], [5, -0.5, 0.]])
 #Collect all patches for the final printing of the terrain
 AllPatches = [Patch1,Patch2]
 #Collect patche sequences, number of rows equals number of rounds
@@ -35,16 +35,16 @@ AllPatches = [Patch1,Patch2]
 #               [Patch2,Patch2,Patch2,Patch2,Patch2],
 #               [Patch2,Patch2,Patch2,Patch2,Patch2]]
 
-ContactSeqs = [[Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2]]
+ContactSeqs = [[Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2],
+               [Patch2,Patch2,Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
 SwingLeftFirst = 1
@@ -55,23 +55,23 @@ SwingRightFirst = 0
 Nrounds = len(ContactSeqs)
 
 #   Initial Condition of the Robot
-x_init = 0
-y_init = 0
+x_init = 0.0
+y_init = 0.0
 z_init = 0.6
 
-xdot_init = 0
+xdot_init = 0.0
 ydot_init = 0
 zdot_init = 0
 
-PLx_init = 0.0
-PLy_init = 0.15
+PLx_init = 0
+PLy_init = 0.1
 PLz_init = 0
 
-PRx_init = 0.0
-PRy_init = -0.15
+PRx_init = 0
+PRy_init = -0.1
 PRz_init = 0
 
-x_end = 10
+x_end = 3
 y_end = 0
 z_end = 0.6
 
@@ -100,23 +100,20 @@ StopRound = Nrounds
 #Number of Lookahead Steps per round
 Nstep_lookahead = len(ContactSeqs[0])
 
-#   Build Solver
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
+#   Build Solver fo normal rounds (Start from Swing Phase)
+#solver_init, DecisionVars_lb_init, DecisionVars_ub_init, glb_init, gub_init, var_index_init = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead,FirstRoundFlag=True)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=True)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=True)
+#solver_init, DecisionVars_lb_init, DecisionVars_ub_init, glb_init, gub_init, var_index_init = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead,FirstRoundFlag=True)
+solver_init, DecisionVars_lb_init, DecisionVars_ub_init, glb_init, gub_init, var_index_init = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=True)
 
-#   Generate Initial Guess
-#   Random Initial Guess
-#       Shuffle the Random Seed Generator
-np.random.seed()
-DecisionVarsShape = DecisionVars_lb.shape
-DecisionVars_init = DecisionVars_lb + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub-DecisionVars_lb))#   Fixed Value Initial Guess
+#   Build Solver for the First Round (Start from Initial Double Support)
+#solver_normal, DecisionVars_lb_normal, DecisionVars_ub_normal, glb_normal, gub_normal, var_index_normal = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead,FirstRoundFlag=False)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=False)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=False)
+#solver_normal, DecisionVars_lb_normal, DecisionVars_ub_normal, glb_normal, gub_normal, var_index_normal = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead,FirstRoundFlag=False)
+solver_normal, DecisionVars_lb_normal, DecisionVars_ub_normal, glb_normal, gub_normal, var_index_normal = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead,FirstRoundFlag=False)
 
-
-#   backup var_index
-var_index_Level1 = var_index["Level1_Var_Index"]
 
 #Main For Loop
 for roundNum in range(Nrounds):
@@ -128,6 +125,22 @@ for roundNum in range(Nrounds):
 
     if roundNum == 0:
 
+        #Switch Solver
+        solver = solver_init
+
+        #   Generate Initial Guess
+        #   Random Initial Guess
+        #       Shuffle the Random Seed Generator
+        np.random.seed()
+        DecisionVarsShape = DecisionVars_lb_init.shape
+        DecisionVarsStart_init = DecisionVars_lb_init + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub_init-DecisionVars_lb_init))#   Fixed Value Initial Guess
+
+        #   backup var_index
+        var_index_Level1 = var_index_init["Level1_Var_Index"]
+
+        #switch var index
+        var_index = var_index_init
+
         if SwingLeftFirst == 1:
             #Swing the Left
             LeftSwingFlag = 1
@@ -137,8 +150,8 @@ for roundNum in range(Nrounds):
             LeftSwingFlag = 0
             RightSwingFlag = 1
         
-        #FirstRoundFlag
-        FirstRoundFlag = 1
+        ##FirstRoundFlag
+        #FirstRoundFlag = 1
         
         #Get Parameters for Half-space representation of Patches
         #Convert to Half Space Representation
@@ -159,9 +172,9 @@ for roundNum in range(Nrounds):
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,HalfSpaceSeq,FirstRoundFlag),axis=None)
+            xdot_end,ydot_end,zdot_end,HalfSpaceSeq),axis=None)
 
-        res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+        res = solver(x0=DecisionVarsStart_init, p = ParaList, lbx = DecisionVars_lb_init, ubx = DecisionVars_ub_init, lbg = glb_init, ubg = gub_init)
 
         x_opt = res["x"]
         x_opt = x_opt.full().flatten()
@@ -172,6 +185,25 @@ for roundNum in range(Nrounds):
         #PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintSecondLevel = False, PlotNLP = True, PlotBothLevel = True)
 
     elif roundNum > 0:
+
+        #Switch Solver
+        solver = solver_normal
+
+        #   Generate Initial Guess
+        #   Random Initial Guess
+        #       Shuffle the Random Seed Generator
+        np.random.seed()
+        DecisionVarsShape = DecisionVars_lb_normal.shape
+        DecisionVarsStart_normal = DecisionVars_lb_normal + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub_normal-DecisionVars_lb_normal))#   Fixed Value Initial Guess
+
+        #   backup var_index
+        if roundNum == 1:
+            var_index_Level1 = var_index_init["Level1_Var_Index"]
+        else:
+            var_index_Level1 = var_index_normal["Level1_Var_Index"]
+
+        #switch var index
+        var_index = var_index_normal
 
         #Update Initial Condition
         x_res = x_opt[var_index_Level1["x"][0]:var_index_Level1["x"][1]+1]
@@ -255,8 +287,8 @@ for roundNum in range(Nrounds):
         HalfSpaceSeq = np.concatenate(HalfSpaceSeq,axis=None)
         #print(HalfSpaceSeq)
 
-        #FirstRoundFlag
-        FirstRoundFlag = 0
+        ##FirstRoundFlag
+        #FirstRoundFlag = 0
 
         #Build Parameter Vector
         ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -265,20 +297,26 @@ for roundNum in range(Nrounds):
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,HalfSpaceSeq,FirstRoundFlag),axis=None)
+            xdot_end,ydot_end,zdot_end,HalfSpaceSeq),axis=None)
 
         if SwingLeftFirst == 1:
             if roundNum%2 == 0:#Even (The First phase)
-                #Swing the Left
-                res = solver(x0=x_opt_left, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+                if roundNum > 1:
+                    #Swing the Left
+                    res = solver(x0=x_opt_left, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
+                else:
+                    res = solver(x0=DecisionVarsStart_normal, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
                 #res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
                 x_opt = res["x"]
                 x_opt = x_opt.full().flatten()  
                 x_opt_left = x_opt
 
             elif roundNum%2 == 1:#odd (The Second phase)
-                #Swing the Right
-                res = solver(x0=x_opt_right, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+                if roundNum > 1:
+                    #Swing the Right
+                    res = solver(x0=x_opt_right, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
+                else:
+                    res = solver(x0=DecisionVarsStart_normal, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
                 #res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
                 x_opt = res["x"]
                 x_opt = x_opt.full().flatten()  
@@ -286,16 +324,22 @@ for roundNum in range(Nrounds):
 
         elif SwingRightFirst == 1:
             if roundNum%2 == 0:#Even (The First phase)
-                #Swing the Right
-                res = solver(x0=x_opt_right, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+                if roundNum > 1:
+                    #Swing the Right
+                    res = solver(x0=x_opt_right, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
+                else:
+                    res = solver(x0=DecisionVarsStart_normal, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
                 #res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
                 x_opt = res["x"]
                 x_opt = x_opt.full().flatten()  
                 x_opt_right = x_opt     
 
             elif roundNum%2 == 1:#odd (The Second phase)
-                #Swing the Left
-                res = solver(x0=x_opt_left, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+                if roundNum > 1:
+                    #Swing the Left
+                    res = solver(x0=x_opt_left, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
+                else:
+                    res = solver(x0=DecisionVarsStart_normal, p = ParaList, lbx = DecisionVars_lb_normal, ubx = DecisionVars_ub_normal, lbg = glb_normal, ubg = gub_normal)
                 #res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
                 x_opt = res["x"]
                 x_opt = x_opt.full().flatten()  
