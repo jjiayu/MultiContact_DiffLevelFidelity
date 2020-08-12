@@ -385,6 +385,18 @@ def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init 
     Ts_res = np.array(Ts_res)
     print('Ts_res: ',Ts_res)
 
+    FR1x_res = x_opt[var_index["FR1x"][0]:var_index["FR1x"][1]+1]
+    FR1x_res = np.array(FR1x_res)
+    print('FR1x_res: ',FR1x_res)
+
+    FR1y_res = x_opt[var_index["FR1y"][0]:var_index["FR1y"][1]+1]
+    FR1y_res = np.array(FR1y_res)
+    print('FR1y_res: ',FR1y_res)
+
+    FR1z_res = x_opt[var_index["FR1z"][0]:var_index["FR1z"][1]+1]
+    FR1z_res = np.array(FR1z_res)
+    print('FR1z_res: ',FR1z_res)
+
     #Backup the complete optimization result
     x_opt_complete = x_opt
     
