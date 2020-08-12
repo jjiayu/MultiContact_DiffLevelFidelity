@@ -846,6 +846,27 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 glb.append(np.array([0]))
                 gub.append(np.array([0]))
             
+                ##Constant Acceleration
+                #Accx_1  = FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m
+                #Accx_2  = FL1x[k+1]/m+FL2x[k+1]/m+FL3x[k+1]/m+FL4x[k+1]/m+FR1x[k+1]/m+FR2x[k+1]/m+FR3x[k+1]/m+FR4x[k+1]/m
+                
+                #Accy_1  = FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m
+                #Accy_2  = FL1y[k+1]/m+FL2y[k+1]/m+FL3y[k+1]/m+FL4y[k+1]/m+FR1y[k+1]/m+FR2y[k+1]/m+FR3y[k+1]/m+FR4y[k+1]/m
+
+                #Accz_1  = FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m
+                #Accz_2  = FL1z[k+1]/m+FL2z[k+1]/m+FL3z[k+1]/m+FL4z[k+1]/m+FR1z[k+1]/m+FR2z[k+1]/m+FR3z[k+1]/m+FR4z[k+1]/m
+
+                #g.append(Accx_1-Accx_2)
+                #glb.append(np.array([0]))
+                #gub.append(np.array([0]))
+
+                #g.append(Accy_1-Accy_2)
+                #glb.append(np.array([0]))
+                #gub.append(np.array([0]))
+
+                #g.append(Accz_1-Accz_2)
+                #glb.append(np.array([0]))
+                #gub.append(np.array([0]))
             #Add Cost Terms
             if k < N_K - 1:
                 J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2

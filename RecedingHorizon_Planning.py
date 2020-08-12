@@ -20,7 +20,7 @@ np.set_printoptions(precision=4)
 #Define Patches
 #NOTE: The rectangle always stat from Top Right Corner, and the vertex move counterclockwise, it should be a list of numpy arrays
 Patch1 = np.array([[0.5, 0.5, 0.], [-0.1, 0.5, 0.], [-0.1, -0.5, 0.], [0.5, -0.5, 0.]])
-Patch2 = np.array([[5, 0.5, 0.15], [0.5, 0.5, 0.15], [0.5, -0.5, 0.15], [5, -0.5, 0.15]])
+Patch2 = np.array([[5, 0.5, 0.], [0., 0.5, 0.], [0., -0.5, 0.], [5, -0.5, 0.]])
 #Collect all patches for the final printing of the terrain
 AllPatches = [Patch1,Patch2]
 #Collect patche sequences, number of rows equals number of rounds
@@ -35,7 +35,7 @@ AllPatches = [Patch1,Patch2]
 #               [Patch2,Patch2,Patch2,Patch2,Patch2],
 #               [Patch2,Patch2,Patch2,Patch2,Patch2]]
 
-ContactSeqs = [[Patch1,Patch2],
+ContactSeqs = [[Patch2,Patch2],
                [Patch2,Patch2],
                [Patch2,Patch2],
                [Patch2,Patch2],
@@ -328,6 +328,10 @@ for roundNum in range(Nrounds):
     #for two levels
     PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintSecondLevel = True, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches)
     
+    #plot acceleration curves
+    PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "x")
+    PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "y")
+    PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "z")
     #for NLP only
     #PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintSecondLevel = False, PlotNLP = True, PlotBothLevel = False, AllSurfaces = AllPatches)
 

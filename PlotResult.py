@@ -494,3 +494,136 @@ def Plot_RHP_result(NumRounds = None, SwingLeftFirst = None, SwingRightFirst = N
     ax.set_zlabel('Z')
 
     plt.show()
+
+def PlotFirstLevelAcceleration(Nk_Local=5, x_opt = None, fig=None, var_index=None, G = 9.80665, m = 95, plotAxis = "x"):
+    #-----------------------------------------------------------------------------------------------------------------------
+    #Plot Result
+    #if fig==None:
+    #    fig=plt.figure()
+    #
+    #ax = Axes3D(fig)
+
+    #Number of NLP Phases
+    NLPphase=3
+
+    #parameter setup
+    N_K = Nk_Local*NLPphase + 1
+    #Time Span Setup
+    tau_upper_limit = 1
+    tauStepLength = tau_upper_limit/(N_K-1) #Get the interval length, total number of knots - 1
+
+    var_index = var_index["Level1_Var_Index"]
+
+    #Get Forces
+    FL1x_res = x_opt[var_index["FL1x"][0]:var_index["FL1x"][1]+1]
+    FL1x_res = np.array(FL1x_res)
+    FL1y_res = x_opt[var_index["FL1y"][0]:var_index["FL1y"][1]+1]
+    FL1y_res = np.array(FL1y_res)
+    FL1z_res = x_opt[var_index["FL1z"][0]:var_index["FL1z"][1]+1]
+    FL1z_res = np.array(FL1z_res)
+
+    FL2x_res = x_opt[var_index["FL2x"][0]:var_index["FL2x"][1]+1]
+    FL2x_res = np.array(FL2x_res)
+    FL2y_res = x_opt[var_index["FL2y"][0]:var_index["FL2y"][1]+1]
+    FL2y_res = np.array(FL2y_res)
+    FL2z_res = x_opt[var_index["FL2z"][0]:var_index["FL2z"][1]+1]
+    FL2z_res = np.array(FL2z_res)
+
+    FL3x_res = x_opt[var_index["FL3x"][0]:var_index["FL3x"][1]+1]
+    FL3x_res = np.array(FL3x_res)
+    FL3y_res = x_opt[var_index["FL3y"][0]:var_index["FL3y"][1]+1]
+    FL3y_res = np.array(FL3y_res)
+    FL3z_res = x_opt[var_index["FL3z"][0]:var_index["FL3z"][1]+1]
+    FL3z_res = np.array(FL3z_res)
+
+    FL4x_res = x_opt[var_index["FL4x"][0]:var_index["FL4x"][1]+1]
+    FL4x_res = np.array(FL4x_res)
+    FL4y_res = x_opt[var_index["FL4y"][0]:var_index["FL4y"][1]+1]
+    FL4y_res = np.array(FL4y_res)
+    FL4z_res = x_opt[var_index["FL4z"][0]:var_index["FL4z"][1]+1]
+    FL4z_res = np.array(FL4z_res)
+
+    FR1x_res = x_opt[var_index["FR1x"][0]:var_index["FR1x"][1]+1]
+    FR1x_res = np.array(FR1x_res)
+    FR1y_res = x_opt[var_index["FR1y"][0]:var_index["FR1y"][1]+1]
+    FR1y_res = np.array(FR1y_res)
+    FR1z_res = x_opt[var_index["FR1z"][0]:var_index["FR1z"][1]+1]
+    FR1z_res = np.array(FR1z_res)
+
+    FR2x_res = x_opt[var_index["FR2x"][0]:var_index["FR2x"][1]+1]
+    FR2x_res = np.array(FR2x_res)
+    FR2y_res = x_opt[var_index["FR2y"][0]:var_index["FR2y"][1]+1]
+    FR2y_res = np.array(FR2y_res)
+    FR2z_res = x_opt[var_index["FR2z"][0]:var_index["FR2z"][1]+1]
+    FR2z_res = np.array(FR2z_res)
+
+    FR3x_res = x_opt[var_index["FR3x"][0]:var_index["FR3x"][1]+1]
+    FR3x_res = np.array(FR3x_res)
+    FR3y_res = x_opt[var_index["FR3y"][0]:var_index["FR3y"][1]+1]
+    FR3y_res = np.array(FR3y_res)
+    FR3z_res = x_opt[var_index["FR3z"][0]:var_index["FR3z"][1]+1]
+    FR3z_res = np.array(FR3z_res)
+
+    FR4x_res = x_opt[var_index["FR4x"][0]:var_index["FR4x"][1]+1]
+    FR4x_res = np.array(FR4x_res)
+    FR4y_res = x_opt[var_index["FR4y"][0]:var_index["FR4y"][1]+1]
+    FR4y_res = np.array(FR4y_res)
+    FR4z_res = x_opt[var_index["FR4z"][0]:var_index["FR4z"][1]+1]
+    FR4z_res = np.array(FR4z_res)
+
+    Ts_res = x_opt[var_index["Ts"][0]:var_index["Ts"][1]+1]
+    Ts_res = np.array(Ts_res)
+
+
+    Accx = []
+    Accy = []
+    Accz = []
+
+    TimeSeries = []
+
+    t = 0
+    #Loop over all Phases (Knots)
+    for Nph in range(NLPphase):
+        
+        #Decide Number of Knots
+        if Nph == NLPphase-1:  #The last Knot belongs to the Last Phase
+            Nk_ThisPhase = Nk_Local+1
+        else:
+            Nk_ThisPhase = Nk_Local
+
+        #Decide Time Vector
+        if Nph == 0: #first phase
+            h = tauStepLength*NLPphase*(Ts_res[Nph]-0)
+        else: #other phases
+            h = tauStepLength*NLPphase*(Ts_res[Nph]-Ts_res[Nph-1])
+
+        for Local_k_Count in range(Nk_ThisPhase):
+            #Get knot number across the entire time line
+            k = Nph*Nk_Local + Local_k_Count
+            #print(k)
+
+            #Add Cost Terms
+            if k < N_K - 1:
+                
+                #make time vector
+                TimeSeries.append(t)
+                t = t + h
+
+                Accx.append((FL1x_res[k]+FL2x_res[k]+FL3x_res[k]+FL4x_res[k]+FR1x_res[k]+FR2x_res[k]+FR3x_res[k]+FR4x_res[k])/m)
+                Accy.append((FL1y_res[k]+FL2y_res[k]+FL3y_res[k]+FL4y_res[k]+FR1y_res[k]+FR2y_res[k]+FR3y_res[k]+FR4y_res[k])/m)
+                Accz.append((FL1z_res[k]+FL2z_res[k]+FL3z_res[k]+FL4z_res[k]+FR1z_res[k]+FR2z_res[k]+FR3z_res[k]+FR4z_res[k])/m - G)
+
+    if plotAxis == "x":
+        plt.plot(TimeSeries,Accx)
+        plt.ylabel('Acc X')
+    elif plotAxis == "y":
+        plt.plot(TimeSeries,Accy)
+        plt.ylabel('Acc Y')
+    elif plotAxis == "z":
+        plt.plot(TimeSeries,Accz)
+        plt.ylabel('Acc Z')
+    
+    plt.xlabel('Time')
+
+
+    plt.show()
