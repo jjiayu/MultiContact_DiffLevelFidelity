@@ -40,7 +40,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
 
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
-    GaitPattern = ['InitialDouble','Swing','DoubleSupport'] #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
+    GaitPattern = ['InitialDouble'] #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
     #   Number of Phases
     Nphase = len(GaitPattern)
@@ -84,9 +84,6 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Casadi Parameters
 
-    #Flags the first round
-    ParaFirstRoundFlag = ParameterList["ParaFirstRoundFlag"]
-
     #Flags for Swing Legs (Defined as Parameters)
     ParaLeftSwingFlag = ParameterList["LeftSwingFlag"]
     ParaRightSwingFlag = ParameterList["RightSwingFlag"]
@@ -125,21 +122,25 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
     Cy_ub = np.array([[30]*(Cy.shape[0]*Cy.shape[1])])
 
     #Control Points for Angular Momentum (order of 3)
-    Ldot0 = ca.SX.sym('Ldot0',3)
-    Ldot0_lb = np.array([[-500]*(Ldot0.shape[0]*Ldot0.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldot0_ub = np.array([[500]*(Ldot0.shape[0]*Ldot0.shape[1])])
+    L0 = ca.SX.sym('L0',3)
+    L0_lb = np.array([[0]*(L0.shape[0]*L0.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    L0_ub = np.array([[0]*(L0.shape[0]*L0.shape[1])])
 
-    Ldot1 = ca.SX.sym('Ldot1',3)
-    Ldot1_lb = np.array([[-500]*(Ldot1.shape[0]*Ldot1.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldot1_ub = np.array([[500]*(Ldot1.shape[0]*Ldot1.shape[1])])
+    L1 = ca.SX.sym('L1',3)
+    L1_lb = np.array([[0]*(L1.shape[0]*L1.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    L1_ub = np.array([[0]*(L1.shape[0]*L1.shape[1])])
 
-    Ldot2 = ca.SX.sym('Ldot2',3)
-    Ldot2_lb = np.array([[-500]*(Ldot2.shape[0]*Ldot2.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldot2_ub = np.array([[500]*(Ldot2.shape[0]*Ldot2.shape[1])])
+    L2 = ca.SX.sym('L2',3)
+    L2_lb = np.array([[0]*(L2.shape[0]*L2.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    L2_ub = np.array([[0]*(L2.shape[0]*L2.shape[1])])
 
-    Ldot3 = ca.SX.sym('Ldot3',3)
-    Ldot3_lb = np.array([[-500]*(Ldot3.shape[0]*Ldot3.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldot3_ub = np.array([[500]*(Ldot3.shape[0]*Ldot3.shape[1])])
+    L3 = ca.SX.sym('L3',3)
+    L3_lb = np.array([[0]*(L3.shape[0]*L3.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    L3_ub = np.array([[0]*(L3.shape[0]*L3.shape[1])])
+
+    L4 = ca.SX.sym('L4',3)
+    L4_lb = np.array([[0]*(L4.shape[0]*L4.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    L4_ub = np.array([[0]*(L4.shape[0]*L4.shape[1])])
 
     #Control Points for Force Trejctory (Temparrily set 2 free variables, in the order of 1), for each phase
     #   Can be implemented by a for loop, later consider about it
@@ -372,13 +373,13 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
     FR4_double_p1_ub = np.array([Fxub,Fyub,Fzub])
 
     #   Collect all Decision Variables
-    DecisionVars = ca.vertcat(Cy, Ldot0, Ldot1, Ldot2, Ldot3, FL1_initdouble_p0, FL1_initdouble_p1, FL1_swing_p0, FL1_swing_p1, FL1_double_p0, FL1_double_p1, FL2_initdouble_p0, FL2_initdouble_p1, FL2_swing_p0, FL2_swing_p1, FL2_double_p0, FL2_double_p1, FL3_initdouble_p0, FL3_initdouble_p1, FL3_swing_p0, FL3_swing_p1, FL3_double_p0, FL3_double_p1, FL4_initdouble_p0, FL4_initdouble_p1, FL4_swing_p0, FL4_swing_p1, FL4_double_p0, FL4_double_p1, FR1_initdouble_p0, FR1_initdouble_p1, FR1_swing_p0, FR1_swing_p1, FR1_double_p0, FR1_double_p1, FR2_initdouble_p0, FR2_initdouble_p1, FR2_swing_p0, FR2_swing_p1, FR2_double_p0, FR2_double_p1, FR3_initdouble_p0, FR3_initdouble_p1, FR3_swing_p0, FR3_swing_p1, FR3_double_p0, FR3_double_p1, FR4_initdouble_p0, FR4_initdouble_p1, FR4_swing_p0, FR4_swing_p1, FR4_double_p0, FR4_double_p1)
+    DecisionVars = ca.vertcat(Cy, L0, L1, L2, L3, L4, FL1_initdouble_p0, FL1_initdouble_p1, FL1_swing_p0, FL1_swing_p1, FL1_double_p0, FL1_double_p1, FL2_initdouble_p0, FL2_initdouble_p1, FL2_swing_p0, FL2_swing_p1, FL2_double_p0, FL2_double_p1, FL3_initdouble_p0, FL3_initdouble_p1, FL3_swing_p0, FL3_swing_p1, FL3_double_p0, FL3_double_p1, FL4_initdouble_p0, FL4_initdouble_p1, FL4_swing_p0, FL4_swing_p1, FL4_double_p0, FL4_double_p1, FR1_initdouble_p0, FR1_initdouble_p1, FR1_swing_p0, FR1_swing_p1, FR1_double_p0, FR1_double_p1, FR2_initdouble_p0, FR2_initdouble_p1, FR2_swing_p0, FR2_swing_p1, FR2_double_p0, FR2_double_p1, FR3_initdouble_p0, FR3_initdouble_p1, FR3_swing_p0, FR3_swing_p1, FR3_double_p0, FR3_double_p1, FR4_initdouble_p0, FR4_initdouble_p1, FR4_swing_p0, FR4_swing_p1, FR4_double_p0, FR4_double_p1)
     #print(DecisionVars)
     DecisionVarsShape = DecisionVars.shape
 
     #   Collect all lower bound and upper bound
-    DecisionVars_lb = np.concatenate(((Cy_lb, Ldot0_lb, Ldot1_lb, Ldot2_lb, Ldot3_lb, FL1_initdouble_p0_lb, FL1_initdouble_p1_lb, FL1_swing_p0_lb, FL1_swing_p1_lb, FL1_double_p0_lb, FL1_double_p1_lb, FL2_initdouble_p0_lb, FL2_initdouble_p1_lb, FL2_swing_p0_lb, FL2_swing_p1_lb, FL2_double_p0_lb, FL2_double_p1_lb, FL3_initdouble_p0_lb, FL3_initdouble_p1_lb, FL3_swing_p0_lb, FL3_swing_p1_lb, FL3_double_p0_lb, FL3_double_p1_lb, FL4_initdouble_p0_lb, FL4_initdouble_p1_lb, FL4_swing_p0_lb, FL4_swing_p1_lb, FL4_double_p0_lb, FL4_double_p1_lb, FR1_initdouble_p0_lb, FR1_initdouble_p1_lb, FR1_swing_p0_lb, FR1_swing_p1_lb, FR1_double_p0_lb, FR1_double_p1_lb, FR2_initdouble_p0_lb, FR2_initdouble_p1_lb, FR2_swing_p0_lb, FR2_swing_p1_lb, FR2_double_p0_lb, FR2_double_p1_lb, FR3_initdouble_p0_lb, FR3_initdouble_p1_lb, FR3_swing_p0_lb, FR3_swing_p1_lb, FR3_double_p0_lb, FR3_double_p1_lb, FR4_initdouble_p0_lb, FR4_initdouble_p1_lb, FR4_swing_p0_lb, FR4_swing_p1_lb, FR4_double_p0_lb, FR4_double_p1_lb)),axis=None)
-    DecisionVars_ub = np.concatenate(((Cy_ub, Ldot0_ub, Ldot1_ub, Ldot2_ub, Ldot3_ub, FL1_initdouble_p0_ub, FL1_initdouble_p1_ub, FL1_swing_p0_ub, FL1_swing_p1_ub, FL1_double_p0_ub, FL1_double_p1_ub, FL2_initdouble_p0_ub, FL2_initdouble_p1_ub, FL2_swing_p0_ub, FL2_swing_p1_ub, FL2_double_p0_ub, FL2_double_p1_ub, FL3_initdouble_p0_ub, FL3_initdouble_p1_ub, FL3_swing_p0_ub, FL3_swing_p1_ub, FL3_double_p0_ub, FL3_double_p1_ub, FL4_initdouble_p0_ub, FL4_initdouble_p1_ub, FL4_swing_p0_ub, FL4_swing_p1_ub, FL4_double_p0_ub, FL4_double_p1_ub, FR1_initdouble_p0_ub, FR1_initdouble_p1_ub, FR1_swing_p0_ub, FR1_swing_p1_ub, FR1_double_p0_ub, FR1_double_p1_ub,  FR2_initdouble_p0_ub, FR2_initdouble_p1_ub, FR2_swing_p0_ub, FR2_swing_p1_ub, FR2_double_p0_ub, FR2_double_p1_ub, FR3_initdouble_p0_ub, FR3_initdouble_p1_ub, FR3_swing_p0_ub, FR3_swing_p1_ub, FR3_double_p0_ub, FR3_double_p1_ub, FR4_initdouble_p0_ub, FR4_initdouble_p1_ub, FR4_swing_p0_ub, FR4_swing_p1_ub, FR4_double_p0_ub, FR4_double_p1_ub)),axis=None)
+    DecisionVars_lb = np.concatenate(((Cy_lb, L0_lb, L1_lb, L2_lb, L3_lb, L4_lb, FL1_initdouble_p0_lb, FL1_initdouble_p1_lb, FL1_swing_p0_lb, FL1_swing_p1_lb, FL1_double_p0_lb, FL1_double_p1_lb, FL2_initdouble_p0_lb, FL2_initdouble_p1_lb, FL2_swing_p0_lb, FL2_swing_p1_lb, FL2_double_p0_lb, FL2_double_p1_lb, FL3_initdouble_p0_lb, FL3_initdouble_p1_lb, FL3_swing_p0_lb, FL3_swing_p1_lb, FL3_double_p0_lb, FL3_double_p1_lb, FL4_initdouble_p0_lb, FL4_initdouble_p1_lb, FL4_swing_p0_lb, FL4_swing_p1_lb, FL4_double_p0_lb, FL4_double_p1_lb, FR1_initdouble_p0_lb, FR1_initdouble_p1_lb, FR1_swing_p0_lb, FR1_swing_p1_lb, FR1_double_p0_lb, FR1_double_p1_lb, FR2_initdouble_p0_lb, FR2_initdouble_p1_lb, FR2_swing_p0_lb, FR2_swing_p1_lb, FR2_double_p0_lb, FR2_double_p1_lb, FR3_initdouble_p0_lb, FR3_initdouble_p1_lb, FR3_swing_p0_lb, FR3_swing_p1_lb, FR3_double_p0_lb, FR3_double_p1_lb, FR4_initdouble_p0_lb, FR4_initdouble_p1_lb, FR4_swing_p0_lb, FR4_swing_p1_lb, FR4_double_p0_lb, FR4_double_p1_lb)),axis=None)
+    DecisionVars_ub = np.concatenate(((Cy_ub, L0_ub, L1_ub, L2_ub, L3_ub, L4_lb, FL1_initdouble_p0_ub, FL1_initdouble_p1_ub, FL1_swing_p0_ub, FL1_swing_p1_ub, FL1_double_p0_ub, FL1_double_p1_ub, FL2_initdouble_p0_ub, FL2_initdouble_p1_ub, FL2_swing_p0_ub, FL2_swing_p1_ub, FL2_double_p0_ub, FL2_double_p1_ub, FL3_initdouble_p0_ub, FL3_initdouble_p1_ub, FL3_swing_p0_ub, FL3_swing_p1_ub, FL3_double_p0_ub, FL3_double_p1_ub, FL4_initdouble_p0_ub, FL4_initdouble_p1_ub, FL4_swing_p0_ub, FL4_swing_p1_ub, FL4_double_p0_ub, FL4_double_p1_ub, FR1_initdouble_p0_ub, FR1_initdouble_p1_ub, FR1_swing_p0_ub, FR1_swing_p1_ub, FR1_double_p0_ub, FR1_double_p1_ub,  FR2_initdouble_p0_ub, FR2_initdouble_p1_ub, FR2_swing_p0_ub, FR2_swing_p1_ub, FR2_double_p0_ub, FR2_double_p1_ub, FR3_initdouble_p0_ub, FR3_initdouble_p1_ub, FR3_swing_p0_ub, FR3_swing_p1_ub, FR3_double_p0_ub, FR3_double_p1_ub, FR4_initdouble_p0_ub, FR4_initdouble_p1_ub, FR4_swing_p0_ub, FR4_swing_p1_ub, FR4_double_p0_ub, FR4_double_p1_ub)),axis=None)
     
     #   Compute Control points for CoM
     C_p0 = C_0
@@ -415,42 +416,60 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
             C_t = 1.0*C_p0*(1 - t/T)**3 + 3.0*C_p1*(t/T)*(1 - t/T)**2 + 3.0*C_p2*(t/T)**2*(1 - (t/T)) + 1.0*(t/T)**3*Cy
             Cddot_t = 6.0*(t/T)*(C_p1 - 2*C_p2 + Cy)/T**2 + 6*(1.0 - 1.0*t/T)*(C_p0 - 2*C_p1 + C_p2)/T**2
             
-            #Get Angular Momentum Rate
-            Ldot_t = Ldot0*(1-t/T)**3 + Ldot1*3*(t/T)*(1-t/T)**2 + Ldot2*3*(t/T)**2*(1-t/T)+Ldot3*(t/T)**3
+            #Get Angular Momentum (for cost computation)
+            L_t = 1.0*L0*(1 - t/T)**4 + 4.0*L1*(t/T)*(1 - t/T)**3 + 6.0*L2*(t/T)**2*(1 - t/T)**2 + 4.0*L3*(t/T)**3*(1 - t/T) + 1.0*L4*(t/T)**4
 
-            #Get w
-            wd_t = (1-t/T)**3*(ca.cross(ca.DM(G),C_p0) - 12/T**2*ca.cross(C_p0,C_p1) + 6/T**2*ca.cross(C_p0,C_p2)) + 3*(1-t/T)**2*(t/T)*(1/T**2*ca.cross(C_p0,Cy) + ca.cross(ca.DM(G),C_p1) - 6/T**2*ca.cross(C_p0,C_p2) + 6/T**2*ca.cross(C_p1,C_p2)) + 3*(1-t/T)*(t/T)**2*(-2/T**2*ca.cross(C_p0,Cy) + 6/T**2*ca.cross(C_p1,Cy) + ca.cross(ca.DM(G),C_p2) - 6/T**2*ca.cross(C_p1,C_p2)) + (t/T)**3*(ca.cross(ca.DM(G),Cy) - 6/T**2*ca.cross(C_p1,Cy) + 12/T**2*ca.cross(C_p2,Cy))
-            wu_t = (1-t/T)**3*(6*(C_p0 - 2*C_p1 + C_p2)/T**2) + 3*(1-t/T)**2*(t/T)*(2/T**2*Cy + (4*C_p0 - 6*C_p1)/T**2) + 3*(1-t/T)*(t/T)**2*(4/T**2*Cy + (2*C_p0 - 6*C_p2)/T**2) + (t/T)**3*(6/T**2*Cy + (6*C_p1 - 12*C_p2)/T**2)
+            #Get Angular Momentum Rate, derivative of Angular Momentum rate
+            #Ldot_t = Ldot0*(1-t/T)**3 + Ldot1*3*(t/T)*(1-t/T)**2 + Ldot2*3*(t/T)**2*(1-t/T)+Ldot3*(t/T)**3
+            Ldot_t = (-L3 + L4)*4/T*(t/T)**3 + (-L2 + L3)*12.0/T*(t/T)**2*(1 - t/T)+ (-L1 + L2)*12.0/T*(t/T)*(1 - t/T)**2+ (-L0 + L1)*4.0/T*(1 - t/T)**3
+
+            #wu --- for linear part
+            #Waypoints for wu
+            wu_0 = 6*(C_p0 - 2*C_p1 + C_p2)/T**2
+            wu_1 = 2/T**2*Cy + (4*C_p0 - 6*C_p1)/T**2
+            wu_2 = 4/T**2*Cy + (2*C_p0 - 6*C_p1)/T**2
+            wu_3 = 6/T**2*Cy + (6*C_p1 - 12*C_p2)/T**2
+
+            wu_t = (1-t/T)**3*wu_0 + 3*(1-t/T)**2*(t/T)*wu_1 + 3*(1-t/T)*(t/T)**2*wu_2 + (t/T)**3*wu_3
+
+            #wd ---- for cross product
+            #Waypoints for wd
+            wd_0 = (1.0*T**2*ca.cross(ca.DM(G),C_p0) - 12.0*ca.cross(C_p0,C_p1) + 6.0*ca.cross(C_p0,C_p2))/T**2
+            wd_1 = 2*ca.cross(C_p0,Cy)/T**2 + (T**2*ca.cross(ca.DM(G),C_p1) - 6*ca.cross(C_p0,C_p2) + 6*ca.cross(C_p1,C_p2))/T**2
+            wd_2 = (-2*ca.cross(C_p0,Cy) + 6*ca.cross(C_p1,Cy))/T**2 + (T**2*ca.cross(ca.DM(G),C_p2) - 6*ca.cross(C_p1,C_p2))/T**2
+            wd_3 = (T**2*ca.cross(ca.DM(G),Cy) - 6*ca.cross(C_p1,Cy) + 12*ca.cross(C_p2,Cy))/T**2
+
+            wd_t = (1-t/T)**3*wd_0 + 3*(1-t/T)**2*(t/T)*wd_1 + 3*(1-t/T)*(t/T)**2*wd_2 + (t/T)**3*wd_3
 
             if GaitPattern[Nph]=='InitialDouble':
                 #Get Forces Knots Depend on Phases
                 #Contact Point 1
-                FL1_t = FL1_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FL1_initdouble_p1*t/T
-                FR1_t = FR1_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FR1_initdouble_p1*t/T
+                FL1_t = FL1_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FL1_initdouble_p1*t/TimeVector[0]
+                FR1_t = FR1_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FR1_initdouble_p1*t/TimeVector[0]
                 #Contact Point 2
-                FL2_t = FL2_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FL2_initdouble_p1*t/T
-                FR2_t = FR2_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FR2_initdouble_p1*t/T
+                FL2_t = FL2_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FL2_initdouble_p1*t/TimeVector[0]
+                FR2_t = FR2_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FR2_initdouble_p1*t/TimeVector[0]
                 #Contact Point 3
-                FL3_t = FL3_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FL3_initdouble_p1*t/T
-                FR3_t = FR3_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FR3_initdouble_p1*t/T
+                FL3_t = FL3_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FL3_initdouble_p1*t/TimeVector[0]
+                FR3_t = FR3_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FR3_initdouble_p1*t/TimeVector[0]
                 #Contact Point 4
-                FL4_t = FL4_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FL4_initdouble_p1*t/T
-                FR4_t = FR4_initdouble_p0*(1.0 - 1.0*t/T) + 1.0*FR4_initdouble_p1*t/T
+                FL4_t = FL4_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FL4_initdouble_p1*t/TimeVector[0]
+                FR4_t = FR4_initdouble_p0*(1.0 - 1.0*t/TimeVector[0]) + 1.0*FR4_initdouble_p1*t/TimeVector[0]
 
                 #Kinematics Constraint
                 #   CoM in the Left foot
-                g.append(ca.if_else(ParaFirstRoundFlag,K_CoM_Left@(C_t-PL_init)-ca.DM(k_CoM_Left),np.full((len(k_CoM_Left),),-1)))
+                g.append(K_CoM_Left@(C_t-PL_init)-ca.DM(k_CoM_Left))
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(np.full((len(k_CoM_Left),),0))
 
                 #   CoM in the Right foot
-                g.append(ca.if_else(ParaFirstRoundFlag,K_CoM_Right@(C_t-PR_init)-ca.DM(k_CoM_Right),np.full((len(k_CoM_Right),),-1)))
+                g.append(K_CoM_Right@(C_t-PR_init)-ca.DM(k_CoM_Right))
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
 
                 #Angular Dynamics
                 if k<N_K-1: #double check the knot number is valid
-                    g.append(m*wd_t + Ldot_t -ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t)+ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t)+ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t)+ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t)+ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t)+ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t)+ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t)+ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t))
+                    g.append(m*wd_t + Ldot_t - ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t) - ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t) - ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t) - ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t) - ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t) - ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t) - ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t) - ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t))
                     glb.append(np.array([0,0,0]))
                     gub.append(np.array([0,0,0]))
             
@@ -515,7 +534,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
 
                 #   Angular Dynamics(Right Support)
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaLeftSwingFlag, m*wd_t + Ldot_t -ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t)+ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t)+ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t)+ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t), np.array([0,0,0])))
+                    g.append(ca.if_else(ParaLeftSwingFlag, m*wd_t + Ldot_t - ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t) - ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t) - ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t) - ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t), np.array([0,0,0])))
                     glb.append(np.array([0,0,0]))
                     gub.append(np.array([0,0,0]))
 
@@ -528,7 +547,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
 
                 #   Angular Dynamics(Left Support)
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaRightSwingFlag, m*wd_t + Ldot_t -ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t)+ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t)+ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t)+ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t), np.array([0,0,0])))
+                    g.append(ca.if_else(ParaRightSwingFlag, m*wd_t + Ldot_t - ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t) - ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t) - ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t) - ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t), np.array([0,0,0])))
                     glb.append(np.array([0,0,0]))
                     gub.append(np.array([0,0,0]))
 
@@ -562,7 +581,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
 
                 #Angular Dynamics
                 #Swing Left
-                g.append(ca.if_else(ParaLeftSwingFlag, m*wd_t + Ldot_t - ca.cross(P_next+np.array([0.11,0.06,0]),FL1_t)+ca.cross(P_next+np.array([0.11,-0.06,0]),FL2_t)+ca.cross(P_next+np.array([-0.11,0.06,0]),FL3_t)+ca.cross(P_next+np.array([-0.11,-0.06,0]),FL4_t)+ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t)+ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t)+ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t)+ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t),np.array([0,0,0])))
+                g.append(ca.if_else(ParaLeftSwingFlag, m*wd_t + Ldot_t - ca.cross(P_next+np.array([0.11,0.06,0]),FL1_t) - ca.cross(P_next+np.array([0.11,-0.06,0]),FL2_t) - ca.cross(P_next+np.array([-0.11,0.06,0]),FL3_t) - ca.cross(P_next+np.array([-0.11,-0.06,0]),FL4_t) - ca.cross(PR_init+np.array([0.11,0.06,0]),FR1_t) - ca.cross(PR_init+np.array([0.11,-0.06,0]),FR2_t) - ca.cross(PR_init+np.array([-0.11,0.06,0]),FR3_t) - ca.cross(PR_init+np.array([-0.11,-0.06,0]),FR4_t),np.array([0,0,0])))
                 glb.append(np.array([0,0,0]))
                 gub.append(np.array([0,0,0]))
                 
@@ -579,7 +598,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
 
                 #Angular Dynamics
                 #Swing Right
-                g.append(ca.if_else(ParaRightSwingFlag, m*wd_t + Ldot_t -ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t)+ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t)+ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t)+ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t)+ca.cross(P_next+np.array([0.11,0.06,0]),FR1_t)+ca.cross(P_next+np.array([0.11,-0.06,0]),FR2_t)+ca.cross(P_next+np.array([-0.11,0.06,0]),FR3_t)+ca.cross(P_next+np.array([-0.11,-0.06,0]),FR4_t),np.array([0,0,0])))
+                g.append(ca.if_else(ParaRightSwingFlag, m*wd_t + Ldot_t - ca.cross(PL_init+np.array([0.11,0.06,0]),FL1_t) - ca.cross(PL_init+np.array([0.11,-0.06,0]),FL2_t) - ca.cross(PL_init+np.array([-0.11,0.06,0]),FL3_t) - ca.cross(PL_init+np.array([-0.11,-0.06,0]),FL4_t) - ca.cross(P_next+np.array([0.11,0.06,0]),FR1_t) - ca.cross(P_next+np.array([0.11,-0.06,0]),FR2_t) - ca.cross(P_next+np.array([-0.11,0.06,0]),FR3_t) - ca.cross(P_next+np.array([-0.11,-0.06,0]),FR4_t),np.array([0,0,0])))
                 glb.append(np.array([0,0,0]))
                 gub.append(np.array([0,0,0]))
 
@@ -763,7 +782,7 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
             glb.append(np.array([0,0,0]))
             gub.append(np.array([0,0,0]))
 
-            J = J + delta_t*Cddot_t[0]**2 + delta_t*Cddot_t[1]**2+ delta_t*Cddot_t[2]**2 + delta_t*Ldot_t[0]**2 + delta_t*Ldot_t[1]**2 +delta_t*Ldot_t[2]**2
+            J = J + delta_t*Cddot_t[0]**2 + delta_t*Cddot_t[1]**2+ delta_t*Cddot_t[2]**2 + delta_t*L_t[0]**2 + delta_t*L_t[1]**2 +delta_t*L_t[2]**2
 
             #Update time 
             t = t + delta_t
@@ -794,11 +813,12 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
     Cy_index = (0,2)
-    Ldot0_index = (Cy_index[0]+3,Cy_index[1]+3)
-    Ldot1_index = (Ldot0_index[0]+3,Ldot0_index[1]+3)
-    Ldot2_index = (Ldot1_index[0]+3,Ldot1_index[1]+3)
-    Ldot3_index = (Ldot2_index[0]+3,Ldot2_index[1]+3)
-    FL1_initdouble_p0_index = (Ldot3_index[0]+3,Ldot3_index[1]+3)
+    L0_index = (Cy_index[0]+3,Cy_index[1]+3)
+    L1_index = (L0_index[0]+3,L0_index[1]+3)
+    L2_index = (L1_index[0]+3,L1_index[1]+3)
+    L3_index = (L2_index[0]+3,L2_index[1]+3)
+    L4_index = (L3_index[0]+3,L3_index[1]+3)
+    FL1_initdouble_p0_index = (L4_index[0]+3,L4_index[1]+3)
     FL1_initdouble_p1_index = (FL1_initdouble_p0_index[0]+3,FL1_initdouble_p0_index[1]+3)
     FL1_swing_p0_index = (FL1_initdouble_p1_index[0]+3,FL1_initdouble_p1_index[1]+3)
     FL1_swing_p1_index = (FL1_swing_p0_index[0]+3,FL1_swing_p0_index[1]+3)
@@ -855,10 +875,11 @@ def Bezier_SingleStep_Discrete_Order3(m = 95, StandAlong = True, ParameterList =
     FR4_double_p1_index = (FR4_double_p0_index[0]+3,FR4_double_p0_index[1]+3)
     
     var_index = {"Cy":Cy_index,
-                 "Ldot0": Ldot0_index,
-                 "Ldot1": Ldot1_index,
-                 "Ldot2": Ldot2_index,
-                 "Ldot3": Ldot3_index,
+                 "L0": L0_index,
+                 "L1": L1_index,
+                 "L2": L2_index,
+                 "L3": L3_index,
+                 "L4": L4_index,
                  "FL1_initdouble_p0": FL1_initdouble_p0_index,
                  "FL1_initdouble_p1": FL1_initdouble_p1_index,
                  "FL1_swing_p0": FL1_swing_p0_index,
@@ -919,8 +940,6 @@ def BuildSolver(FirstLevel = None, SecondLevel = None, m = 95, NumPhase = 3):
     #Define Parameter Vector
     #-------------------------------------------
     #Define Solver Parameter Vector
-    #Flag for defining the First Round
-    ParaFirstRoundFlag = ca.SX.sym("ParaFirstRoundFlag")
 
     #Flags for Swing Legs (Defined as Parameters)
     ParaLeftSwingFlag = ca.SX.sym("LeftSwingFlag")
@@ -952,8 +971,7 @@ def BuildSolver(FirstLevel = None, SecondLevel = None, m = 95, NumPhase = 3):
     P_next = ca.SX.sym("P_next",3)
 
     #   Collect all Parameters
-    ParaList = {"ParaFirstRoundFlag":ParaFirstRoundFlag,
-                "LeftSwingFlag":ParaLeftSwingFlag,
+    ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
                 "RightSwingFlag":ParaRightSwingFlag,
                 "CoM_0":C_0,
                 "CoMdot_0":Cdot_0,
@@ -966,7 +984,7 @@ def BuildSolver(FirstLevel = None, SecondLevel = None, m = 95, NumPhase = 3):
                 "P_next":P_next,
     }
 
-    paras = ca.vertcat(ParaFirstRoundFlag,ParaLeftSwingFlag,ParaRightSwingFlag,C_0,Cdot_0,Cddot_0,C_end,TimeVector,T,PL_init,PR_init,P_next)
+    paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,C_0,Cdot_0,Cddot_0,C_end,TimeVector,T,PL_init,PR_init,P_next)
 
     #Identify the Fidelity Type of the whole framework, Used to tell the First Level to set Constraints Accordingly
     if SecondLevel == None:
@@ -1021,34 +1039,3 @@ def BuildSolver(FirstLevel = None, SecondLevel = None, m = 95, NumPhase = 3):
     solver = ca.qpsol('solver', 'gurobi', prob)
 
     return solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index
-
-
-
-solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "Bezier_SingleStep_Discrete_Order3")
-
-np.random.seed()
-DecisionVarsShape = DecisionVars_lb.shape
-DecisionVars_init = DecisionVars_lb + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub-DecisionVars_lb))#   Fixed Value Initial Guess
-
-FirstRoundFlag = 1
-LeftSwingFlag = 0
-RightSwingFlag = 1
-C_start = [0.,0.,0.45]
-Cdot_start = [0.0,0.,0.]
-Cddot_start = [0.0,0.0,0.0]
-C_end = [10,0,0.5]
-TimeVec = [0.2,0.4,0.2]
-T = 0.8
-PL_init = [0, 0.1,0]
-PR_init = [0,-0.1,0]
-P_next = [0.1,-0.1,0]
-
-ParaList = np.concatenate((FirstRoundFlag,LeftSwingFlag,RightSwingFlag,C_start,Cdot_start,Cddot_start,C_end,TimeVec,T,PL_init,PR_init,P_next),axis=None)
-
-#res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
-
-res = solver(x0=DecisionVars_init, p = ParaList,lbx = DecisionVars_lb, ubx = DecisionVars_ub,lbg = glb, ubg = gub)
-
-x_opt = res['x']
-print(solver.stats()["success"])
-print('x_opt: ', x_opt)
