@@ -627,12 +627,15 @@ def PlotFirstLevelAcceleration(Nk_Local=5, x_opt = None, fig=None, var_index=Non
 
     if plotAxis == "x":
         plt.plot(TimeSeries,Accx)
+        #plt.plot(TimeSeries,FL3x_res[0:15])
         plt.ylabel('Acc X')
     elif plotAxis == "y":
         plt.plot(TimeSeries,Accy)
+        #plt.plot(TimeSeries,FL3y_res[0:15])
         plt.ylabel('Acc Y')
     elif plotAxis == "z":
         plt.plot(TimeSeries,Accz)
+        #plt.plot(TimeSeries,FL3z_res[0:15])
         plt.ylabel('Acc Z')
     
     plt.xlabel('Time')
