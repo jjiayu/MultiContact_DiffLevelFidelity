@@ -24,7 +24,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #   Number of Steps
     Nstep = 1
     #   Number of Knots per Phase - how many intervals do we have for a single phase; 10 intervals need 11 knots/ticks
-    Nk_Local= 5
+    Nk_Local= 7
     #   Compute Number of Total knots/ticks, but the enumeration start from 0 to N_K-1
     N_K = Nk_Local*Nphase + 1 #+1 the last knots to finalize the plan
     #   Robot mass
@@ -37,12 +37,13 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     TerrainTangentY = [0,1,0]
     miu = 0.3
     #   Force Limits
-    Fxlb = -300
-    Fxub = 300
-    Fylb = -300
-    Fyub = 300
-    Fzlb = -300
-    Fzub = 300
+    F_bound = 300
+    Fxlb = -F_bound
+    Fxub = F_bound
+    Fylb = -F_bound
+    Fyub = F_bound
+    Fzlb = -F_bound
+    Fzub = F_bound
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -72,13 +73,13 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     ydot_init = ParameterList["ydot_init"]
     zdot_init = ParameterList["zdot_init"]
 
-    Lx_init = 0
-    Ly_init = 0
-    Lz_init = 0
+    Lx_init = ParameterList["Lx_init"]
+    Ly_init = ParameterList["Ly_init"]
+    Lz_init = ParameterList["Lz_init"]
 
-    Ldotx_init = 0
-    Ldoty_init = 0
-    Ldotz_init = 0
+    Ldotx_init = ParameterList["Ldotx_init"]
+    Ldoty_init = ParameterList["Ldoty_init"]
+    Ldotz_init = ParameterList["Ldotz_init"]
 
     PLx_init = ParameterList["PLx_init"]
     PLy_init = ParameterList["PLy_init"]
@@ -98,13 +99,13 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     ydot_end = ParameterList["ydot_end"]
     zdot_end = ParameterList["zdot_end"]
 
-    Lx_end = 0
-    Ly_end = 0
-    Lz_end = 0
+    #Lx_end = 0
+    #Ly_end = 0
+    #Lz_end = 0
 
-    Ldotx_end = 0
-    Ldoty_end = 0
-    Ldotz_end = 0
+    #Ldotx_end = 0
+    #Ldoty_end = 0
+    #Ldotz_end = 0
 
     #Flags for Swing Legs (Defined as Parameters)
     ParaLeftSwingFlag = ParameterList["LeftSwingFlag"]
@@ -137,50 +138,50 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     x_ub = np.array([[10]*(x.shape[0]*x.shape[1])])
     #   CoM Position y-axis
     y = ca.SX.sym('y',N_K)
-    y_lb = np.array([[-0.75]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    y_ub = np.array([[0.75]*(y.shape[0]*y.shape[1])])
+    y_lb = np.array([[-1]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[[0.55]]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
+    z_lb = np.array([[[-5]]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #z_lb = np.array([[0.55]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
     #z_ub = np.array([[0.65]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)
-    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-1]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[1]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-50]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[50]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[-5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[5]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-50]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[50]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[-5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[5]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-50]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[50]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[-5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[5]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-50]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[50]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[-5]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[5]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-50]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[50]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[-5]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[5]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-50]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[50]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[-5]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[5]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -294,7 +295,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     for stepIdx in range(Nstep):
         pxtemp = ca.SX.sym('px'+str(stepIdx+1)) #0 + 1
         px.append(pxtemp)
-        px_lb.append(np.array([-0.5]))
+        px_lb.append(np.array([-1]))
         px_ub.append(np.array([10]))
 
         pytemp = ca.SX.sym('py'+str(stepIdx+1))
@@ -305,8 +306,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
         #   Foot steps are all staying on the ground
         pztemp = ca.SX.sym('pz'+str(stepIdx+1))
         pz.append(pztemp)
-        pz_lb.append(np.array([-1]))
-        pz_ub.append(np.array([1]))
+        pz_lb.append(np.array([-5]))
+        pz_ub.append(np.array([5]))
 
     #Switching Time Vector
     Ts = []
@@ -432,34 +433,34 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
         gub.append(np.array([0]))
 
     #   Terminal Angular Momentum x-axis
-    g.append(Lx[-1]-Lx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Lx[-1]-Lx_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum y-axis
-    g.append(Ly[-1]-Ly_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ly[-1]-Ly_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum z-axis
-    g.append(Lz[-1]-Lz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Lz[-1]-Lz_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate x-axis
-    g.append(Ldotx[-1]-Ldotx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldotx[-1]-Ldotx_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate y-axis
-    g.append(Ldoty[-1]-Ldoty_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldoty[-1]-Ldoty_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate z-axis
-    g.append(Ldotz[-1]-Ldotz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldotz[-1]-Ldotz_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -716,7 +717,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             g.append(FL4_k.T@TerrainTangentX - miu*FL4_k.T@TerrainNorm)
             glb.append([-np.inf])
             gub.append(np.array([0]))
-            #   Left Foot 4 x-axis Set 2
+            #   Left Foot 4 x-axis Set 2<
             g.append(FL4_k.T@TerrainTangentX + miu*FL4_k.T@TerrainNorm)
             glb.append(np.array([0]))
             gub.append([np.inf])
@@ -913,12 +914,12 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             gub.append(np.array([0.3]))
         elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.3])) #0.3 is better
-            gub.append(np.array([0.9])) #0.4 - 0.9
+            glb.append(np.array([0.4])) #0.3 is better
+            gub.append(np.array([0.5])) #0.4 - 0.9
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
             glb.append(np.array([0.05]))
-            gub.append(np.array([0.3])) #0.1 - 0.3
+            gub.append(np.array([0.1])) #0.1 - 0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
@@ -1008,11 +1009,12 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #NLP Second Level
-def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None):
+def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
+
     #   Number of Phases
     Nphase = len(GaitPattern)
     #   Number of Steps
@@ -1031,12 +1033,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     TerrainTangentY = [0,1,0]
     miu = 0.3
     #   Force Limits
-    Fxlb = -300
-    Fxub = 300
-    Fylb = -300
-    Fyub = 300
-    Fzlb = -300
-    Fzub = 300
+    F_bound = 300
+    Fxlb = -F_bound
+    Fxub = F_bound
+    Fylb = -F_bound
+    Fyub = F_bound
+    Fzlb = -F_bound
+    Fzub = F_bound
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -1064,13 +1067,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     ydot_init = ParameterList["ydot_init"]
     zdot_init = ParameterList["zdot_init"]
 
-    Lx_init = 0
-    Ly_init = 0
-    Lz_init = 0
+    #Lx_init = 0
+    #Ly_init = 0
+    #Lz_init = 0
 
-    Ldotx_init = 0
-    Ldoty_init = 0
-    Ldotz_init = 0
+    #Ldotx_init = 0
+    #Ldoty_init = 0
+    #Ldotz_init = 0
 
     PLx_init = ParameterList["PLx_init"]
     PLy_init = ParameterList["PLy_init"]
@@ -1090,13 +1093,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     ydot_end = ParameterList["ydot_end"]
     zdot_end = ParameterList["zdot_end"]
 
-    Lx_end = 0
-    Ly_end = 0
-    Lz_end = 0
+    #Lx_end = 0
+    #Ly_end = 0
+    #Lz_end = 0
 
-    Ldotx_end = 0
-    Ldoty_end = 0
-    Ldotz_end = 0
+    #Ldotx_end = 0
+    #Ldoty_end = 0
+    #Ldotz_end = 0
 
     #Flags for Swing Legs (Defined as Parameters)
     ParaLeftSwingFlag = ParameterList["LeftSwingFlag"]
@@ -1114,48 +1117,48 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     x_ub = np.array([[10]*(x.shape[0]*x.shape[1])])
     #   CoM Position y-axis
     y = ca.SX.sym('y',N_K)
-    y_lb = np.array([[-0.75]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    y_ub = np.array([[0.75]*(y.shape[0]*y.shape[1])])
+    y_lb = np.array([[-1]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[0.55]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
+    z_lb = np.array([[-5]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)
-    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-1]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[1]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-50]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[50]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[-5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[5]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-50]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[50]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[-5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[5]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-50]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[50]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[-5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[5]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-50]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[50]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[-5]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[5]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-50]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[50]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[-5]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[5]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-50]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[50]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[-5]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[5]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -1264,13 +1267,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
 
     #   py
     py_init = ca.SX.sym('py_init')
-    py_init_lb = np.array([-0.75])
-    py_init_ub = np.array([0.75])
+    py_init_lb = np.array([-1])
+    py_init_ub = np.array([1])
 
     #   pz
     pz_init = ca.SX.sym('pz_init')
-    pz_init_lb = np.array([-1])
-    pz_init_ub = np.array([1])
+    pz_init_lb = np.array([-5])
+    pz_init_ub = np.array([5])
 
     #   Contact Location Sequence
     px = [] 
@@ -1285,7 +1288,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     for stepIdx in range(Nsteps):
         pxtemp = ca.SX.sym('px'+str(stepIdx+1)) #0 + 1
         px.append(pxtemp)
-        px_lb.append(np.array([-0.5]))
+        px_lb.append(np.array([-1]))
         px_ub.append(np.array([10]))
 
         pytemp = ca.SX.sym('py'+str(stepIdx+1))
@@ -1296,8 +1299,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
         #   Foot steps are all staying on the ground
         pztemp = ca.SX.sym('pz'+str(stepIdx+1))
         pz.append(pztemp)
-        pz_lb.append(np.array([-1]))
-        pz_ub.append(np.array([1]))
+        pz_lb.append(np.array([-5]))
+        pz_ub.append(np.array([5]))
 
     #Switching Time Vector
     Ts = []
@@ -1358,34 +1361,34 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
     #    gub.append(np.array([0]))
 
     #   Terminal Angular Momentum x-axis
-    g.append(Lx[-1]-Lx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Lx[-1]-Lx_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum y-axis
-    g.append(Ly[-1]-Ly_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ly[-1]-Ly_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum z-axis
-    g.append(Lz[-1]-Lz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Lz[-1]-Lz_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate x-axis
-    g.append(Ldotx[-1]-Ldotx_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldotx[-1]-Ldotx_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate y-axis
-    g.append(Ldoty[-1]-Ldoty_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldoty[-1]-Ldoty_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate z-axis
-    g.append(Ldotz[-1]-Ldotz_end)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    #g.append(Ldotz[-1]-Ldotz_end)
+    #glb.append(np.array([0]))
+    #gub.append(np.array([0]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -2002,16 +2005,16 @@ def NLP_SecondLevel(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, Stat
         elif GaitPattern[phase_cnt] == 'Swing':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
-                glb.append(np.array([0.05]))
-                gub.append(np.array([0.9]))
+                glb.append(np.array([0.4]))
+                gub.append(np.array([0.5]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-                glb.append(np.array([0.05]))
-                gub.append(np.array([0.9]))
+                glb.append(np.array([0.4]))
+                gub.append(np.array([0.5]))
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.05]))
-            gub.append(np.array([0.3])) #0.1 - 0.3
+            glb.append(np.array([0.1]))
+            gub.append(np.array([0.4])) #0.1 - 0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
@@ -2440,7 +2443,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     #   Number of Phases: Nsteps*2 + 1 (Initial Double Support)
     Nphase = len(GaitPattern)
     #   Number of Knots per Phase - how many intervals do we have for a single phase; 10 intervals need 11 knots/ticks
-    Nk_Local= 5
+    Nk_Local= 7
     #   Compute Number of Total knots/ticks, but the enumeration start from 0 to N_K-1
     N_K = Nk_Local*Nphase + 1 #+1 the last knots to finalize the plan
     #   Robot mass
@@ -2453,12 +2456,13 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     TerrainTangentY = [0,1,0]
     miu = 0.3
     #   Force Limits
-    Fxlb = -300*4
-    Fxub = 300*4
-    Fylb = -300*4
-    Fyub = 300*4
-    Fzlb = -300*4
-    Fzub = 300*4
+    F_bound = 300
+    Fxlb = -F_bound*4
+    Fxub = F_bound*4
+    Fylb = -F_bound*4
+    Fyub = F_bound*4
+    Fzlb = -F_bound*4
+    Fzub = F_bound*4
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -2516,24 +2520,24 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     x_ub = np.array([[10]*(x.shape[0]*x.shape[1])])
     #   CoM Position y-axis
     y = ca.SX.sym('y',N_K)
-    y_lb = np.array([[-0.75]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    y_ub = np.array([[0.75]*(y.shape[0]*y.shape[1])])
+    y_lb = np.array([[-1]*(y.shape[0]*y.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[0.55]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    z_ub = np.array([[1]*(z.shape[0]*z.shape[1])])
+    z_lb = np.array([[-5]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)#0.75 old
-    xdot_lb = np.array([[-0.75]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    xdot_ub = np.array([[0.75]*(xdot.shape[0]*xdot.shape[1])])
+    xdot_lb = np.array([[-1]*(xdot.shape[0]*xdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-0.75]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[0.75]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
-    zdot_lb = np.array([[-0.75]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    zdot_ub = np.array([[0.75]*(zdot.shape[0]*zdot.shape[1])])
+    zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    zdot_ub = np.array([[1]*(zdot.shape[0]*zdot.shape[1])])
 
     #Left Foot Force
     #Left Foot x-axis
@@ -2571,13 +2575,13 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
 
     #   py
     py_init = ca.SX.sym('py_init')
-    py_init_lb = np.array([-0.75])
-    py_init_ub = np.array([0.75])
+    py_init_lb = np.array([-1])
+    py_init_ub = np.array([1])
 
     #   pz
     pz_init = ca.SX.sym('pz_init')
-    pz_init_lb = np.array([-1])
-    pz_init_ub = np.array([1])
+    pz_init_lb = np.array([-5])
+    pz_init_ub = np.array([5])
 
     #   Contact Location Sequence
     px = [] 
@@ -2592,7 +2596,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     for stepIdx in range(Nsteps):
         pxtemp = ca.SX.sym('px'+str(stepIdx+1)) #0 + 1
         px.append(pxtemp)
-        px_lb.append(np.array([-0.5]))
+        px_lb.append(np.array([-1]))
         px_ub.append(np.array([10]))
 
         pytemp = ca.SX.sym('py'+str(stepIdx+1))
@@ -2603,8 +2607,8 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         #   Foot steps are all staying on the ground
         pztemp = ca.SX.sym('pz'+str(stepIdx+1))
         pz.append(pztemp)
-        pz_lb.append(np.array([-1]))
-        pz_ub.append(np.array([1]))
+        pz_lb.append(np.array([-5]))
+        pz_ub.append(np.array([5]))
 
     #Switching Time Vector
     Ts = []
@@ -2683,8 +2687,9 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         #glb.append(np.array([0]))    
         #gub.append(np.array([0]))
 
-    h_doublesupport = 0.3
-    h_swing = 0.8
+    h_initialdouble = 0.2
+    h_doublesupport = 0.2
+    h_swing = 0.5
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -2695,15 +2700,17 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
             Nk_ThisPhase = Nk_Local       
 
         ##Decide Time Vector
-        if Nph == 0: #first phase
-            h = tauStepLength*Nphase*(Ts[Nph]-0)
-        else: #other phases
-            h = tauStepLength*Nphase*(Ts[Nph]-Ts[Nph-1]) 
+        #if Nph == 0: #first phase
+        #    h = tauStepLength*Nphase*(Ts[Nph]-0)
+        #else: #other phases
+        #    h = tauStepLength*Nphase*(Ts[Nph]-Ts[Nph-1]) 
 
-        #if GaitPattern[Nph]=='Swing':
-        #    h = h_swing/Nk_Local
-        #elif GaitPattern[Nph]=='DoubleSupport':
-        #    h = h_doublesupport/Nk_Local
+        if GaitPattern[Nph]=='InitialDouble':
+            h = h_initialdouble/Nk_Local
+        elif GaitPattern[Nph]=='Swing':
+            h = h_swing/Nk_Local
+        elif GaitPattern[Nph]=='DoubleSupport':
+            h = h_doublesupport/Nk_Local
 
 
         for Local_k_Count in range(Nk_ThisPhase):
@@ -3034,20 +3041,20 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         if GaitPattern[phase_cnt] == 'InitialDouble':
             g.append(Ts[phase_cnt])
             glb.append(np.array([0.05]))
-            gub.append(np.array([0.3]))
+            gub.append(np.array([0.2]))
         elif GaitPattern[phase_cnt] == 'Swing':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
-                glb.append(np.array([0.05]))
-                gub.append(np.array([0.9]))
+                glb.append(np.array([0.3]))
+                gub.append(np.array([0.4]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-                glb.append(np.array([0.05]))
-                gub.append(np.array([0.9]))
+                glb.append(np.array([0.3]))
+                gub.append(np.array([0.4]))
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.05]))
-            gub.append(np.array([0.3])) #0.1 - 0.3
+            glb.append(np.array([0.1]))
+            gub.append(np.array([0.2])) #0.1 - 0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
@@ -3110,6 +3117,14 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     xdot_init = ca.SX.sym('xdot_init')
     ydot_init = ca.SX.sym('ydot_init')
     zdot_init = ca.SX.sym('zdot_init')
+    #   Initial Anglular Momentum
+    Lx_init = ca.SX.sym('Lx_init')
+    Ly_init = ca.SX.sym('Ly_init')
+    Lz_init = ca.SX.sym('Lz_init')
+    #   Initial Anglular Momentum Rate
+    Ldotx_init = ca.SX.sym('Ldotx_init')
+    Ldoty_init = ca.SX.sym('Ldoty_init')
+    Ldotz_init = ca.SX.sym('Ldotz_init')
     #   Initial Left Foot Position
     PLx_init = ca.SX.sym('PLx_init')
     PLy_init = ca.SX.sym('PLy_init')
@@ -3146,6 +3161,12 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                 "xdot_init":xdot_init,
                 "ydot_init":ydot_init,
                 "zdot_init":zdot_init,
+                "Lx_init":Lx_init,
+                "Ly_init":Ly_init,
+                "Lz_init":Lz_init,
+                "Ldotx_init":Ldotx_init,
+                "Ldoty_init":Ldoty_init,
+                "Ldotz_init":Ldotz_init,
                 "PLx_init":PLx_init,
                 "PLy_init":PLy_init,
                 "PLz_init":PLz_init,
@@ -3165,6 +3186,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
                        x_init,y_init,z_init,
                        xdot_init,ydot_init,zdot_init,
+                       Lx_init,Ly_init,Lz_init,
+                       Ldotx_init,Ldoty_init,Ldotz_init,
                        PLx_init,PLy_init,PLz_init,
                        PRx_init,PRy_init,PRz_init,
                        x_end,y_end,z_end,
@@ -3204,10 +3227,10 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         x_Level1 = var_Level1[var_index_Level1["x"][0]:var_index_Level1["x"][1]+1]
         y_Level1 = var_Level1[var_index_Level1["y"][0]:var_index_Level1["y"][1]+1]
         z_Level1 = var_Level1[var_index_Level1["z"][0]:var_index_Level1["z"][1]+1]
-        xdot_Level1 = var_Level1[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
-        ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
-        zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
-        J = J + 100*(x_Level1[-1]-x_end)**2 + 100*(y_Level1[-1]-y_end)**2 + 100*(z_Level1[-1]-z_end)**2
+        #xdot_Level1 = var_Level1[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
+        #ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
+        #zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
+        J = J + 10(x_Level1[-1]-x_end)**2 + 100*(y_Level1[-1]-y_end)**2 + 1000*(z_Level1[-1]-z_end)**2
         #J = J + 100*(x_Level1[-1]-x_end)**2
     else:#With Second level
         #Summation of the all running cost
@@ -3215,13 +3238,13 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         x_Level2 = var_Level2[var_index_Level2["x"][0]:var_index_Level2["x"][1]+1]
         y_Level2 = var_Level2[var_index_Level2["y"][0]:var_index_Level2["y"][1]+1]
         z_Level2 = var_Level2[var_index_Level2["z"][0]:var_index_Level2["z"][1]+1]
-        if SecondLevel == "CoM_Dynamics" or SecondLevel == "NLP_SecondLevel":
-            xdot_Level2 = var_Level2[var_index_Level2["xdot"][0]:var_index_Level2["xdot"][1]+1]
-            ydot_Level2 = var_Level2[var_index_Level2["ydot"][0]:var_index_Level2["ydot"][1]+1]
-            zdot_Level2 = var_Level2[var_index_Level2["zdot"][0]:var_index_Level2["zdot"][1]+1]
+        #if SecondLevel == "CoM_Dynamics" or SecondLevel == "NLP_SecondLevel":
+        #    xdot_Level2 = var_Level2[var_index_Level2["xdot"][0]:var_index_Level2["xdot"][1]+1]
+        #    ydot_Level2 = var_Level2[var_index_Level2["ydot"][0]:var_index_Level2["ydot"][1]+1]
+        #    zdot_Level2 = var_Level2[var_index_Level2["zdot"][0]:var_index_Level2["zdot"][1]+1]
         #Add terminal cost
         #J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2 + 100*(xdot_Level2[-1])**2 + 100*(ydot_Level2[-1])**2 + 100*(zdot_Level2[-1])**2
-        J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2
+        J = J + 10*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 1000*(z_Level2[-1]-z_end)**2
         #J = J + 100*(x_Level2[-1]-x_end)**2
         
         #Deal with Connections between the first level and the second level
@@ -3356,66 +3379,3 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     return solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index
 
     #print("Not Implemented")    
-
-def TestSolverBuild():
-    #-------------------------------------------
-    #Define Solver Parameter Vector
-    #   Initial Position
-    x_init = ca.SX.sym('x_init')
-    y_init = ca.SX.sym('y_init')
-    z_init = ca.SX.sym('z_init')
-    #   Initial Velocity
-    xdot_init = ca.SX.sym('xdot_init')
-    ydot_init = ca.SX.sym('ydot_init')
-    zdot_init = ca.SX.sym('zdot_init')
-    #   Initial Left Foot Position
-    PLx_init = ca.SX.sym('PLx_init')
-    PLy_init = ca.SX.sym('PLy_init')
-    PLz_init = ca.SX.sym('PLz_init')
-    #   Initial Right Foot Position
-    PRx_init = ca.SX.sym('PRx_init')
-    PRy_init = ca.SX.sym('PRy_init')
-    PRz_init = ca.SX.sym('PRz_init')
-    #   Terminal Position
-    x_end = ca.SX.sym('x_end')
-    y_end = ca.SX.sym('y_end')
-    z_end = ca.SX.sym('z_end')
-    #   Terminal Velocity
-    xdot_end = ca.SX.sym('xdot_end')
-    ydot_end = ca.SX.sym('ydot_end')
-    zdot_end = ca.SX.sym('zdot_end')
-    #   Foot Swing Indicators
-    ParaLeftSwingFlag = ca.SX.sym('LeftSwingFlag')
-    ParaRightSwingFlag = ca.SX.sym('RightSwingFlag')
-    #   Collect all Parameters
-    ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
-                "RightSwingFlag":ParaRightSwingFlag,
-                "x_init":x_init,
-                "y_init":y_init,
-                "z_init":z_init,
-                "xdot_init":xdot_init,
-                "ydot_init":ydot_init,
-                "zdot_init":zdot_init,
-                "PLx_init":PLx_init,
-                "PLy_init":PLy_init,
-                "PLz_init":PLz_init,
-                "PRx_init":PRx_init,
-                "PRy_init":PRy_init,
-                "PRz_init":PRz_init,
-                "x_end":x_end,
-                "y_end":y_end,
-                "z_end":z_end,
-                "xdot_end":xdot_end,
-                "ydot_end":ydot_end,
-                "zdot_end":zdot_end,
-    }
-    #Collect all Parameters
-    paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
-                       x_init,y_init,z_init,
-                       xdot_init,ydot_init,zdot_init,
-                       PLx_init,PLy_init,PLz_init,
-                       PRx_init,PRy_init,PRz_init,
-                       x_end,y_end,z_end,
-                       xdot_end,ydot_end,zdot_end)
-
-    CoM_Dynamics(ParameterList=ParaList)

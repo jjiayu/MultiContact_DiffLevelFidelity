@@ -20,35 +20,37 @@ np.set_printoptions(precision=4)
 #Define Patches
 #NOTE: The rectangle always stat from Top Right Corner, and the vertex move counterclockwise, it should be a list of numpy arrays
 Patch1 = np.array([[0.5, 0.5, 0.], [-0.1, 0.5, 0.], [-0.1, -0.5, 0.], [0.5, -0.5, 0.]])
-Patch2 = np.array([[5, 0.5, 0.1], [0.5, 0.5, 0.1], [0.5, -0.5, 0.1], [5, -0.5, 0.1]])
+Patch2 = np.array([[0.8, 0.5, 0.1], [0.5, 0.5, 0.1], [0.5, -0.5, 0.1], [0.8, -0.5, 0.1]])
+Patch3 = np.array([[5, 0.5, 0.2], [0.8, 0.5, 0.2], [0.8, -0.5, 0.2], [5, -0.5, 0.2]])
 #Collect all patches for the final printing of the terrain
-AllPatches = [Patch1,Patch2]
+AllPatches = [Patch1,Patch2,Patch3]
 #Collect patche sequences, number of rows equals number of rounds
-#ContactSeqs = [[Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2],
-#               [Patch2,Patch2,Patch2,Patch2,Patch2]]
+ContactSeqs = [[Patch1,Patch2,Patch3,Patch3,Patch3],
+               [Patch2,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3],
+               [Patch3,Patch3,Patch3,Patch3,Patch3]]
 
-ContactSeqs = [[Patch1,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2],
-               [Patch2,Patch2]]
+#ContactSeqs = [[Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2],
+#               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 0
-SwingRightFirst = 1
+SwingLeftFirst = 1
+SwingRightFirst = 0
 
 #   Number of Rounds
 #Nrounds = 15
@@ -63,6 +65,14 @@ xdot_init = 0.0
 ydot_init = 0
 zdot_init = 0
 
+Lx_init = 0
+Ly_init = 0
+Lz_init = 0
+
+Ldotx_init = 0
+Ldoty_init = 0
+Ldotz_init = 0
+
 PLx_init = 0
 PLy_init = 0.1
 PLz_init = 0
@@ -73,7 +83,7 @@ PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.6
+z_end = 0.8
 
 xdot_end = 0
 ydot_end = 0
@@ -101,10 +111,10 @@ StopRound = Nrounds
 Nstep_lookahead = len(ContactSeqs[0])
 
 #   Build Solver fo normal rounds (Start from Swing Phase)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
-solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
 
 #   Generate Initial Guess
@@ -155,6 +165,8 @@ for roundNum in range(Nrounds):
         ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
             x_init,y_init,z_init,
             xdot_init,ydot_init,zdot_init,
+            Lx_init,Ly_init,Lz_init,
+            Ldotx_init,Ldoty_init,Ldotz_init,
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,
@@ -179,6 +191,20 @@ for roundNum in range(Nrounds):
         y_init = y_res[-1]
         z_res = x_opt[var_index_Level1["z"][0]:var_index_Level1["z"][1]+1]
         z_init = z_res[-1]
+
+        Lx_res = x_opt[var_index_Level1["Lx"][0]:var_index_Level1["Lx"][1]+1]
+        Lx_init = Lx_res[-1]
+        Ly_res = x_opt[var_index_Level1["Ly"][0]:var_index_Level1["Ly"][1]+1]
+        Ly_init = Ly_res[-1]
+        Lz_res = x_opt[var_index_Level1["Lz"][0]:var_index_Level1["Lz"][1]+1]
+        Lz_init = Ly_res[-1]
+
+        Ldotx_res = x_opt[var_index_Level1["Ldotx"][0]:var_index_Level1["Ldotx"][1]+1]
+        Ldotx_init = Ldotx_res[-1]
+        Ldoty_res = x_opt[var_index_Level1["Ldoty"][0]:var_index_Level1["Ldoty"][1]+1]
+        Ldoty_init = Ldoty_res[-1]
+        Ldotz_res = x_opt[var_index_Level1["Ldotz"][0]:var_index_Level1["Ldotz"][1]+1]
+        Ldotz_init = Ldoty_res[-1]
 
         xdot_res  = x_opt[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
         xdot_init = xdot_res[-1]
@@ -261,6 +287,8 @@ for roundNum in range(Nrounds):
         ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
             x_init,y_init,z_init,
             xdot_init,ydot_init,zdot_init,
+            Lx_init,Ly_init,Lz_init,
+            Ldotx_init,Ldoty_init,Ldotz_init,
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,

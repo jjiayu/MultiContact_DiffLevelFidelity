@@ -625,20 +625,20 @@ def PlotFirstLevelAcceleration(Nk_Local=5, x_opt = None, fig=None, var_index=Non
                 Accy.append((FL1y_res[k]+FL2y_res[k]+FL3y_res[k]+FL4y_res[k]+FR1y_res[k]+FR2y_res[k]+FR3y_res[k]+FR4y_res[k])/m)
                 Accz.append((FL1z_res[k]+FL2z_res[k]+FL3z_res[k]+FL4z_res[k]+FR1z_res[k]+FR2z_res[k]+FR3z_res[k]+FR4z_res[k])/m - G)
 
-    if plotAxis == "x":
-        plt.plot(TimeSeries,Accx)
-        #plt.plot(TimeSeries,FL3x_res[0:15])
-        plt.ylabel('Acc X')
-    elif plotAxis == "y":
-        plt.plot(TimeSeries,Accy)
-        #plt.plot(TimeSeries,FL3y_res[0:15])
-        plt.ylabel('Acc Y')
-    elif plotAxis == "z":
-        plt.plot(TimeSeries,Accz)
-        #plt.plot(TimeSeries,FL3z_res[0:15])
-        plt.ylabel('Acc Z')
+    #if plotAxis == "x":
+    #    plt.plot(TimeSeries,Accx)
+    #    #plt.plot(TimeSeries,FL3x_res[0:15])
+    #    plt.ylabel('Acc X')
+    #elif plotAxis == "y":
+    #    plt.plot(TimeSeries,Accy)
+    #    #plt.plot(TimeSeries,FL3y_res[0:15])
+    #    plt.ylabel('Acc Y')
+    #elif plotAxis == "z":
+    #    plt.plot(TimeSeries,Accz)
+    #    #plt.plot(TimeSeries,FL3z_res[0:15])
+    #    plt.ylabel('Acc Z')
     
-    plt.xlabel('Time')
+    #plt.xlabel('Time')
 
 
     plt.show()
