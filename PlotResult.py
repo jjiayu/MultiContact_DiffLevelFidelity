@@ -12,6 +12,16 @@ def PlotSurface(Surface = None, ax = None):
     ax.plot(cx, cy, cz)
 
 
+def PlotTriangle(Surface = None, ax = None):
+    #Make the Rectangle, start from the top right coner, and move counter clockwise
+    SurfRect = np.append(Surface,[Surface[0]],axis = 0)
+
+    cx = [c[0] for c in SurfRect]
+    cy = [c[1] for c in SurfRect]
+    cz = [c[2] for c in SurfRect]
+    ax.plot(cx, cy, cz)
+
+
 def PlotNLPStep(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, AllSurfaces = None):
     #-----------------------------------------------------------------------------------------------------------------------
     #Plot Result
@@ -90,7 +100,7 @@ def PlotNLPStep(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init 
 
     #Pring surfaces
     for surf in AllSurfaces:
-        print(surf)
+        #print(surf)
         PlotSurface(Surface = surf, ax = ax)
 
     ax.set_xlim3d(x_res[0]-0.2, px_res[-1]+0.35)
@@ -297,7 +307,7 @@ def Plot_Both_Levels(x_opt = None, fig=None, var_index=None, PL_init = None, PR_
 
     #Print Surfaces
     for surf in AllSurfaces:
-        print(surf)
+        #print(surf)
         PlotSurface(Surface = surf, ax = ax)
 
 
@@ -310,11 +320,9 @@ def Plot_Both_Levels(x_opt = None, fig=None, var_index=None, PL_init = None, PR_
 
     plt.show()
 
-def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, PrintSecondLevel = False, PlotNLP = None, PlotBothLevel = None, AllSurfaces = None):
+def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, PrintFirstLevel = False, PrintSecondLevel = False, PlotNLP = None, PlotBothLevel = None, AllSurfaces = None):
     #Print Result
     #First Level
-    
-    print("First Level NLP Results:")
 
     #save the complete var_index
     var_index_complete =var_index
@@ -323,80 +331,83 @@ def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init 
 
     x_res = x_opt[var_index["x"][0]:var_index["x"][1]+1]
     x_res = np.array(x_res)
-    print('x_res: ',x_res)
 
     y_res = x_opt[var_index["y"][0]:var_index["y"][1]+1]
     y_res = np.array(y_res)
-    print('y_res: ',y_res)
 
     z_res = x_opt[var_index["z"][0]:var_index["z"][1]+1]
     z_res = np.array(z_res)
-    print('z_res: ',z_res)
 
     xdot_res = x_opt[var_index["xdot"][0]:var_index["xdot"][1]+1]
     xdot_res = np.array(xdot_res)
-    print('xdot_res: ',xdot_res)
 
     ydot_res = x_opt[var_index["ydot"][0]:var_index["ydot"][1]+1]
     ydot_res = np.array(ydot_res)
-    print('ydot_res: ',ydot_res)
 
     zdot_res = x_opt[var_index["zdot"][0]:var_index["zdot"][1]+1]
     zdot_res = np.array(zdot_res)
-    print('zdot_res: ',zdot_res)
 
     Lx_res = x_opt[var_index["Lx"][0]:var_index["Lx"][1]+1]
     Lx_res = np.array(Lx_res)
-    print('Lx_res: ',Lx_res)
 
     Ly_res = x_opt[var_index["Ly"][0]:var_index["Ly"][1]+1]
     Ly_res = np.array(Ly_res)
-    print('Ly_res: ',Ly_res)
 
     Lz_res = x_opt[var_index["Lz"][0]:var_index["Lz"][1]+1]
     Lz_res = np.array(Lz_res)
-    print('Lz_res: ',Lz_res)
 
     Ldotx_res = x_opt[var_index["Ldotx"][0]:var_index["Ldotx"][1]+1]
     Ldotx_res = np.array(Ldotx_res)
-    print('Ldotx_res: ',Ldotx_res)
 
     Ldoty_res = x_opt[var_index["Ldoty"][0]:var_index["Ldoty"][1]+1]
     Ldoty_res = np.array(Ldoty_res)
-    print('Ldoty_res: ',Ldoty_res)
 
     Ldotz_res = x_opt[var_index["Ldotz"][0]:var_index["Ldotz"][1]+1]
     Ldotz_res = np.array(Ldotz_res)
-    print('Ldotz_res: ',Ldotz_res)
 
     px_res = x_opt[var_index["px"][0]:var_index["px"][1]+1]
     px_res = np.array(px_res)
-    print('px_res: ',px_res)
 
     py_res = x_opt[var_index["py"][0]:var_index["py"][1]+1]
     py_res = np.array(py_res)
-    print('py_res: ',py_res)
 
     pz_res = x_opt[var_index["pz"][0]:var_index["pz"][1]+1]
     pz_res = np.array(pz_res)
-    print('pz_res: ',pz_res)
 
     Ts_res = x_opt[var_index["Ts"][0]:var_index["Ts"][1]+1]
     Ts_res = np.array(Ts_res)
-    print('Ts_res: ',Ts_res)
 
     FR1x_res = x_opt[var_index["FR1x"][0]:var_index["FR1x"][1]+1]
     FR1x_res = np.array(FR1x_res)
-    print('FR1x_res: ',FR1x_res)
 
     FR1y_res = x_opt[var_index["FR1y"][0]:var_index["FR1y"][1]+1]
     FR1y_res = np.array(FR1y_res)
-    print('FR1y_res: ',FR1y_res)
 
     FR1z_res = x_opt[var_index["FR1z"][0]:var_index["FR1z"][1]+1]
     FR1z_res = np.array(FR1z_res)
-    print('FR1z_res: ',FR1z_res)
 
+    if PrintFirstLevel == True:
+        print("First Level NLP Results:")
+        print('x_res: ',x_res)
+        print('y_res: ',y_res)
+        print('z_res: ',z_res)
+        print('xdot_res: ',xdot_res)
+        print('ydot_res: ',ydot_res)
+        print('zdot_res: ',zdot_res)
+        print('Lx_res: ',Lx_res)
+        print('Ly_res: ',Ly_res)
+        print('Lz_res: ',Lz_res)
+        print('Ldotx_res: ',Ldotx_res)
+        print('Ldoty_res: ',Ldoty_res)
+        print('Ldotz_res: ',Ldotz_res)
+        print('px_res: ',px_res)
+        print('py_res: ',py_res)
+        print('pz_res: ',pz_res)
+        print('Ts_res: ',Ts_res)
+        print('FR1x_res: ',FR1x_res)
+        print('FR1y_res: ',FR1y_res)
+        print('FR1z_res: ',FR1z_res)
+    
     #Backup the complete optimization result
     x_opt_complete = x_opt
     
@@ -640,5 +651,19 @@ def PlotFirstLevelAcceleration(Nk_Local=5, x_opt = None, fig=None, var_index=Non
     
     #plt.xlabel('Time')
 
+
+    plt.show()
+
+def PlotTerrain(AllSurfaces = None):
+    fig=plt.figure()
+    ax = Axes3D(fig)
+
+    for surf in AllSurfaces:
+        print(surf)
+        PlotSurface(Surface = surf, ax = ax)
+    
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
 
     plt.show()

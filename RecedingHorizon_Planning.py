@@ -10,32 +10,24 @@ from constraints import *
 from Humanoid_ProblemDescription import *
 from PlotResult import *
 from Tools import *
+from TerrainGeneration import *
 
 #Initialization and Porblem Setup
 
 #   Set Decimal Printing Precision
 np.set_printoptions(precision=4)
 
-#Terrain Definition/Surface Sequence
-#Define Patches
-#NOTE: The rectangle always stat from Top Right Corner, and the vertex move counterclockwise, it should be a list of numpy arrays
-Patch1 = np.array([[0.5, 0.5, 0.], [-0.1, 0.5, 0.], [-0.1, -0.5, 0.], [0.5, -0.5, 0.]])
-Patch2 = np.array([[0.8, 0.5, 0.1], [0.5, 0.5, 0.1], [0.5, -0.5, 0.1], [0.8, -0.5, 0.1]])
-Patch3 = np.array([[5, 0.5, 0.2], [0.8, 0.5, 0.2], [0.8, -0.5, 0.2], [5, -0.5, 0.2]])
-#Collect all patches for the final printing of the terrain
-AllPatches = [Patch1,Patch2,Patch3]
-#Collect patche sequences, number of rows equals number of rounds
-ContactSeqs = [[Patch1,Patch2,Patch3,Patch3,Patch3],
-               [Patch2,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3],
-               [Patch3,Patch3,Patch3,Patch3,Patch3]]
+#get terrain set up
+#AllPatches, ContactSeqs, TerrainTangentsX, TerrainTangentsY, TerrainNorms = TerrainSelection(name = "single_obstacle")
+AllPatches, ContactSeqs, TerrainTangentsX, TerrainTangentsY, TerrainNorms = TerrainSelection(name = "darpa_like_right_first", NumRounds = 14, NumContactSequence = 8)
+
+#Initial Contact Tagents and Norms
+PL_init_TangentX = np.array([1,0,0])
+PL_init_TangentY = np.array([0,1,0])
+PL_init_Norm = np.array([0,0,1])
+PR_init_TangentX = np.array([1,0,0])
+PR_init_TangentY = np.array([0,1,0])
+PR_init_Norm = np.array([0,0,1])
 
 #ContactSeqs = [[Patch2,Patch2],
 #               [Patch2,Patch2],
@@ -49,17 +41,17 @@ ContactSeqs = [[Patch1,Patch2,Patch3,Patch3,Patch3],
 #               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 1
-SwingRightFirst = 0
+SwingLeftFirst = 0
+SwingRightFirst = 1
 
 #   Number of Rounds
 #Nrounds = 15
 Nrounds = len(ContactSeqs)
 
 #   Initial Condition of the Robot
-x_init = 0.0
+x_init = 0.65
 y_init = 0.0
-z_init = 0.6
+z_init = 0.55
 
 xdot_init = 0.0
 ydot_init = 0
@@ -73,17 +65,17 @@ Ldotx_init = 0
 Ldoty_init = 0
 Ldotz_init = 0
 
-PLx_init = 0
+PLx_init = 0.65
 PLy_init = 0.1
 PLz_init = 0
 
-PRx_init = 0
+PRx_init = 0.65
 PRy_init = -0.1
 PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.8
+z_end = 0.55
 
 xdot_end = 0
 ydot_end = 0
@@ -102,7 +94,9 @@ xdot_fullres = []
 Px_fullres = []
 Py_fullres = []
 Pz_fullres = []
-costs = []
+Fullcosts = []
+Acc_cost = []
+Momentum_Cost = []
 
 #StopRound initialisation
 StopRound = Nrounds
@@ -170,8 +164,12 @@ for roundNum in range(Nrounds):
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,HalfSpaceSeq),axis=None)
-
+            xdot_end,ydot_end,zdot_end,
+            HalfSpaceSeq,
+            TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+            PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+            PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+        
         res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
 
         x_opt = res["x"]
@@ -219,13 +217,17 @@ for roundNum in range(Nrounds):
                 LeftSwingFlag = 1
                 RightSwingFlag = 0
                 
-                #Update Initial Foot Location 
+                #Update Initial Foot Location and Terrain Tangents Norms
                 px_res = x_opt[var_index_Level1["px"][0]:var_index_Level1["px"][1]+1]
                 PRx_init = px_res[-1]
                 py_res = x_opt[var_index_Level1["py"][0]:var_index_Level1["py"][1]+1]
                 PRy_init = py_res[-1]
                 pz_res = x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1]
                 PRz_init = pz_res[-1]
+                #Init Terrain Tangent and Norm
+                PR_init_TangentX = TerrainTangentsX[roundNum-1][0]
+                PR_init_TangentY = TerrainTangentsY[roundNum-1][0]
+                PR_init_Norm = TerrainNorms[roundNum-1][0]
 
             elif roundNum%2 == 1:#odd (The Second phase)
                 #Swing the Right
@@ -239,6 +241,10 @@ for roundNum in range(Nrounds):
                 PLy_init = py_res[-1]
                 pz_res = x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1]
                 PLz_init = pz_res[-1]      
+                #Init Terrain Tangent and Norm
+                PL_init_TangentX = TerrainTangentsX[roundNum-1][0]
+                PL_init_TangentY = TerrainTangentsY[roundNum-1][0]
+                PL_init_Norm = TerrainNorms[roundNum-1][0]
 
         elif SwingRightFirst == 1:
             if roundNum%2 == 0:#Even (The First phase)
@@ -253,6 +259,10 @@ for roundNum in range(Nrounds):
                 PLy_init = py_res[-1]
                 pz_res = x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1]
                 PLz_init = pz_res[-1]
+                #Init Terrain Tangent and Norm
+                PL_init_TangentX = TerrainTangentsX[roundNum-1][0]
+                PL_init_TangentY = TerrainTangentsY[roundNum-1][0]
+                PL_init_Norm = TerrainNorms[roundNum-1][0]
 
             elif roundNum%2 == 1:#odd (The Second phase)
                 #Swing the Left
@@ -266,6 +276,10 @@ for roundNum in range(Nrounds):
                 PRy_init = py_res[-1]
                 pz_res = x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1]
                 PRz_init = pz_res[-1]            
+                #Init Terrain Tangent and Norm
+                PR_init_TangentX = TerrainTangentsX[roundNum-1][0]
+                PR_init_TangentY = TerrainTangentsY[roundNum-1][0]
+                PR_init_Norm = TerrainNorms[roundNum-1][0]
 
         #Get Parameters for Half-space representation of Patches
         #Convert to Half Space Representation
@@ -292,7 +306,11 @@ for roundNum in range(Nrounds):
             PLx_init,PLy_init,PLz_init,
             PRx_init,PRy_init,PRz_init,
             x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,HalfSpaceSeq),axis=None)
+            xdot_end,ydot_end,zdot_end,
+            HalfSpaceSeq,
+            TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+            PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+            PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
 
         if SwingLeftFirst == 1:
             if roundNum%2 == 0:#Even (The First phase)
@@ -327,6 +345,8 @@ for roundNum in range(Nrounds):
                 x_opt = res["x"]
                 x_opt = x_opt.full().flatten()  
                 x_opt_left = x_opt
+
+    #print(solver.stats())
      
     if solver.stats()["success"] == True:
         print("Round ", roundNum, solver.stats()["success"])
@@ -341,11 +361,16 @@ for roundNum in range(Nrounds):
         Py_fullres.append(x_opt[var_index_Level1["py"][0]:var_index_Level1["py"][1]+1])
         Pz_fullres.append(x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1])
         #Get Cost
-        firstLevelCost = FirstLevelCost(x_opt=x_opt,var_index=var_index,G = 9.80665,m=95)
-        costs.append(firstLevelCost)
+        firstLevelFullCost,firstLevelAccCost,firstLevelMomentumCost = FirstLevelCost(x_opt=x_opt,var_index=var_index,G = 9.80665,m=95)
+        Fullcosts.append(firstLevelFullCost)
+        Acc_cost.append(firstLevelAccCost)
+        Momentum_Cost.append(firstLevelMomentumCost)
+        #Compute timings
+        #TotalRunTime = solver.stats()["t_proc_total"]
+        #ProgramTime = TotalRunTime - solver.stats()["t_proc_nlp_hess_l"] - solver.stats()["t_proc_nlp_grad"] - solver.stats()["t_proc_nlp_gf_jg"] - solver.stats()["t_proc_nlp_fg"]
 
-        #Plot xdot of the first Level
-
+        #print(TotalRunTime)
+        #print(ProgramTime)
 
     elif solver.stats()["success"] == False:
         StopRound = roundNum
@@ -353,7 +378,7 @@ for roundNum in range(Nrounds):
         break
 
     #for two levels
-    PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintSecondLevel = True, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches)
+    PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = False, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches)
     
     #plot acceleration curves
     PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "x")
@@ -366,5 +391,9 @@ for roundNum in range(Nrounds):
 #plot full result
 Plot_RHP_result(NumRounds = StopRound, SwingLeftFirst = SwingLeftFirst, SwingRightFirst = SwingRightFirst, x_fullres = x_fullres, y_fullres = y_fullres, z_fullres = z_fullres, PL_init_fullres = PL_init_fullres, PR_init_fullres = PR_init_fullres, Px_fullres = Px_fullres, Py_fullres = Py_fullres, Pz_fullres = Pz_fullres, AllSurfaces = AllPatches)
 #Calculate Accumulated Cost
-AccumCost = np.sum(costs)
-print("Accumulated Cost is: ",AccumCost)
+AccumFullCost = np.sum(Fullcosts)
+AccumAccCost = np.sum(Acc_cost)
+AccumMomentumCost = np.sum(Momentum_Cost)
+print("Accumulated Full Cost is: ",AccumFullCost)
+print("Accumulated Acc Cost is: ",AccumAccCost)
+print("Accumulated Momentum Cost is: ",AccumMomentumCost)

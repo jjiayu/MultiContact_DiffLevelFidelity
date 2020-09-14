@@ -1,8 +1,11 @@
 import numpy as np
+from scipy.spatial.transform import Rotation as R
 
 def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
     
     cost_val=0
+    cost_acc = 0
+    cost_momentum = 0
 
     #Number of NLP Phases
     NLPphase=3
@@ -105,7 +108,51 @@ def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
             #Add Cost Terms
             if k < N_K - 1:
                 cost_val = cost_val + h*Lx_res[k]**2 + h*Ly_res[k]**2 + h*Lz_res[k]**2 + h*(FL1x_res[k]/m+FL2x_res[k]/m+FL3x_res[k]/m+FL4x_res[k]/m+FR1x_res[k]/m+FR2x_res[k]/m+FR3x_res[k]/m+FR4x_res[k]/m)**2 + h*(FL1y_res[k]/m+FL2y_res[k]/m+FL3y_res[k]/m+FL4y_res[k]/m+FR1y_res[k]/m+FR2y_res[k]/m+FR3y_res[k]/m+FR4y_res[k]/m)**2 + h*(FL1z_res[k]/m+FL2z_res[k]/m+FL3z_res[k]/m+FL4z_res[k]/m+FR1z_res[k]/m+FR2z_res[k]/m+FR3z_res[k]/m+FR4z_res[k]/m - G)**2
+                cost_acc = cost_acc + h*(FL1x_res[k]/m+FL2x_res[k]/m+FL3x_res[k]/m+FL4x_res[k]/m+FR1x_res[k]/m+FR2x_res[k]/m+FR3x_res[k]/m+FR4x_res[k]/m)**2 + h*(FL1y_res[k]/m+FL2y_res[k]/m+FL3y_res[k]/m+FL4y_res[k]/m+FR1y_res[k]/m+FR2y_res[k]/m+FR3y_res[k]/m+FR4y_res[k]/m)**2 + h*(FL1z_res[k]/m+FL2z_res[k]/m+FL3z_res[k]/m+FL4z_res[k]/m+FR1z_res[k]/m+FR2z_res[k]/m+FR3z_res[k]/m+FR4z_res[k]/m - G)**2
+                cost_momentum = cost_momentum + h*Lx_res[k]**2 + h*Ly_res[k]**2 + h*Lz_res[k]**2
 
-    print("Cost Value: ",cost_val)
+    print("Full Cost Value: ",cost_val)
+    print("Acceleration: ",cost_acc)
+    print("Momentum: ",cost_momentum)
 
-    return cost_val
+    return cost_val,cost_acc,cost_momentum
+
+def getTerrainTagents_and_Norm(Patch):
+    #Input Format
+    #p2---------------------p1
+    # |                      |
+    # |                      |
+    # |                      |
+    #p3---------------------p4
+
+    p1 = Patch[0]
+    p2 = Patch[1]
+    p3 = Patch[2]
+    p4 = Patch[3]
+
+    #Unrotated Terrain Norm and Tangents
+    TerrainTangentX = np.array([1,0,0])
+    TerrainTangentY = np.array([0,1,0])
+    TerrainNorm = np.array([0,0,1])
+
+    #Case 1 all flat
+    if p1[2] == p2[2] and p2[2] == p3[2] and p3[2] == p4[2] and p4[2] == p1[2]:
+        print("Flat Terrain, use the default set up of terrain tangent and norm")
+    #Case 2, tilt arond Y axis
+    elif p1[2] == p4[2] and p2[2] == p3[2] and (not p1[2]-p2[2] == 0) and (not p4[2]-p3[2]==0):
+        print("tilt arond Y axis")
+        tiltAngle = np.arctan2(p2[2]-p1[2],p1[0]-p2[0])
+        r = R.from_euler('y', tiltAngle, degrees=False) 
+        TerrainTangentX = r.as_matrix()@TerrainTangentX
+        TerrainNorm = r.as_matrix()@TerrainNorm
+    #Case 3, tilt around X axis    
+    elif p1[2] == p2[2] and p3[2] == p4[2] and (not p2[2]-p3[2] == 0) and (not p1[2]-p4[2]==0):
+        tiltAngle = np.arctan2(p1[2]-p4[2],p1[1]-p4[1])
+        r = R.from_euler('x', tiltAngle, degrees=False) 
+        TerrainTangentY = r.as_matrix()@TerrainTangentY
+        TerrainNorm = r.as_matrix()@TerrainNorm
+        print("tilt arond X axis")
+    else:
+        raise Exception("Un-defined Terrain Type")
+
+    return TerrainTangentX, TerrainTangentY, TerrainNorm
