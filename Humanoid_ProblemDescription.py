@@ -46,6 +46,13 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     Fyub = F_bound
     Fzlb = -F_bound
     Fzub = F_bound
+    #   Angular Momentum Bounds
+    L_bound = 1.5
+    Ldot_bound = 1.5
+    Lub = L_bound
+    Llb = -L_bound
+    Ldotub = Ldot_bound
+    Ldotlb = -Ldot_bound
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -176,28 +183,28 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     zdot_ub = np.array([[1]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[5]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[Llb]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[Lub]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[5]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[Llb]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[Lub]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[5]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[Llb]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[Lub]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-5]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[5]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[Ldotlb]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[Ldotub]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-5]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[5]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[Ldotlb]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[Ldotub]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-5]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[5]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[Ldotlb]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[Ldotub]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -1052,6 +1059,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     Fyub = F_bound
     Fzlb = -F_bound
     Fzub = F_bound
+    #   Angular Momentum Bounds
+    L_bound = 1.5
+    Ldot_bound = 1.5
+    Lub = L_bound
+    Llb = -L_bound
+    Ldotub = Ldot_bound
+    Ldotlb = -Ldot_bound
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -1163,28 +1177,28 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     zdot_ub = np.array([[1]*(zdot.shape[0]*zdot.shape[1])])
     #   Angular Momentum x-axis
     Lx = ca.SX.sym('Lx',N_K)
-    Lx_lb = np.array([[-5]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lx_ub = np.array([[5]*(Lx.shape[0]*Lx.shape[1])])
+    Lx_lb = np.array([[Llb]*(Lx.shape[0]*Lx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lx_ub = np.array([[Lub]*(Lx.shape[0]*Lx.shape[1])])
     #   Angular Momentum y-axis
     Ly = ca.SX.sym('Ly',N_K)
-    Ly_lb = np.array([[-5]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ly_ub = np.array([[5]*(Ly.shape[0]*Ly.shape[1])])
+    Ly_lb = np.array([[Llb]*(Ly.shape[0]*Ly.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ly_ub = np.array([[Lub]*(Ly.shape[0]*Ly.shape[1])])
     #   Angular Momntum y-axis
     Lz = ca.SX.sym('Lz',N_K)
-    Lz_lb = np.array([[-5]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Lz_ub = np.array([[5]*(Lz.shape[0]*Lz.shape[1])])
+    Lz_lb = np.array([[Llb]*(Lz.shape[0]*Lz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Lz_ub = np.array([[Lub]*(Lz.shape[0]*Lz.shape[1])])
     #   Angular Momentum rate x-axis
     Ldotx = ca.SX.sym('Ldotx',N_K)
-    Ldotx_lb = np.array([[-5]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotx_ub = np.array([[5]*(Ldotx.shape[0]*Ldotx.shape[1])])
+    Ldotx_lb = np.array([[Ldotlb]*(Ldotx.shape[0]*Ldotx.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotx_ub = np.array([[Ldotub]*(Ldotx.shape[0]*Ldotx.shape[1])])
     #   Angular Momentum y-axis
     Ldoty = ca.SX.sym('Ldoty',N_K)
-    Ldoty_lb = np.array([[-5]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldoty_ub = np.array([[5]*(Ldoty.shape[0]*Ldoty.shape[1])])
+    Ldoty_lb = np.array([[Ldotlb]*(Ldoty.shape[0]*Ldoty.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldoty_ub = np.array([[Ldotub]*(Ldoty.shape[0]*Ldoty.shape[1])])
     #   Angular Momntum z-axis
     Ldotz = ca.SX.sym('Ldotz',N_K)
-    Ldotz_lb = np.array([[-5]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    Ldotz_ub = np.array([[5]*(Ldotz.shape[0]*Ldotz.shape[1])])
+    Ldotz_lb = np.array([[Ldotlb]*(Ldotz.shape[0]*Ldotz.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    Ldotz_ub = np.array([[Ldotub]*(Ldotz.shape[0]*Ldotz.shape[1])])
     #left Foot Forces
     #Left Foot Contact Point 1 x-axis
     FL1x = ca.SX.sym('FL1x',N_K)
@@ -2192,7 +2206,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
         if GaitPattern[phase_cnt] == 'InitialDouble':
             g.append(Ts[phase_cnt])
             glb.append(np.array([0.05]))
-            gub.append(np.array([0.3]))
+            gub.append(np.array([0.3])) #o.3
         elif GaitPattern[phase_cnt] == 'Swing':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt]-0)
@@ -2205,7 +2219,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
             glb.append(np.array([0.1]))
-            gub.append(np.array([0.4])) #0.1 - 0.3
+            gub.append(np.array([0.4])) #0.1-0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
@@ -2344,6 +2358,20 @@ def Pure_Kinematics_Check(Nsteps = 8, StandAlong = False, ParameterList = None):
     #Flags for Swing Legs (Defined as Parameters)
     ParaLeftSwingFlag = ParameterList["LeftSwingFlag"]
     ParaRightSwingFlag = ParameterList["RightSwingFlag"]
+
+    #Tangents and Norms
+    #Initial Contact Norm and Tangents
+    PL_init_Norm = ParameterList["PL_init_Norm"]
+    PL_init_TangentX = ParameterList["PL_init_TangentX"]
+    PL_init_TangentY = ParameterList["PL_init_TangentY"]
+    PR_init_Norm = ParameterList["PR_init_Norm"]
+    PR_init_TangentX = ParameterList["PR_init_TangentX"]
+    PR_init_TangentY = ParameterList["PR_init_TangentY"]
+    
+    #Future Contact Norm and Tangents
+    SurfNorms = ParameterList["SurfNorms"]                
+    SurfTangentsX = ParameterList["SurfTangentsX"]
+    SurfTangentsY = ParameterList["SurfTangentsY"]
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Variables and Lower and Upper Bounds
@@ -3630,8 +3658,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     #Bulding the First Level
     if FirstLevel == "NLP_SingleStep":
         var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = NLP_SingleStep(m = m, StandAlong = SingleFidelity, ConservativeEnd = ConservativeFirstStep, ParameterList = ParaList)
-    #elif FirstLevel == "Pure_Kinematics_Check":
-    #    var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = Pure_Kinematics_Check(StandAlong = SingleFidelity, ParameterList = ParaList)
+    elif FirstLevel == "Pure_Kinematics_Check":
+        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = Pure_Kinematics_Check(StandAlong = SingleFidelity, ParameterList = ParaList)
     else:
         print("Print Not implemented or Wrong Solver Build Enumeration")        
     

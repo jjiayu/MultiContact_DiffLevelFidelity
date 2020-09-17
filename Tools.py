@@ -156,3 +156,67 @@ def getTerrainTagents_and_Norm(Patch):
         raise Exception("Un-defined Terrain Type")
 
     return TerrainTangentX, TerrainTangentY, TerrainNorm
+
+#Get Computation Time
+def GetComputationTimeFromFile(filename = None):
+    
+    ProgramTime = []
+    TotalTime = []
+
+    with open(filename, 'r') as read_obj:
+        for line in read_obj:
+            if "Total program time (secs)" in line:
+                ProgramTime.append(float(line[44:51]))
+                #print(float(line[44:51]))
+
+
+    with open(filename, 'r') as read_obj:
+        for line in read_obj:
+            if "Total Program Time: " in line:
+                TotalTime.append(float(line[21:27]))
+                #print(float(line[21:27]))
+                    
+    print("Program Time:")
+    print(ProgramTime)
+
+    print("Total Computation Time:")
+    print(TotalTime)
+
+    return ProgramTime, TotalTime
+
+def GetStatsFromOutputStings(output_log = None):
+    
+    ProgramTime = []
+    TotalTime = []
+
+    for line in output_log:
+        if "Total program time (secs)" in line:
+            ProgramTime.append(float(line[37:51]))
+            #print(float(line[44:51]))
+
+        if "Total Program Time: " in line:
+            TotalTime.append(float(line[21:27]))
+            #print(float(line[21:27]))
+
+        if "Accumulated Full Cost is:" in line:
+            FullCost = float(line[27:33])
+
+        if "Accumulated Acc Cost is:" in line:
+            AccCost = float(line[26:32])
+
+        if "Accumulated Momentum Cost is:" in line:
+            MomentCost = float(line[31:37])
+
+    print("Program Time:")
+    print(ProgramTime)
+
+    print("Total Computation Time:")
+    print(TotalTime)
+
+    print("Full Cost: ",FullCost)
+
+    print("Acc Cost: ", AccCost)
+
+    print("Moment Cost: ", MomentCost)
+
+    return ProgramTime, TotalTime, FullCost, AccCost, MomentCost

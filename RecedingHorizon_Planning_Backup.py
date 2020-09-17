@@ -12,30 +12,13 @@ from PlotResult import *
 from Tools import *
 from TerrainGeneration import *
 import os as os
-import sys
-import pickle
 
 #Initialization and Porblem Setup
-
-#Get Parameters from Command line
-TerrainName = sys.argv[1]
-
-InitSeedType = sys.argv[2] #"random" or "previous"
-
-ChosenSolver = sys.argv[3] #"NLP" or "CoM"
-
-NumofLookAhead = int(sys.argv[4])
-
-ShowFigure = sys.argv[5] #"True" or "False"
-
-NumofRounds = int(sys.argv[6])
-
-TrialNum = int(sys.argv[7])
-
-ResultSavingFolder = sys.argv[8]
+#InitSeedType = "Random"
+InitSeedType = "Previous"
 
 #Clear the logging file
-#open("test.txt", "w").close()
+open("test.txt", "w").close()
 
 
 print("==================================================================")
@@ -43,20 +26,13 @@ print("A new Round")
 print(" ")
 
 print("Initial Seed Type: ", InitSeedType)
-print("Chosen Solver: ", ChosenSolver)
-print("Number of LookAhead: ",NumofLookAhead)
-
 
 #   Set Decimal Printing Precision
 np.set_printoptions(precision=4)
 
 #get terrain set up
 #AllPatches, ContactSeqs, TerrainTangentsX, TerrainTangentsY, TerrainNorms = TerrainSelection(name = "single_obstacle")
-AllPatches, ContactSeqs, TerrainTangentsX, TerrainTangentsY, TerrainNorms = TerrainSelection(name = TerrainName, NumRounds = NumofRounds, NumContactSequence = NumofLookAhead)
-
-#Show terrains
-if ShowFigure == "True":
-    PlotTerrain(AllSurfaces = AllPatches)
+AllPatches, ContactSeqs, TerrainTangentsX, TerrainTangentsY, TerrainNorms = TerrainSelection(name = "flat", NumRounds = 14, NumContactSequence = 2)
 
 #Initial Contact Tagents and Norms
 PL_init_TangentX = np.array([1,0,0])
@@ -135,9 +111,6 @@ Fullcosts = []
 Acc_cost = []
 Momentum_Cost = []
 
-#Full result container
-AllRoundTrajectory = []
-
 #StopRound initialisation
 StopRound = Nrounds
 
@@ -149,18 +122,7 @@ Nstep_lookahead = len(ContactSeqs[0])
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Pure_Kinematics_Check", ConservativeFirstStep = True, m = 95, NumSurfaces = Nstep_lookahead)
 #solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-#solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
-
-if ChosenSolver == "NLP":
-    if NumofLookAhead == 1:
-        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-    else:
-        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
-elif ChosenSolver == "CoM":
-    if NumofLookAhead == 1:
-        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
-    else:
-        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "NLP_SecondLevel", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
 
 #   Generate Initial Guess
 #   Random Initial Guess
@@ -363,7 +325,7 @@ for roundNum in range(Nrounds):
             PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
             PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
 
-        if InitSeedType == "random":
+        if InitSeedType == "Random":
             #Shuffle the Random Seed Generator
             np.random.seed()
             DecisionVarsShape = DecisionVars_lb.shape
@@ -372,7 +334,7 @@ for roundNum in range(Nrounds):
             x_opt = res["x"]
             x_opt = x_opt.full().flatten()  
 
-        elif InitSeedType == "previous":
+        elif InitSeedType == "Previous":
             if SwingLeftFirst == 1:
                 if roundNum%2 == 0:#Even (The First phase)
                     #Swing the Left
@@ -426,9 +388,6 @@ for roundNum in range(Nrounds):
         Fullcosts.append(firstLevelFullCost)
         Acc_cost.append(firstLevelAccCost)
         Momentum_Cost.append(firstLevelMomentumCost)
-        #Save the trajectory of current round
-        AllRoundTrajectory.append(x_opt)
-
         #Compute timings
         #ProgramTime = TotalRunTime - solver.stats()["t_proc_nlp_hess_l"] - solver.stats()["t_proc_nlp_grad"] - solver.stats()["t_proc_nlp_gf_jg"] - solver.stats()["t_proc_nlp_fg"]
 
@@ -445,8 +404,7 @@ for roundNum in range(Nrounds):
     #===========================
     #NOTE: Remove comment to enbale Plot function
     #for two levels
-    if ShowFigure == "True":
-        PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = True, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches, RoundNum = roundNum)
+    #PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = True, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches)
     #===========================
 
     #plot acceleration curves
@@ -458,23 +416,15 @@ for roundNum in range(Nrounds):
 #===========================
 #NOTE: Remove comment to enbale Plot function
 #plot full result
-if ShowFigure == "True":
-    Plot_RHP_result(NumRounds = StopRound, SwingLeftFirst = SwingLeftFirst, SwingRightFirst = SwingRightFirst, x_fullres = x_fullres, y_fullres = y_fullres, z_fullres = z_fullres, PL_init_fullres = PL_init_fullres, PR_init_fullres = PR_init_fullres, Px_fullres = Px_fullres, Py_fullres = Py_fullres, Pz_fullres = Pz_fullres, AllSurfaces = AllPatches)
+#Plot_RHP_result(NumRounds = StopRound, SwingLeftFirst = SwingLeftFirst, SwingRightFirst = SwingRightFirst, x_fullres = x_fullres, y_fullres = y_fullres, z_fullres = z_fullres, PL_init_fullres = PL_init_fullres, PR_init_fullres = PR_init_fullres, Px_fullres = Px_fullres, Py_fullres = Py_fullres, Pz_fullres = Pz_fullres, AllSurfaces = AllPatches)
 #===========================
 #Calculate Accumulated Cost
-AccumFullCost = round(np.sum(Fullcosts),4)
-AccumAccCost = round(np.sum(Acc_cost),4)
-AccumMomentumCost = round(np.sum(Momentum_Cost),4)
-print("Accumulated Full Cost is: ", AccumFullCost)
-print("Accumulated Acc Cost is: ", AccumAccCost)
-print("Accumulated Momentum Cost is: ", AccumMomentumCost)
-
-#Dump data into pickled file
-DumpedResult = {"TerrainModel": AllPatches,
-                "VarIdx_of_All_Levels": var_index,
-                "Trajectory_of_All_Rounds":AllRoundTrajectory,
-                "Accmulated_Full_Cost":AccumFullCost,
-                "Accumulated_Acc_Cost":AccumAccCost,
-                "Accumulated_Momentum_Cost":AccumMomentumCost,
-}
-pickle.dump(DumpedResult, open(ResultSavingFolder+'/'+str(NumofLookAhead)+'LookAhead_Trial'+str(TrialNum)+'.p', "wb"))  # save it into a file named save.p
+AccumFullCost = np.sum(Fullcosts)
+AccumAccCost = np.sum(Acc_cost)
+AccumMomentumCost = np.sum(Momentum_Cost)
+print("Accumulated Full Cost is: ")
+print(AccumFullCost)
+print("Accumulated Acc Cost is: ")
+print(AccumAccCost)
+print("Accumulated Momentum Cost is: ")
+print(AccumMomentumCost)

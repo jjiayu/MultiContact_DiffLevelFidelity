@@ -22,7 +22,7 @@ def PlotTriangle(Surface = None, ax = None):
     ax.plot(cx, cy, cz)
 
 
-def PlotNLPStep(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, AllSurfaces = None):
+def PlotNLPStep(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, AllSurfaces = None, RoundNum = None):
     #-----------------------------------------------------------------------------------------------------------------------
     #Plot Result
     if fig==None:
@@ -109,7 +109,7 @@ def PlotNLPStep(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init 
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-
+    ax.set_title('Round '+str(RoundNum))
     plt.show()
 
     return ax
@@ -166,7 +166,7 @@ def Plot_Pure_Kinematics_Plan(x_opt = None, fig=None, var_index=None, PL_init = 
 
     #Print Surfaces
     for surf in AllSurfaces:
-        print(surf)
+        #print(surf)
         PlotSurface(Surface = surf, ax = ax)
 
     ax.set_xlim3d(x_res[0]-0.2, px_res[-1]+0.35)
@@ -180,7 +180,7 @@ def Plot_Pure_Kinematics_Plan(x_opt = None, fig=None, var_index=None, PL_init = 
 
     return ax
 
-def Plot_Both_Levels(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, AllSurfaces = None):
+def Plot_Both_Levels(x_opt = None, fig=None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, AllSurfaces = None, RoundNum = None):
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Plot First Level Result
@@ -317,10 +317,11 @@ def Plot_Both_Levels(x_opt = None, fig=None, var_index=None, PL_init = None, PR_
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+    ax.set_title('Round '+str(RoundNum))
 
     plt.show()
 
-def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, PrintFirstLevel = False, PrintSecondLevel = False, PlotNLP = None, PlotBothLevel = None, AllSurfaces = None):
+def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init = None, PR_init = None, LeftSwing = None, RightSwing = None, PrintFirstLevel = False, PrintSecondLevel = False, PlotNLP = None, PlotBothLevel = None, AllSurfaces = None, RoundNum = None):
     #Print Result
     #First Level
 
@@ -466,10 +467,10 @@ def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init 
 
 
     if PlotBothLevel == True:
-        Plot_Both_Levels(x_opt=x_opt_complete,fig=None,var_index=var_index_complete,PL_init=PL_init,PR_init = PR_init, LeftSwing = LeftSwing, RightSwing = RightSwing, AllSurfaces = AllSurfaces)
+        Plot_Both_Levels(x_opt=x_opt_complete,fig=None,var_index=var_index_complete,PL_init=PL_init,PR_init = PR_init, LeftSwing = LeftSwing, RightSwing = RightSwing, AllSurfaces = AllSurfaces, RoundNum = RoundNum)
 
     if PlotNLP == True:
-        PlotNLPStep(x_opt=x_opt_complete,fig=None,var_index=var_index_complete,PL_init=PL_init,PR_init = PR_init, LeftSwing = LeftSwing, RightSwing = RightSwing, AllSurfaces = AllSurfaces)
+        PlotNLPStep(x_opt=x_opt_complete,fig=None,var_index=var_index_complete,PL_init=PL_init,PR_init = PR_init, LeftSwing = LeftSwing, RightSwing = RightSwing, AllSurfaces = AllSurfaces, RoundNum = RoundNum)
 
 
 def Plot_RHP_result(NumRounds = None, SwingLeftFirst = None, SwingRightFirst = None, x_fullres = None, y_fullres = None, z_fullres = None, PL_init_fullres = None, PR_init_fullres = None, Px_fullres = None, Py_fullres = None, Pz_fullres = None, AllSurfaces = None):
@@ -506,7 +507,7 @@ def Plot_RHP_result(NumRounds = None, SwingLeftFirst = None, SwingRightFirst = N
     #Draw Terrain
 
     for surf in AllSurfaces:
-        print(surf)
+        #print(surf)
         PlotSurface(Surface = surf, ax = ax)
 
     ax.set_xlim3d(x_fullres[0][0]-0.2, x_fullres[-1][-1]+0.35)

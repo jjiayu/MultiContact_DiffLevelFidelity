@@ -1,0 +1,7 @@
+python3 GenerateRecedingHorizonResults.py flat random CoM
+
+python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start random CoM
+
+python3 GenerateRecedingHorizonResults.py up_and_down_left_first random CoM
+
+python3 GenerateRecedingHorizonResults.py darpa_like_left_first random CoM
