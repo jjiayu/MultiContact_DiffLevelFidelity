@@ -519,7 +519,7 @@ def Plot_RHP_result(NumRounds = None, SwingLeftFirst = None, SwingRightFirst = N
 
     plt.show()
 
-def PlotFirstLevelAcceleration(Nk_Local=5, x_opt = None, fig=None, var_index=None, G = 9.80665, m = 95, plotAxis = "x"):
+def PlotFirstLevelAcceleration(Nk_Local=7, x_opt = None, fig=None, var_index=None, G = 9.80665, m = 95, plotAxis = "x"):
     #-----------------------------------------------------------------------------------------------------------------------
     #Plot Result
     #if fig==None:

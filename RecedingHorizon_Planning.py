@@ -78,8 +78,8 @@ PR_init_Norm = np.array([0,0,1])
 #               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 1
-SwingRightFirst = 0
+SwingLeftFirst = 0
+SwingRightFirst = 1
 
 #   Number of Rounds
 #Nrounds = 15
@@ -88,7 +88,7 @@ Nrounds = len(ContactSeqs)
 #   Initial Condition of the Robot
 x_init = 0.6
 y_init = 0.0
-z_init = 0.55
+z_init = 0.5
 
 xdot_init = 0.0
 ydot_init = 0
@@ -112,7 +112,7 @@ PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.55
+z_end = 0.5
 
 xdot_end = 0
 ydot_end = 0
@@ -368,7 +368,7 @@ for roundNum in range(Nrounds):
             np.random.seed()
             DecisionVarsShape = DecisionVars_lb.shape
             DecisionVars_init = DecisionVars_lb + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub - DecisionVars_lb))#   Fixed Value Initial Guess
-            res = solver(x0=x_opt_left, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
+            res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
             x_opt = res["x"]
             x_opt = x_opt.full().flatten()  
 
@@ -476,5 +476,16 @@ DumpedResult = {"TerrainModel": AllPatches,
                 "Accmulated_Full_Cost":AccumFullCost,
                 "Accumulated_Acc_Cost":AccumAccCost,
                 "Accumulated_Momentum_Cost":AccumMomentumCost,
+                "StopRound":StopRound,
+                "SwingLeftFirst":SwingLeftFirst,
+                "SwingRightFirst":SwingRightFirst,
+                "x_fullres":x_fullres,
+                "y_fullres":y_fullres,
+                "z_fullres":z_fullres,
+                "PL_init_fullres":PL_init_fullres,
+                "PR_init_fullres":PR_init_fullres,
+                "Px_fullres":Px_fullres,
+                "Py_fullres":Py_fullres,
+                "Pz_fullres":Pz_fullres
 }
 pickle.dump(DumpedResult, open(ResultSavingFolder+'/'+str(NumofLookAhead)+'LookAhead_Trial'+str(TrialNum)+'.p', "wb"))  # save it into a file named save.p

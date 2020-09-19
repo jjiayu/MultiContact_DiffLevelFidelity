@@ -1,0 +1,1431 @@
+==================================================================
+A new Round
+ 
+Initial Seed Type:  previous
+Chosen Solver:  NLP
+Number of LookAhead:  4
+Flat Terrain, use the default set up of terrain tangent and norm
+tilt arond Y axis
+tilt arond X axis
+tilt arond Y axis
+tilt arond X axis
+tilt arond X axis
+tilt arond Y axis
+tilt arond Y axis
+tilt arond X axis
+tilt arond Y axis
+tilt arond X axis
+tilt arond Y axis
+tilt arond X axis
+Flat Terrain, use the default set up of terrain tangent and norm
+The  0 Round:
+[[ 1.  -1.  -1.   1. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[ 1.6   1.    1.    1.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 1.6   1.    1.    1.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 349 variables and 5414 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (500 variables).
+Knitro fixing 349 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2268)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2268)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5684)
+    linear equalities:                       715 (        27)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4628)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     30618)
+Number of nonzeros in Hessian:             19410 (     15201)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    2.362585e+02   6.669e+03
+      10    7.116784e+02   3.938e+03   1.036e+03   7.997e+01        0
+      20    8.167728e+02   3.869e+03   4.708e+03   5.573e+00        0
+      30    7.252840e+02   2.435e+03   6.246e+03   8.822e+01        0
+      40    7.343909e+02   2.413e+03   8.435e+03   2.618e+01        0
+      50    7.644604e+02   2.395e+03   8.388e+03   2.076e+01        0
+      60    7.916877e+02   2.379e+03   8.521e+03   1.761e+01        0
+      70    8.111608e+02   2.370e+03   9.920e+03   5.913e+01        0
+      80    8.247440e+02   2.350e+03   8.258e+03   2.982e+01        0
+      90    8.424759e+02   2.333e+03   2.357e+04   1.011e+02        0
+     100    8.876280e+02   2.319e+03   1.618e+04   1.159e+02        0
+     110    1.037433e+03   2.001e+03   1.011e+04   1.013e+02        0
+     120    1.110522e+03   1.980e+03   1.684e+04   9.183e+01        0
+     130    1.246187e+03   1.531e+03   8.637e+03   5.252e+01        0
+     140    1.363394e+03   1.501e+03   1.454e+04   1.326e+02        0
+     150    1.461746e+03   1.493e+03   1.534e+04   3.354e+01        0
+     160    1.589004e+03   1.431e+03   7.416e+03   8.906e+01        0
+     170    1.777342e+03   1.367e+03   8.039e+03   1.052e+02        0
+     180    1.944571e+03   1.298e+03   2.063e+03   9.672e+01        0
+     190    2.237287e+03   1.006e+03   6.519e+02   1.098e+02       27
+     200    2.143203e+03   1.594e+03   2.651e+04   3.693e+01        0
+     210    2.071351e+03   1.530e+03   4.050e+04   9.636e+01        0
+     220    2.080251e+03   9.091e+02   7.011e+03   8.148e+01        0
+     230    2.037846e+03   7.799e+02   2.540e+03   7.467e+01        0
+     240    1.670782e+03   8.276e+02   2.431e+04   4.155e+01        0
+     250    1.006699e+03   6.273e+02   8.929e+01   1.719e+02        0
+     260    8.268411e+02   4.068e+01   8.974e+01   4.052e+01        0
+     270    8.092329e+02   2.408e+00   7.846e+01   1.847e+01        0
+     280    7.808537e+02   3.999e-01   7.668e+01   3.796e+00        0
+     290    7.903187e+02   3.455e-01   7.595e+01   4.815e+00        0
+     300    7.922831e+02   3.475e-01   7.566e+01   1.339e+01        0
+     310    7.926800e+02   3.325e-01   7.525e+01   1.391e+01        0
+     320    7.897514e+02   2.658e-01   7.458e+01   1.563e+01        0
+     330    7.909998e+02   1.431e-01   7.439e+01   9.489e+00        1
+     340    7.961132e+02   1.202e-01   7.454e+01   1.886e+00        0
+     350    7.934842e+02   1.049e+00   7.447e+01   5.959e+02        0
+     360    6.933747e+02   5.128e-01   6.105e+01   2.303e+02        0
+     370    6.419807e+02   4.267e-01   4.697e-01   9.079e+01        0
+     380    6.404039e+02   1.063e-02   1.670e-02   3.213e+01        0
+     390    6.400258e+02   1.322e-04   4.323e-02   1.600e+01        8
+     400    6.396712e+02   2.187e-03   1.654e-02   4.914e+01        0
+     410    6.393654e+02   2.999e-02   1.962e-01   1.443e+02        0
+     420    6.392259e+02   4.379e-02   6.726e-02   7.804e+01        0
+     430    6.391683e+02   3.912e-02   1.220e-02   1.760e+01        0
+     440    6.391520e+02   1.996e-02   1.038e-02   2.693e+00        0
+     450    6.391347e+02   1.524e-02   1.456e-02   4.663e+00        0
+     460    6.391214e+02   7.862e-03   5.388e-03   8.096e+00        0
+     470    6.391158e+02   4.255e-03   1.247e-02   3.489e+00        0
+     480    6.390844e+02   8.620e-04   2.552e-01   1.491e+01        0
+     490    6.390504e+02   3.516e-03   1.397e-01   5.902e+01        0
+     500    6.390409e+02   2.576e-04   3.171e-04   3.032e-01        0
+     510    6.390390e+02   1.501e-04   3.740e-03   2.856e+00        0
+     520    6.390356e+02   5.275e-04   1.041e-02   1.350e+01        0
+     530    6.390307e+02   9.609e-04   2.487e-02   8.553e+01        0
+     540    6.390269e+02   4.904e-04   2.106e-02   7.979e+01        0
+     550    6.390244e+02   1.832e-04   9.676e-03   1.087e+02        0
+     556    6.390240e+02   5.357e-06   4.490e-07   2.020e+01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   6.39023986709775e+02
+Final feasibility error (abs / rel) =   5.36e-06 / 8.03e-10
+Final optimality error  (abs / rel) =   4.49e-07 / 6.34e-09
+# of iterations                     =        556 
+# of CG iterations                  =        401 
+# of function evaluations           =        593
+# of gradient evaluations           =        558
+# of Hessian evaluations            =        557
+Total program time (secs)           =      12.45112 (    12.450 CPU time)
+Time spent in evaluations (secs)    =       0.83416
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  | 285.98ms (481.45us) 284.84ms (479.53us)       594
+   nlp_gf_jg  | 299.34ms (536.46us) 298.87ms (535.61us)       558
+    nlp_grad  |   1.29ms (  1.29ms)   1.29ms (  1.29ms)         1
+  nlp_hess_l  | 236.14ms (423.96us) 235.98ms (423.67us)       557
+       total  |  12.92 s ( 12.92 s)  12.72 s ( 12.72 s)         1
+Round  0 True
+Full Cost Value:  0.14688537957775238
+Acceleration:  0.11500910189470778
+Momentum:  0.03187627768304462
+Total Program Time:  12.9191
+The  1 Round:
+[[ 1.6   1.    1.    1.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 1.6   1.    1.    1.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5254 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (416 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5844)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4784)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31655)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    8.521351e+02   1.245e+02
+      10    8.518097e+02   7.744e+01   1.393e+02   1.413e+01        0
+      20    1.116612e+03   4.884e+01   4.518e+04   1.994e+01        0
+      30    9.626904e+02   9.639e+00   3.493e+02   2.682e+01        0
+      40    9.464122e+02   6.443e+00   2.376e+02   1.266e+01        0
+      50    7.259770e+02   1.274e+00   2.386e+02   1.929e+02        0
+      60    7.258418e+02   1.086e+00   2.353e+02   4.963e+02        0
+      70    7.579972e+02   3.781e-01   2.365e+02   1.060e+01        0
+      80    7.685222e+02   1.519e-01   2.327e+02   4.077e+01        0
+      90    8.239619e+02   3.096e-01   2.249e+02   1.565e+02        0
+     100    8.166367e+02   1.086e-01   2.089e+01   2.324e+02        0
+     110    6.036000e+02   7.175e-01   5.146e+00   2.622e+02        0
+     120    5.958056e+02   9.556e-03   7.664e-03   2.146e+01        0
+     130    5.952740e+02   1.768e-02   1.693e-02   3.957e+02        0
+     136    5.952496e+02   1.166e-05   4.053e-05   1.658e+02        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   5.95249644030796e+02
+Final feasibility error (abs / rel) =   1.17e-05 / 9.37e-08
+Final optimality error  (abs / rel) =   4.05e-05 / 4.20e-07
+# of iterations                     =        136 
+# of CG iterations                  =         13 
+# of function evaluations           =        141
+# of gradient evaluations           =        138
+# of Hessian evaluations            =        137
+Total program time (secs)           =       3.10619 (     3.106 CPU time)
+Time spent in evaluations (secs)    =       0.21156
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  71.01ms (500.07us)  70.72ms (498.02us)       142
+   nlp_gf_jg  |  77.40ms (560.85us)  77.21ms (559.47us)       138
+    nlp_grad  |   1.52ms (  1.52ms)   1.52ms (  1.52ms)         1
+  nlp_hess_l  |  61.10ms (445.97us)  61.05ms (445.64us)       137
+       total  |   3.35 s (  3.35 s)   3.29 s (  3.29 s)         1
+Round  1 True
+Full Cost Value:  0.07538358670949531
+Acceleration:  0.048540116296604
+Momentum:  0.026843470412891295
+Total Program Time:  3.3456
+The  2 Round:
+[[ 1.6   1.    1.    1.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07 -0.07  0.07  0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5141 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (101 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5957)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4897)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31620)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    6.390503e+02   1.245e+02
+      10    6.318486e+02   1.826e+01   3.149e+02   3.115e+01        0
+      20    5.619779e+02   2.134e-01   1.746e+00   2.144e+01        0
+      30    5.484203e+02   8.436e-02   8.359e-02   1.886e+01        0
+      40    5.479122e+02   3.661e-01   4.366e-02   1.698e+00        0
+      50    5.477943e+02   1.221e-02   2.666e-02   3.497e+01        0
+      60    5.477379e+02   4.143e-03   2.576e-01   1.752e+01        0
+      70    5.476662e+02   4.955e-03   1.222e-01   1.885e+01        0
+      80    5.476163e+02   8.934e-03   1.064e-01   1.308e+02        0
+      90    5.475918e+02   1.550e-04   1.976e-04   4.885e-01        0
+     100    5.475894e+02   5.329e-05   1.397e-02   2.962e+01        0
+     109    5.475884e+02   7.854e-08   2.592e-06   1.627e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   5.47588367958605e+02
+Final feasibility error (abs / rel) =   7.85e-08 / 6.31e-10
+Final optimality error  (abs / rel) =   2.59e-06 / 2.80e-08
+# of iterations                     =        109 
+# of CG iterations                  =         37 
+# of function evaluations           =        111
+# of gradient evaluations           =        111
+# of Hessian evaluations            =        109
+Total program time (secs)           =       2.71576 (     2.716 CPU time)
+Time spent in evaluations (secs)    =       0.16755
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  56.41ms (503.62us)  56.20ms (501.78us)       112
+   nlp_gf_jg  |  61.86ms (557.34us)  61.77ms (556.51us)       111
+    nlp_grad  |   1.38ms (  1.38ms)   1.38ms (  1.38ms)         1
+  nlp_hess_l  |  47.99ms (440.24us)  47.95ms (439.86us)       109
+       total  |   2.95 s (  2.95 s)   2.92 s (  2.92 s)         1
+Round  2 True
+Full Cost Value:  0.06946030543473257
+Acceleration:  0.04022177248798232
+Momentum:  0.029238532946750252
+Total Program Time:  2.9541
+The  3 Round:
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07  0.07  0.07 -0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5112 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (26 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5986)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4926)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     32075)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    5.952678e+02   1.733e+02
+      10    6.197796e+02   5.215e+01   2.382e+02   2.738e+02        0
+      20    5.451413e+02   8.142e-01   5.352e+00   2.009e+02        0
+      30    5.083359e+02   7.568e-02   6.706e-02   1.336e+01        0
+      40    5.071032e+02   1.477e-03   2.451e-02   2.211e+01        0
+      50    5.069705e+02   1.684e-02   2.210e-02   1.100e+02        0
+      60    5.069301e+02   1.973e-02   8.789e-03   4.278e+01        0
+      70    5.069132e+02   3.736e-02   7.242e-03   1.017e+02        0
+      80    5.069021e+02   3.536e-02   2.582e-02   1.401e+02        0
+      90    5.068981e+02   4.337e-04   1.207e-04   6.379e-01        0
+     100    5.068975e+02   2.723e-04   2.157e-03   8.840e+01        0
+     110    5.068967e+02   1.954e-04   1.646e-03   3.700e+01        0
+     118    5.068963e+02   3.606e-08   1.364e-05   8.882e-02        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   5.06896254870306e+02
+Final feasibility error (abs / rel) =   3.61e-08 / 2.08e-10
+Final optimality error  (abs / rel) =   1.36e-05 / 1.48e-07
+# of iterations                     =        118 
+# of CG iterations                  =         10 
+# of function evaluations           =        120
+# of gradient evaluations           =        120
+# of Hessian evaluations            =        118
+Total program time (secs)           =       2.32317 (     2.323 CPU time)
+Time spent in evaluations (secs)    =       0.18129
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  60.17ms (497.26us)  59.92ms (495.23us)       121
+   nlp_gf_jg  |  67.38ms (561.49us)  67.28ms (560.64us)       120
+    nlp_grad  |   1.30ms (  1.30ms)   1.30ms (  1.30ms)         1
+  nlp_hess_l  |  52.22ms (442.55us)  52.19ms (442.29us)       118
+       total  |   2.56 s (  2.56 s)   2.56 s (  2.56 s)         1
+Round  3 True
+Full Cost Value:  0.048833507805714785
+Acceleration:  0.027952225192977957
+Momentum:  0.020881282612736852
+Total Program Time:  2.5619
+The  4 Round:
+[[ 2.2   1.6   1.6   2.2 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5111 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (61 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5987)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4927)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31716)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    5.476224e+02   1.174e+02
+      10    5.355344e+02   2.992e+01   1.423e+02   4.702e+01        0
+      20    4.852771e+02   3.347e-01   5.735e+00   7.984e+01        0
+      30    4.646686e+02   1.172e-01   4.532e-01   1.376e+02        0
+      40    4.638916e+02   1.839e-02   2.107e-02   3.008e+01        0
+      50    4.638313e+02   1.395e-04   1.438e-02   8.616e+00        7
+      60    4.637773e+02   5.014e-03   1.972e-02   2.065e+01        0
+      70    4.637251e+02   1.421e-02   2.674e-02   1.771e+01        0
+      80    4.636440e+02   2.319e-03   1.042e-01   9.788e+01        0
+      90    4.635775e+02   8.693e-04   2.065e-03   2.064e+00        0
+     100    4.635740e+02   4.742e-05   4.852e-03   3.055e+01        0
+     110    4.635707e+02   1.206e-05   4.808e-04   9.140e-01        0
+     120    4.635665e+02   6.408e-05   6.360e-03   2.591e+01        0
+     130    4.635603e+02   1.840e-04   3.152e-02   3.192e+01        0
+     140    4.635541e+02   9.794e-04   2.961e-02   3.307e+01        0
+     150    4.635526e+02   8.876e-04   2.343e-02   3.827e+01        0
+     160    4.635503e+02   1.072e-04   1.218e-03   2.158e+01        0
+     162    4.635502e+02   5.143e-06   6.112e-05   4.887e+01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   4.63550240853079e+02
+Final feasibility error (abs / rel) =   5.14e-06 / 4.38e-08
+Final optimality error  (abs / rel) =   6.11e-05 / 6.65e-07
+# of iterations                     =        162 
+# of CG iterations                  =         44 
+# of function evaluations           =        164
+# of gradient evaluations           =        164
+# of Hessian evaluations            =        162
+Total program time (secs)           =       3.88040 (     3.880 CPU time)
+Time spent in evaluations (secs)    =       0.24793
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  82.72ms (501.36us)  82.41ms (499.48us)       165
+   nlp_gf_jg  |  91.12ms (555.59us)  90.99ms (554.82us)       164
+    nlp_grad  |   1.34ms (  1.34ms)   1.34ms (  1.34ms)         1
+  nlp_hess_l  |  71.46ms (441.09us)  71.40ms (440.75us)       162
+       total  |   4.12 s (  4.12 s)   4.10 s (  4.10 s)         1
+Round  4 True
+Full Cost Value:  0.07985423409241228
+Acceleration:  0.048437693170273924
+Momentum:  0.0314165409221384
+Total Program Time:  4.1185
+The  5 Round:
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5112 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (83 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5986)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4926)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     32081)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    5.069218e+02   1.142e+02
+      10    5.245719e+02   5.465e+00   3.719e+02   4.684e+01        0
+      20    4.477467e+02   1.675e-01   4.126e+00   6.820e+01        0
+      30    4.296224e+02   8.073e-02   1.139e+00   3.989e+02        0
+      40    4.270854e+02   9.896e-02   1.369e-02   1.605e+01        0
+      50    4.268407e+02   1.875e-02   1.243e-02   1.498e+02        0
+      60    4.266484e+02   1.215e-02   8.885e-02   5.949e+01        0
+      70    4.266080e+02   3.506e-03   3.878e-02   2.042e+02        0
+      79    4.266020e+02   3.177e-07   3.722e-06   2.396e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   4.26601957658312e+02
+Final feasibility error (abs / rel) =   3.18e-07 / 2.78e-09
+Final optimality error  (abs / rel) =   3.72e-06 / 4.06e-08
+# of iterations                     =         79 
+# of CG iterations                  =          6 
+# of function evaluations           =         81
+# of gradient evaluations           =         81
+# of Hessian evaluations            =         79
+Total program time (secs)           =       1.57391 (     1.574 CPU time)
+Time spent in evaluations (secs)    =       0.12198
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  40.90ms (498.78us)  40.75ms (496.97us)        82
+   nlp_gf_jg  |  45.39ms (560.35us)  45.32ms (559.48us)        81
+    nlp_grad  |   1.41ms (  1.41ms)   1.41ms (  1.41ms)         1
+  nlp_hess_l  |  35.01ms (443.19us)  34.98ms (442.82us)        79
+       total  |   1.83 s (  1.83 s)   1.75 s (  1.75 s)         1
+Round  5 True
+Full Cost Value:  0.061383560064645716
+Acceleration:  0.0297837595176173
+Momentum:  0.03159980054702843
+Total Program Time:  1.8284
+The  6 Round:
+[[ 2.8   2.2   2.2   2.8 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5110 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (95 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5988)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4928)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31719)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    4.635743e+02   1.424e+02
+      10    5.079863e+02   9.508e+01   1.333e+02   4.859e+00        0
+      20    4.716588e+02   4.636e+01   6.296e+01   2.466e+01        0
+      30    3.915543e+02   4.828e-01   3.867e+00   8.815e+00        0
+      40    3.871455e+02   1.726e-01   1.550e-01   2.998e+01        0
+      50    3.865128e+02   4.017e-03   3.353e-02   3.856e+00        0
+      60    3.864582e+02   5.109e-03   6.571e-03   1.047e+01        0
+      70    3.864437e+02   2.464e-03   2.454e-02   3.143e+00        0
+      80    3.864255e+02   9.640e-03   5.523e-02   5.318e+00        0
+      90    3.863941e+02   8.218e-04   1.857e-02   2.838e+01        0
+     100    3.863499e+02   1.284e-02   1.315e-01   1.580e+02        0
+     110    3.863254e+02   6.302e-03   1.852e-01   1.156e+02        0
+     119    3.863207e+02   3.168e-05   3.274e-05   2.986e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   3.86320663815207e+02
+Final feasibility error (abs / rel) =   3.17e-05 / 2.23e-07
+Final optimality error  (abs / rel) =   3.27e-05 / 3.59e-07
+# of iterations                     =        119 
+# of CG iterations                  =         44 
+# of function evaluations           =        128
+# of gradient evaluations           =        121
+# of Hessian evaluations            =        119
+Total program time (secs)           =       2.79812 (     2.798 CPU time)
+Time spent in evaluations (secs)    =       0.18683
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  65.06ms (504.35us)  64.79ms (502.28us)       129
+   nlp_gf_jg  |  67.41ms (557.14us)  67.30ms (556.21us)       121
+    nlp_grad  |   1.33ms (  1.33ms)   1.33ms (  1.33ms)         1
+  nlp_hess_l  |  52.75ms (443.31us)  52.71ms (442.90us)       119
+       total  |   3.04 s (  3.04 s)   3.08 s (  3.08 s)         1
+Round  6 True
+Full Cost Value:  0.08884825036144707
+Acceleration:  0.03150000610391645
+Momentum:  0.057348244257530594
+Total Program Time:  3.0368
+The  7 Round:
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.5   0.5   0.    0.  ]
+ [ 0.07 -0.07 -0.07  0.07]]
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5110 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (82 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5988)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4928)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     32087)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    4.266287e+02   1.181e+02
+      10    4.424956e+02   3.260e+01   4.165e+02   4.439e+02        0
+      20    3.703381e+02   8.171e-01   2.475e+00   1.605e+02        0
+      30    3.527557e+02   2.193e-02   1.966e-02   7.631e+00        0
+      40    3.524612e+02   3.112e-02   1.940e-02   4.262e+00        0
+      50    3.524050e+02   3.586e-02   1.793e-02   1.178e+01        0
+      60    3.523559e+02   2.596e-02   1.493e-02   1.159e+01        0
+      70    3.522944e+02   2.573e-02   1.004e-02   4.577e+01        0
+      80    3.522590e+02   2.469e-02   2.573e-02   7.362e+01        0
+      90    3.522360e+02   1.912e-02   2.298e-02   7.208e+01        0
+     100    3.522233e+02   1.199e-02   1.045e-02   1.503e+02        0
+     109    3.522210e+02   7.823e-05   4.693e-05   5.892e+01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   3.52220998675128e+02
+Final feasibility error (abs / rel) =   7.82e-05 / 6.63e-07
+Final optimality error  (abs / rel) =   4.69e-05 / 5.16e-07
+# of iterations                     =        109 
+# of CG iterations                  =         18 
+# of function evaluations           =        111
+# of gradient evaluations           =        111
+# of Hessian evaluations            =        109
+Total program time (secs)           =       2.47136 (     2.471 CPU time)
+Time spent in evaluations (secs)    =       0.16802
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  55.86ms (498.71us)  55.58ms (496.26us)       112
+   nlp_gf_jg  |  62.43ms (562.41us)  62.34ms (561.58us)       111
+    nlp_grad  |   1.27ms (  1.27ms)   1.27ms (  1.27ms)         1
+  nlp_hess_l  |  48.46ms (444.61us)  48.43ms (444.30us)       109
+       total  |   2.71 s (  2.71 s)   2.73 s (  2.73 s)         1
+Round  7 True
+Full Cost Value:  0.06452910623116688
+Acceleration:  0.03269394163077364
+Momentum:  0.03183516460039323
+Total Program Time:  2.7087
+The  8 Round:
+[[ 3.4   2.8   2.8   3.4 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [ 0.07  0.07 -0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5119 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (42 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5979)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4919)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31692)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    3.863529e+02   1.251e+02
+      10    3.967923e+02   5.388e+01   9.281e+01   3.308e+01        0
+      20    3.884310e+02   6.627e+00   2.884e+02   7.944e+01        0
+      30    3.214387e+02   4.722e-01   1.653e+00   9.920e+01        0
+      40    3.192167e+02   1.048e-02   4.296e-02   3.686e+01       18
+      50    3.189246e+02   4.573e-02   9.880e-02   8.735e+00        0
+      60    3.187956e+02   2.495e-02   1.375e-01   2.933e+01        0
+      70    3.186976e+02   1.767e-02   6.939e-02   3.432e+01        0
+      80    3.186431e+02   2.073e-02   8.256e-02   3.268e+01        0
+      90    3.185956e+02   1.951e-02   4.639e-02   1.251e+01        0
+     100    3.185642e+02   6.689e-03   1.099e-01   1.753e+01        0
+     110    3.185410e+02   1.126e-02   4.728e-02   2.866e+00        0
+     120    3.185308e+02   4.517e-04   7.068e-03   1.088e+00        0
+     130    3.185141e+02   1.496e-02   1.919e-02   1.448e+01        0
+     140    3.184859e+02   1.086e-02   2.621e-01   1.454e+02        0
+     150    3.184530e+02   6.381e-03   4.130e-01   1.542e+02        0
+     160    3.184451e+02   7.689e-06   4.058e-04   4.992e-01        0
+     170    3.184447e+02   1.509e-06   5.023e-03   2.519e+01        0
+     173    3.184447e+02   1.958e-08   1.744e-06   1.140e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   3.18444720943919e+02
+Final feasibility error (abs / rel) =   1.96e-08 / 1.57e-10
+Final optimality error  (abs / rel) =   1.74e-06 / 1.93e-08
+# of iterations                     =        173 
+# of CG iterations                  =         97 
+# of function evaluations           =        175
+# of gradient evaluations           =        175
+# of Hessian evaluations            =        173
+Total program time (secs)           =       4.44322 (     4.443 CPU time)
+Time spent in evaluations (secs)    =       0.26306
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  87.86ms (499.19us)  87.51ms (497.20us)       176
+   nlp_gf_jg  |  96.76ms (552.94us)  96.66ms (552.35us)       175
+    nlp_grad  |   1.29ms (  1.29ms)   1.29ms (  1.29ms)         1
+  nlp_hess_l  |  75.55ms (436.73us)  75.47ms (436.25us)       173
+       total  |   4.68 s (  4.68 s)   4.72 s (  4.72 s)         1
+Round  8 True
+Full Cost Value:  0.11010874611954717
+Acceleration:  0.07313289054536098
+Momentum:  0.036975855574186166
+Total Program Time:  4.6822
+The  9 Round:
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 348 variables and 5118 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (28 variables).
+Knitro fixing 348 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2269)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2269)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5980)
+    linear equalities:                       715 (        31)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4920)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     32063)
+Number of nonzeros in Hessian:             19410 (     15315)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    3.522424e+02   1.393e+02
+      10    3.422014e+02   6.836e+01   4.846e+01   2.581e+01        0
+      20    3.443698e+02   1.246e+01   1.443e+03   5.195e+01        0
+      30    2.888009e+02   1.449e-01   2.454e-01   8.214e+01        0
+      40    2.858549e+02   6.337e-02   1.955e-01   4.966e+01        0
+      50    2.857191e+02   3.029e-03   5.511e-03   2.755e+01        0
+      60    2.856911e+02   7.824e-03   2.817e-02   1.533e+02        0
+      70    2.856858e+02   3.453e-04   8.531e-04   4.637e+00        0
+      80    2.856818e+02   3.060e-04   8.944e-03   2.084e+01        0
+      90    2.856739e+02   2.462e-05   3.953e-04   1.964e+01       29
+     100    2.856704e+02   7.123e-05   5.224e-03   4.356e+01        0
+     110    2.856683e+02   1.555e-04   1.239e-02   1.857e+02        0
+     120    2.856679e+02   3.549e-05   4.362e-03   8.880e+00        0
+     125    2.856678e+02   1.143e-08   8.221e-07   7.345e-02        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   2.85667775429796e+02
+Final feasibility error (abs / rel) =   1.14e-08 / 8.20e-11
+Final optimality error  (abs / rel) =   8.22e-07 / 9.13e-09
+# of iterations                     =        125 
+# of CG iterations                  =        133 
+# of function evaluations           =        127
+# of gradient evaluations           =        127
+# of Hessian evaluations            =        125
+Total program time (secs)           =       3.42019 (     3.420 CPU time)
+Time spent in evaluations (secs)    =       0.18225
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  60.31ms (471.18us)  60.01ms (468.84us)       128
+   nlp_gf_jg  |  67.35ms (530.34us)  67.26ms (529.62us)       127
+    nlp_grad  |   1.30ms (  1.30ms)   1.30ms (  1.30ms)         1
+  nlp_hess_l  |  52.86ms (422.90us)  52.82ms (422.54us)       125
+       total  |   3.67 s (  3.67 s)   3.68 s (  3.68 s)         1
+Round  9 True
+Full Cost Value:  0.09798333528830351
+Acceleration:  0.05040815479429049
+Momentum:  0.04757518049401306
+Total Program Time:  3.6747
+The  10 Round:
+[[ 4.    3.4   3.4   4.  ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 349 variables and 5133 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (89 variables).
+Knitro fixing 349 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2268)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2268)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5965)
+    linear equalities:                       715 (        27)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4909)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     31404)
+Number of nonzeros in Hessian:             19410 (     15201)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    3.184714e+02   1.994e+02
+      10    3.897125e+02   6.763e+01   3.182e+02   2.779e+02        0
+      20    2.740297e+02   6.060e-01   2.141e+00   1.877e+02        0
+      30    2.578010e+02   2.540e-02   7.831e-02   2.502e+01        0
+      40    2.573376e+02   4.180e-02   2.235e-02   5.296e+00        0
+      50    2.572375e+02   1.480e-02   2.499e-01   8.172e+00        0
+      60    2.571598e+02   7.436e-03   2.874e-02   1.988e+00        0
+      70    2.571441e+02   1.746e-03   3.324e-02   2.816e+01        0
+      80    2.571293e+02   3.589e-04   1.426e-03   2.870e+00        0
+      90    2.571191e+02   1.519e-04   2.599e-02   4.462e+01        0
+     100    2.571135e+02   1.303e-04   3.848e-02   7.847e+01        0
+     110    2.571093e+02   3.138e-04   2.424e-02   9.822e+01        0
+     117    2.571079e+02   3.956e-06   7.652e-05   5.178e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   2.57107872931391e+02
+Final feasibility error (abs / rel) =   3.96e-06 / 1.98e-08
+Final optimality error  (abs / rel) =   7.65e-05 / 8.51e-07
+# of iterations                     =        117 
+# of CG iterations                  =          0 
+# of function evaluations           =        119
+# of gradient evaluations           =        119
+# of Hessian evaluations            =        117
+Total program time (secs)           =       2.13534 (     2.135 CPU time)
+Time spent in evaluations (secs)    =       0.17272
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  58.05ms (483.78us)  57.77ms (481.38us)       120
+   nlp_gf_jg  |  62.97ms (529.17us)  62.90ms (528.55us)       119
+    nlp_grad  |   1.23ms (  1.23ms)   1.23ms (  1.23ms)         1
+  nlp_hess_l  |  50.03ms (427.64us)  49.97ms (427.13us)       117
+       total  |   2.39 s (  2.39 s)   2.39 s (  2.39 s)         1
+Round  10 True
+Full Cost Value:  0.0883482784164131
+Acceleration:  0.0514752144420273
+Momentum:  0.036873063974385833
+Total Program Time:  2.39
+The  11 Round:
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.5   0.5   0.    0.  ]
+ [-0.07  0.07  0.07 -0.07]]
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 350 variables and 5205 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (96 variables).
+Knitro fixing 350 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2267)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2267)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5893)
+    linear equalities:                       715 (        23)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4841)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     30945)
+Number of nonzeros in Hessian:             19410 (     14917)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    2.856877e+02   1.026e+02
+      10    3.338186e+02   5.701e+01   3.418e+02   4.648e+02        0
+      20    3.315196e+02   3.214e-01   1.207e+02   2.469e+02        0
+      30    2.293521e+02   4.404e-01   1.411e+00   7.539e+00        0
+      40    2.264097e+02   8.049e-02   7.995e-02   3.625e+00        0
+      50    2.260234e+02   4.127e-03   3.265e-02   3.129e+01       11
+      60    2.259628e+02   4.695e-02   1.057e-02   2.122e+01        0
+      70    2.259438e+02   3.412e-02   1.535e-02   4.791e+00        0
+      80    2.259270e+02   2.347e-02   9.908e-03   8.692e+00        0
+      90    2.259163e+02   2.809e-02   8.234e-03   9.385e+00        0
+     100    2.259084e+02   3.752e-02   1.130e-02   1.862e+01        0
+     110    2.259011e+02   3.213e-02   2.547e-02   5.100e+01        0
+     120    2.258958e+02   2.897e-02   3.015e-02   1.675e+02        0
+     130    2.258925e+02   1.313e-02   1.321e-02   8.373e+01        0
+     140    2.258917e+02   1.709e-03   2.413e-04   4.746e+01        0
+     142    2.258917e+02   1.667e-05   1.319e-06   1.201e+01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   2.25891707130499e+02
+Final feasibility error (abs / rel) =   1.67e-05 / 1.62e-07
+Final optimality error  (abs / rel) =   1.32e-06 / 1.48e-08
+# of iterations                     =        142 
+# of CG iterations                  =         20 
+# of function evaluations           =        144
+# of gradient evaluations           =        144
+# of Hessian evaluations            =        142
+Total program time (secs)           =       2.91502 (     2.915 CPU time)
+Time spent in evaluations (secs)    =       0.20949
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  69.10ms (476.54us)  68.77ms (474.29us)       145
+   nlp_gf_jg  |  77.82ms (540.44us)  77.69ms (539.50us)       144
+    nlp_grad  |   1.34ms (  1.34ms)   1.34ms (  1.34ms)         1
+  nlp_hess_l  |  60.26ms (424.34us)  60.19ms (423.89us)       142
+       total  |   3.17 s (  3.17 s)   3.13 s (  3.13 s)         1
+Round  11 True
+Full Cost Value:  0.0557251413296583
+Acceleration:  0.032355359253714557
+Momentum:  0.023369782075943726
+Total Program Time:  3.1692
+The  12 Round:
+[[ 4.6   3.4   3.4   4.6 ]
+ [ 0.    0.   -0.5  -0.5 ]
+ [-0.07 -0.07  0.07  0.07]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 351 variables and 5325 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (89 variables).
+Knitro fixing 351 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2266)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2266)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5773)
+    linear equalities:                       715 (        19)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4725)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     29666)
+Number of nonzeros in Hessian:             19410 (     14633)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    2.571484e+02   1.447e+02
+      10    2.368439e+02   5.380e+00   1.393e+03   4.310e+01        0
+      20    1.991683e+02   7.003e-02   2.614e-01   2.187e+01        0
+      30    1.976999e+02   1.989e-03   2.832e-02   3.067e+00        0
+      40    1.975883e+02   8.226e-02   5.403e-02   3.359e+00        0
+      50    1.975030e+02   1.661e-02   5.342e-02   1.407e+01        0
+      60    1.974427e+02   2.826e-02   7.824e-02   3.453e+01        0
+      70    1.974243e+02   4.851e-04   6.677e-02   2.826e+01       55
+      80    1.974093e+02   2.417e-03   4.261e-03   1.760e+02        0
+      83    1.974085e+02   5.568e-07   4.699e-05   1.527e-01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   1.97408494027774e+02
+Final feasibility error (abs / rel) =   5.57e-07 / 3.85e-09
+Final optimality error  (abs / rel) =   4.70e-05 / 5.36e-07
+# of iterations                     =         83 
+# of CG iterations                  =         71 
+# of function evaluations           =         85
+# of gradient evaluations           =         85
+# of Hessian evaluations            =         83
+Total program time (secs)           =       2.08499 (     2.085 CPU time)
+Time spent in evaluations (secs)    =       0.12232
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  |  41.64ms (484.16us)  41.46ms (482.12us)        86
+   nlp_gf_jg  |  44.69ms (525.78us)  44.64ms (525.16us)        85
+    nlp_grad  |   1.31ms (  1.31ms)   1.31ms (  1.31ms)         1
+  nlp_hess_l  |  35.29ms (425.18us)  35.26ms (424.77us)        83
+       total  |   2.34 s (  2.34 s)   2.34 s (  2.34 s)         1
+Round  12 True
+Full Cost Value:  0.051643155120006716
+Acceleration:  0.02938354090399816
+Momentum:  0.022259614216008545
+Total Program Time:  2.3391
+The  13 Round:
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+[[12.   4.6  4.6 12. ]
+ [ 0.5  0.5 -0.5 -0.5]
+ [ 0.   0.   0.   0. ]]
+
+=======================================
+           Academic License
+       (NOT FOR COMMERCIAL USE)
+         Artelys Knitro 10.3.0
+=======================================
+
+Knitro presolve eliminated 352 variables and 5488 constraints.
+
+Knitro changing algorithm from AUTO to 1.
+Knitro changing bar_initpt from AUTO to 3.
+Knitro changing bar_murule from AUTO to 4.
+Knitro changing bar_penaltycons from AUTO to 1.
+Knitro changing bar_penaltyrule from AUTO to 2.
+Knitro changing bar_switchrule from AUTO to 2.
+Knitro changing linesearch from AUTO to 1.
+Knitro changing linsolver from AUTO to 5.
+Knitro shifted start point to satisfy presolved bounds (94 variables).
+Knitro fixing 352 variables eliminated from the presolve.
+
+Problem Characteristics                    ( Presolved)
+-----------------------
+Objective goal:  Minimize
+Number of variables:                        2617 (      2265)
+    bounded below only:                        0 (         0)
+    bounded above only:                        0 (         0)
+    bounded below and above:                2617 (      2265)
+    fixed:                                     0 (         0)
+    free:                                      0 (         0)
+Number of constraints:                     11090 (      5610)
+    linear equalities:                       715 (        15)
+    nonlinear equalities:                   1029 (      1029)
+    linear one-sided inequalities:          9336 (      4566)
+    nonlinear one-sided inequalities:          0 (         0)
+    linear two-sided inequalities:            10 (         0)
+    nonlinear two-sided inequalities:          0 (         0)
+Number of nonzeros in Jacobian:            52146 (     29353)
+Number of nonzeros in Hessian:             19410 (     14519)
+
+  Iter      Objective      FeasError   OptError    ||Step||    CGits 
+--------  --------------  ----------  ----------  ----------  -------
+       0    2.259174e+02   8.931e+01
+      10    3.031963e+02   3.305e+01   7.163e+02   2.972e+02        0
+      20    2.026955e+02   8.812e-02   8.410e-01   1.200e+02        0
+      30    1.741638e+02   1.005e-01   2.635e-01   1.083e+01        0
+      40    1.733374e+02   8.228e-04   7.558e-03   3.679e+00        0
+      50    1.732373e+02   3.071e-04   4.384e-02   1.090e+02        0
+      60    1.731582e+02   1.768e-01   3.363e-02   3.117e+01        0
+      70    1.730804e+02   9.729e-02   3.826e-02   1.180e+02        0
+      80    1.730435e+02   3.686e-03   4.654e-03   5.990e-01        0
+      90    1.730391e+02   3.129e-04   3.695e-03   1.690e+01        0
+     100    1.730357e+02   5.709e-05   1.415e-03   1.487e+01        0
+     110    1.730335e+02   8.159e-05   8.669e-04   5.394e+00        0
+     120    1.730322e+02   1.191e-04   1.489e-03   9.085e+00        0
+     130    1.730312e+02   5.641e-04   1.194e-03   1.859e+01        0
+     140    1.730304e+02   1.840e-03   2.504e-03   5.266e+00        0
+     150    1.730298e+02   9.521e-04   8.290e-04   1.006e+01        0
+     160    1.730294e+02   5.667e-04   5.042e-04   1.609e+01        0
+     170    1.730288e+02   7.731e-03   4.442e-03   7.964e+00        0
+     180    1.730280e+02   8.388e-03   1.157e-03   2.634e+00        0
+     190    1.730270e+02   2.718e-02   1.028e-02   1.998e+01        0
+     200    1.730261e+02   3.068e-02   1.139e-03   7.414e+00        0
+     210    1.730250e+02   6.054e-02   1.072e-03   5.824e+01        0
+     220    1.730240e+02   4.413e-02   4.293e-03   1.430e+02        0
+     230    1.730236e+02   1.443e-03   8.955e-05   4.110e+01        0
+     231    1.730236e+02   4.905e-06   1.304e-06   4.447e+01        0
+
+EXIT: Locally optimal solution found.
+
+Final Statistics
+----------------
+Final objective value               =   1.73023566045262e+02
+Final feasibility error (abs / rel) =   4.90e-06 / 5.49e-08
+Final optimality error  (abs / rel) =   1.30e-06 / 1.57e-08
+# of iterations                     =        231 
+# of CG iterations                  =          6 
+# of function evaluations           =        234
+# of gradient evaluations           =        233
+# of Hessian evaluations            =        231
+Total program time (secs)           =       4.33028 (     4.330 CPU time)
+Time spent in evaluations (secs)    =       0.33896
+
+===============================================================================
+
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+      nlp_fg  | 112.06ms (476.84us) 111.54ms (474.65us)       235
+   nlp_gf_jg  | 124.40ms (533.91us) 124.20ms (533.07us)       233
+    nlp_grad  |   1.32ms (  1.32ms)   1.32ms (  1.32ms)         1
+  nlp_hess_l  |  98.03ms (424.36us)  97.95ms (424.02us)       231
+       total  |   4.58 s (  4.58 s)   4.59 s (  4.59 s)         1
+Round  13 True
+Full Cost Value:  0.0415534805349689
+Acceleration:  0.023147834876044212
+Momentum:  0.018405645658924677
+Total Program Time:  4.5838
+Accumulated Full Cost is:  1.0805
+Accumulated Acc Cost is:  0.634
+Accumulated Momentum Cost is:  0.4465

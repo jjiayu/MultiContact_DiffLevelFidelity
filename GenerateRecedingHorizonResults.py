@@ -13,14 +13,14 @@ InitSeedType = sys.argv[2]
 
 ChosenSolver = sys.argv[3]
 
-ShowFigure =  'False'
+ShowFigure =  'True'
 
 NumofRound = 14
 
 MinNumLookAhead = 1
 MaxNumLookAhead = 12
 
-NumofTrials = 10
+NumofTrials = 1
 
 ResultFolder = TerrainName + '_' + ChosenSolver + '_' + InitSeedType
 
@@ -57,7 +57,7 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         output = stream.readlines()
         
         #write log into text
-        file_object = open(ResultFolder+'/'+str(NumLookAhead)+'LookAhaed_Trial'+str(Trial), 'a')
+        file_object = open(ResultFolder+'/'+str(NumLookAhead)+'LookAhead_Trial'+str(Trial), 'a')
         for logIdx in range(len(output)):
             file_object.write(output[logIdx])
         file_object.close()

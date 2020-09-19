@@ -39,7 +39,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #Friction Coefficient
     miu = 0.3
     #   Force Limits
-    F_bound = 300
+    F_bound = 400
     Fxlb = -F_bound
     Fxub = F_bound
     Fylb = -F_bound
@@ -47,8 +47,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     Fzlb = -F_bound
     Fzub = F_bound
     #   Angular Momentum Bounds
-    L_bound = 1.5
-    Ldot_bound = 1.5
+    L_bound = 5
+    Ldot_bound = 3.5
     Lub = L_bound
     Llb = -L_bound
     Ldotub = Ldot_bound
@@ -175,8 +175,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1.0]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1.0]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
     zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
@@ -1052,7 +1052,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     #TerrainTangentY = [0,1,0]
     miu = 0.3
     #   Force Limits
-    F_bound = 300
+    F_bound = 400
     Fxlb = -F_bound
     Fxub = F_bound
     Fylb = -F_bound
@@ -1060,8 +1060,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     Fzlb = -F_bound
     Fzub = F_bound
     #   Angular Momentum Bounds
-    L_bound = 1.5
-    Ldot_bound = 1.5
+    L_bound = 5
+    Ldot_bound = 3.5
     Lub = L_bound
     Llb = -L_bound
     Ldotub = Ldot_bound
@@ -1169,8 +1169,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1.0]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1.0]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
     zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
@@ -2675,7 +2675,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     #TerrainTangentY = [0,1,0]
     miu = 0.3
     #   Force Limits
-    F_bound = 300
+    F_bound = 400
     Fxlb = -F_bound*4
     Fxub = F_bound*4
     Fylb = -F_bound*4
@@ -2765,8 +2765,8 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     xdot_ub = np.array([[1]*(xdot.shape[0]*xdot.shape[1])])
     #   CoM Velocity y-axis
     ydot = ca.SX.sym('ydot',N_K)
-    ydot_lb = np.array([[-1]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
-    ydot_ub = np.array([[1]*(ydot.shape[0]*ydot.shape[1])])
+    ydot_lb = np.array([[-1.0]*(ydot.shape[0]*ydot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    ydot_ub = np.array([[1.0]*(ydot.shape[0]*ydot.shape[1])])
     #   CoM Velocity z-axis
     zdot = ca.SX.sym('zdot',N_K)
     zdot_lb = np.array([[-1]*(zdot.shape[0]*zdot.shape[1])]) #particular way of generating lists in python, [value]*number of elements
@@ -2923,7 +2923,6 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     h_initialdouble = 0.2
     h_doublesupport = 0.2
     h_swing = 0.5
-
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
         #Decide Number of Knots

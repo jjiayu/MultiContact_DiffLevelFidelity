@@ -1,7 +1,0 @@
-python3 GenerateRecedingHorizonResults.py flat previous NLP
-
-python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start previous NLP
-
-python3 GenerateRecedingHorizonResults.py up_and_down_left_first previous NLP
-
-python3 GenerateRecedingHorizonResults.py darpa_like_left_first previous NLP
