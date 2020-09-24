@@ -78,8 +78,8 @@ PR_init_Norm = np.array([0,0,1])
 #               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 1
-SwingRightFirst = 0
+SwingLeftFirst = 0
+SwingRightFirst = 1
 
 #   Number of Rounds
 #Nrounds = 15

@@ -3239,7 +3239,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
                     glb.append(np.full((len(k_CoM_Left),),-np.inf))
                     gub.append(np.full((len(k_CoM_Left),),0))
 
-                    g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Right@(CoM_k-P_k_current)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
+                    g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Right@(CoM_k-P_k_next)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
                     glb.append(np.full((len(k_CoM_Right),),-np.inf))
                     gub.append(np.full((len(k_CoM_Right),),0))
 
