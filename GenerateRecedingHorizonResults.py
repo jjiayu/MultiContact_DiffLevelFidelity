@@ -18,9 +18,9 @@ ShowFigure =  'False'
 NumofRound = 14
 
 MinNumLookAhead = 1
-MaxNumLookAhead = 12
+MaxNumLookAhead = 10
 
-NumofTrials = 5
+NumofTrials = 10
 
 ResultFolder = TerrainName + '_' + ChosenSolver + '_' + InitSeedType
 

@@ -78,8 +78,8 @@ PR_init_Norm = np.array([0,0,1])
 #               [Patch2,Patch2]]
 
 #   Define the Swing foot of the First Step
-SwingLeftFirst = 0
-SwingRightFirst = 1
+SwingLeftFirst = 1
+SwingRightFirst = 0
 
 #   Number of Rounds
 #Nrounds = 15
@@ -447,6 +447,8 @@ for roundNum in range(Nrounds):
     #for two levels
     if ShowFigure == "True":
         PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = True, PlotNLP = True, PlotBothLevel = True, AllSurfaces = AllPatches, RoundNum = roundNum)
+    elif ShowFigure == "False":
+        PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = True, PlotNLP = False, PlotBothLevel = False, AllSurfaces = AllPatches, RoundNum = roundNum)
     #===========================
 
     #plot acceleration curves
@@ -460,6 +462,7 @@ for roundNum in range(Nrounds):
 #plot full result
 if ShowFigure == "True":
     Plot_RHP_result(NumRounds = StopRound, SwingLeftFirst = SwingLeftFirst, SwingRightFirst = SwingRightFirst, x_fullres = x_fullres, y_fullres = y_fullres, z_fullres = z_fullres, PL_init_fullres = PL_init_fullres, PR_init_fullres = PR_init_fullres, Px_fullres = Px_fullres, Py_fullres = Py_fullres, Pz_fullres = Pz_fullres, AllSurfaces = AllPatches)
+
 #===========================
 #Calculate Accumulated Cost
 AccumFullCost = round(np.sum(Fullcosts),4)

@@ -1952,7 +1952,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                     glb.append(np.full((len(k_CoM_Left),),-np.inf))
                     gub.append(np.full((len(k_CoM_Left),),0))
 
-                    g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Right@(CoM_k-P_k_current)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
+                    g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Right@(CoM_k-P_k_next)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
                     glb.append(np.full((len(k_CoM_Right),),-np.inf))
                     gub.append(np.full((len(k_CoM_Right),),0))
 
@@ -2920,8 +2920,8 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         #glb.append(np.array([0]))    
         #gub.append(np.array([0]))
 
-    h_initialdouble = 0.2
-    h_doublesupport = 0.2
+    h_initialdouble = 0.15
+    h_doublesupport = 0.15
     h_swing = 0.5
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
