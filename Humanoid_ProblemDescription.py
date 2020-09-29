@@ -2920,8 +2920,8 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         #glb.append(np.array([0]))    
         #gub.append(np.array([0]))
 
-    h_initialdouble = 0.15
-    h_doublesupport = 0.15
+    h_initialdouble = 0.2
+    h_doublesupport = 0.2
     h_swing = 0.5
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):

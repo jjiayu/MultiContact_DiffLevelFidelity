@@ -1,7 +1,7 @@
-python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_right_start previous NLP
+python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start previous NLP
 
-python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_right_start previous CoM
+python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start previous CoM
 
-python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_right_start random NLP
+python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start random NLP
 
-python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_right_start random CoM
+python3 GenerateRecedingHorizonResults.py antfarm_firstLevel_left_start random CoM
