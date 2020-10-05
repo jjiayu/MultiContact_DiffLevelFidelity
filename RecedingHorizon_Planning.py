@@ -88,7 +88,7 @@ Nrounds = len(ContactSeqs)
 #   Initial Condition of the Robot
 x_init = 0.6
 y_init = 0.0
-z_init = 0.55
+z_init = 0.6
 
 xdot_init = 0.0
 ydot_init = 0
@@ -103,16 +103,16 @@ Ldoty_init = 0
 Ldotz_init = 0
 
 PLx_init = 0.6
-PLy_init = 0.1
+PLy_init = 0.15
 PLz_init = 0
 
 PRx_init = 0.6
-PRy_init = -0.1
+PRy_init = -0.15
 PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.55
+z_end = 0.6
 
 xdot_end = 0
 ydot_end = 0
@@ -134,6 +134,8 @@ Pz_fullres = []
 Fullcosts = []
 Acc_cost = []
 Momentum_Cost = []
+TerminalCost = []
+CasadiParameters = []
 
 #Full result container
 AllRoundTrajectory = []
@@ -426,8 +428,10 @@ for roundNum in range(Nrounds):
         Fullcosts.append(firstLevelFullCost)
         Acc_cost.append(firstLevelAccCost)
         Momentum_Cost.append(firstLevelMomentumCost)
+        TerminalCost.append(10*(x_fullres[-1][-1]-x_end)**2 + 10*(y_fullres[-1][-1]-y_end)**2 + 10*(z_fullres[-1][-1]-z_end)**2)
         #Save the trajectory of current round
         AllRoundTrajectory.append(x_opt)
+        CasadiParameters.append(ParaList)
 
         #Compute timings
         #ProgramTime = TotalRunTime - solver.stats()["t_proc_nlp_hess_l"] - solver.stats()["t_proc_nlp_grad"] - solver.stats()["t_proc_nlp_gf_jg"] - solver.stats()["t_proc_nlp_fg"]
@@ -451,11 +455,7 @@ for roundNum in range(Nrounds):
         PlotSingleOptimiation_and_PrintResult(x_opt = x_opt, var_index=var_index, PL_init = np.array([PLx_init,PLy_init,PLz_init]), PR_init = np.array([PRx_init,PRy_init,PRz_init]), LeftSwing = LeftSwingFlag, RightSwing = RightSwingFlag, PrintFirstLevel=True, PrintSecondLevel = True, PlotNLP = False, PlotBothLevel = False, AllSurfaces = AllPatches, RoundNum = roundNum)
     #===========================
 
-    #plot acceleration curves
-    #PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "x")
-    #PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "y")
-    #PlotFirstLevelAcceleration(x_opt = x_opt, var_index=var_index, plotAxis = "z")
-    #for NLP only
+
 
 #===========================
 #NOTE: Remove comment to enbale Plot function
@@ -464,18 +464,30 @@ if ShowFigure == "True":
     Plot_RHP_result(NumRounds = StopRound, SwingLeftFirst = SwingLeftFirst, SwingRightFirst = SwingRightFirst, x_fullres = x_fullres, y_fullres = y_fullres, z_fullres = z_fullres, PL_init_fullres = PL_init_fullres, PR_init_fullres = PR_init_fullres, Px_fullres = Px_fullres, Py_fullres = Py_fullres, Pz_fullres = Pz_fullres, AllSurfaces = AllPatches)
 
 #===========================
+#Compute Total Cost
+TotalCost = TerminalCost[-1]+np.sum(Fullcosts)
 #Calculate Accumulated Cost
 AccumFullCost = round(np.sum(Fullcosts),4)
 AccumAccCost = round(np.sum(Acc_cost),4)
 AccumMomentumCost = round(np.sum(Momentum_Cost),4)
+Terminal_X_pos = round(x_fullres[-1][-1],4)
+Terminal_Y_pos = round(y_fullres[-1][-1],4)
+Terminal_Z_pos = round(z_fullres[-1][-1],4)
 print("Accumulated Full Cost is: ", AccumFullCost)
 print("Accumulated Acc Cost is: ", AccumAccCost)
 print("Accumulated Momentum Cost is: ", AccumMomentumCost)
+print("Total Cost is: ",round(TotalCost,4))
+print("Terminal Cost is: ", round(TerminalCost[-1],4))
+print("Terminal X position is: ", Terminal_X_pos)
+print("Terminal Y position is: ", Terminal_Y_pos)
+print("Terminal Z position is: ", Terminal_Z_pos)
 
 #Dump data into pickled file
 DumpedResult = {"TerrainModel": AllPatches,
                 "VarIdx_of_All_Levels": var_index,
                 "Trajectory_of_All_Rounds":AllRoundTrajectory,
+                "TotalCost":TotalCost,
+                "TerminalCost":TerminalCost,
                 "Accmulated_Full_Cost":AccumFullCost,
                 "Accumulated_Acc_Cost":AccumAccCost,
                 "Accumulated_Momentum_Cost":AccumMomentumCost,
@@ -489,6 +501,10 @@ DumpedResult = {"TerrainModel": AllPatches,
                 "PR_init_fullres":PR_init_fullres,
                 "Px_fullres":Px_fullres,
                 "Py_fullres":Py_fullres,
-                "Pz_fullres":Pz_fullres
+                "Pz_fullres":Pz_fullres,
+                "Terminal_X_pos":Terminal_X_pos,
+                "Terminal_Y_pos":Terminal_Y_pos,
+                "Terminal_Z_pos":Terminal_Z_pos,
+                "CasadiParameters":CasadiParameters
 }
 pickle.dump(DumpedResult, open(ResultSavingFolder+'/'+str(NumofLookAhead)+'LookAhead_Trial'+str(TrialNum)+'.p', "wb"))  # save it into a file named save.p

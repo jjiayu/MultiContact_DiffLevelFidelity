@@ -336,6 +336,33 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
+        #--------------------------------------
+        #Added patches
+        #Patch12 = np.array([[4.6, 0, -HightVariation], [4, 0, -HightVariation], [4, -0.5, HightVariation], [4.6, -0.5, HightVariation]])
+        #Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
+        #AllPatches.append(Patch12)
+        #AllPatchesName.append("Patch12")
+        #AllTerrainTangentsX.append(Patch12_TangentX)
+        #AllTerrainTangentsY.append(Patch12_TangentY)
+        #AllTerrainNorm.append(Patch12_Norm)
+
+        #Patch13 = np.array([[4.6, 0.5, HightVariation], [4, 0.5, HightVariation], [4, 0, -HightVariation], [4.6, 0, -HightVariation]])
+        #Patch13_TangentX, Patch13_TangentY, Patch13_Norm = getTerrainTagents_and_Norm(Patch13)
+        #AllPatches.append(Patch13)
+        #AllPatchesName.append("Patch13")
+        #AllTerrainTangentsY.append(Patch13_TangentY)
+        #AllTerrainNorm.append(Patch13_Norm)
+
+        #Patch14 = np.array([[12.0, 0.5, 0.], [4.6, 0.5, 0.], [4.6, -0.5, 0.], [12.0, -0.5, 0.]])
+        #Patch14_TangentX, Patch14_TangentY, Patch14_Norm = getTerrainTagents_and_Norm(Patch14)
+        #AllPatches.append(Patch14)
+        #AllPatchesName.append("Patch14")
+        #AllTerrainTangentsX.append(Patch14_TangentX)
+        #AllTerrainTangentsY.append(Patch14_TangentY)
+        #AllTerrainNorm.append(Patch14_Norm)
+
+        #--------------------------------------
+
         Patch12 = np.array([[12.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [12.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
@@ -353,7 +380,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY = []
         AllTerrainNorm = []
 
-        HightVariation =0.08
+        HightVariation =0.09
 
         Patch1 = np.array([[1, 0.5, 0.], [-1, 0.5, 0.], [-1, -0.5, 0.], [1, -0.5, 0.]])
         Patch1_TangentX, Patch1_TangentY, Patch1_Norm = getTerrainTagents_and_Norm(Patch1)
@@ -567,7 +594,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY = []
         AllTerrainNorm = []
 
-        HightVariation =0.07
+        HightVariation =0.08
         HorizontanIncrease = 0.6
 
         Patch1 = np.array([[1, 0.5, 0.], [-1, 0.5, 0.], [-1, -0.5, 0.], [1, -0.5, 0.]])
@@ -675,7 +702,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY = []
         AllTerrainNorm = []
 
-        HightVariation =0.07
+        HightVariation =0.08
         HorizontanIncrease = 0.6
 
         Patch1 = np.array([[1, 0.5, 0.], [-1, 0.5, 0.], [-1, -0.5, 0.], [1, -0.5, 0.]])

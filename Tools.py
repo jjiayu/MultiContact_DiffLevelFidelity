@@ -184,7 +184,7 @@ def GetComputationTimeFromFile(filename = None):
 
     return ProgramTime, TotalTime
 
-def GetStatsFromOutputStings(output_log = None):
+def GetStatsFromOutputStrings(output_log = None):
     
     ProgramTime = []
     TotalTime = []
@@ -206,6 +206,21 @@ def GetStatsFromOutputStings(output_log = None):
 
         if "Accumulated Momentum Cost is:" in line:
             MomentCost = float(line[31:37])
+    
+        if "Total Cost is:" in line:
+            TotalCost = float(line[16:])
+        
+        if "Terminal Cost is:" in line:
+            TerminalCost = float(line[19:])
+
+        if "Terminal X position is:" in line:
+            Terminal_X_pos = float(line[25:])
+
+        if "Terminal Y position is:" in line:
+            Terminal_Y_pos = float(line[25:])
+
+        if "Terminal Z position is:" in line:
+            Terminal_Z_pos = float(line[25:])
 
     print("Program Time:")
     print(ProgramTime)
@@ -219,4 +234,14 @@ def GetStatsFromOutputStings(output_log = None):
 
     print("Moment Cost: ", MomentCost)
 
-    return ProgramTime, TotalTime, FullCost, AccCost, MomentCost
+    print("Total Cost: ", TotalCost)
+
+    print("Terminal Cost: ",TerminalCost)
+
+    print("Terminal X position: ", Terminal_X_pos)
+
+    print("Terminal Y position: ", Terminal_Y_pos)
+
+    print("Terminal Z position: ", Terminal_Z_pos)
+
+    return ProgramTime, TotalTime, FullCost, AccCost, MomentCost, TotalCost, TerminalCost, Terminal_X_pos, Terminal_Y_pos, Terminal_Z_pos

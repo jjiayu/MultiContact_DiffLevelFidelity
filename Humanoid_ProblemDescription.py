@@ -53,6 +53,11 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     Llb = -L_bound
     Ldotub = Ldot_bound
     Ldotlb = -Ldot_bound
+
+    #Minimum y-axis foot location
+    py_lower_limit = 0.11
+    #Lowest z
+    z_lowest = 0.55
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -165,7 +170,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[[-5]]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_lb = np.array([[[z_lowest]]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
     z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #z_lb = np.array([[0.55]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
     #z_ub = np.array([[0.65]*(z.shape[0]*z.shape[1])])
@@ -850,6 +855,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #No Angular momentum
                 #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #With Angular momentum rate
+                #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
 
     #Relative Foot Constraints
     #   For init phase
@@ -922,6 +929,17 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     glb.append(np.array([0]))
     gub.append(np.array([0]))
 
+
+    #Approximate Kinematics Contraint to avoid footstep over-crossing from y=0
+    #if Left swing the first, then the landing foot is the left
+    g.append(ca.if_else(ParaLeftSwingFlag,p_next[1],np.array([1])))
+    glb.append(np.array([py_lower_limit]))
+    gub.append(np.array([np.inf]))
+
+    #if Right swing the first, then the landing foot is the Right
+    g.append(ca.if_else(ParaRightSwingFlag,p_next[1],np.array([-1])))
+    glb.append(np.array([-np.inf]))
+    gub.append(np.array([-py_lower_limit]))
 
     #Switching Time Constraint
     #NOTE: For Unconservative First Level, The range of double support is 0.1 to 0.3, The range of swing is 0.3 to 0.9
@@ -1066,6 +1084,10 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     Llb = -L_bound
     Ldotub = Ldot_bound
     Ldotlb = -Ldot_bound
+    #Minimum y-axis foot location
+    py_lower_limit = 0.11
+    #Lowest Z
+    z_lowest = 0.55
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -1161,7 +1183,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[-5]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_lb = np.array([[z_lowest]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
     z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)
@@ -2201,6 +2223,37 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
         #glb.append(np.array([0]))
         #gub.append(np.array([0]))
 
+    #Approximate Kinematics Constraint --- Disallow over-crossing of footsteps from y =0
+
+    for step_cnt in range(Nsteps):
+        P_k_next = ca.vertcat(px[step_cnt],py[step_cnt],pz[step_cnt])
+
+        if step_cnt%2 == 0: #even number steps
+            #If First Level Swing the Left, then the second level Even Number Phases (the first Phase) Swing the Right -> Left -> Right
+            #Left foot in contact for p_current, right foot is going to land as p_next
+            g.append(ca.if_else(ParaLeftSwingFlag,P_k_next[1],np.array([-1])))
+            glb.append(np.array([-np.inf]))
+            gub.append(np.array([-py_lower_limit]))
+
+            #If First Levvel Swing the Right, then the second level Even Number Phases (the first phase) Swing the Left -> Right -> Left
+            #Right foot in contact for p_current, left foot is going to land at p_next
+            g.append(ca.if_else(ParaRightSwingFlag,P_k_next[1],np.array([1])))
+            glb.append(np.array([py_lower_limit]))
+            gub.append(np.array([np.inf]))
+
+        elif step_cnt%2 == 1: #odd number steps
+            #If the first level swings the Left, then the second level for Odd Number Phases (the second phase) swings left -> Right -> Left
+            #Right foot in contact for p_current, left foot is going to land at p_next
+            g.append(ca.if_else(ParaLeftSwingFlag,P_k_next[1],np.array([1])))
+            glb.append(np.array([py_lower_limit]))
+            gub.append(np.array([np.inf]))
+
+            #If the first level swings the Right, then the second level for Odd Number Phases (the second phase) swings Right -> Left -> Right
+            #Left foot in contact for p_current, right foot is going to land as p_next
+            g.append(ca.if_else(ParaRightSwingFlag,P_k_next[1],np.array([-1])))
+            glb.append(np.array([-np.inf]))
+            gub.append(np.array([-py_lower_limit]))
+
     #Switching Time Constraint
     for phase_cnt in range(Nphase):
         if GaitPattern[phase_cnt] == 'InitialDouble':
@@ -2682,6 +2735,10 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     Fyub = F_bound*4
     Fzlb = -F_bound*4
     Fzub = F_bound*4
+    #Minimum y-axis foot location
+    py_lower_limit = 0.11
+    #Lowest Z
+    z_lowest = 0.55
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     kinematicConstraints = genKinematicConstraints(left_foot_constraints, right_foot_constraints)
@@ -2757,7 +2814,7 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
     y_ub = np.array([[1]*(y.shape[0]*y.shape[1])])
     #   CoM Position z-axis
     z = ca.SX.sym('z',N_K)
-    z_lb = np.array([[-5]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
+    z_lb = np.array([[z_lowest]*(z.shape[0]*z.shape[1])]) #particular way of generating lists in python, [value]*number of elements
     z_ub = np.array([[5]*(z.shape[0]*z.shape[1])])
     #   CoM Velocity x-axis
     xdot = ca.SX.sym('xdot',N_K)#0.75 old
@@ -3421,32 +3478,36 @@ def CoM_Dynamics(m = 95, Nsteps = 1, StandAlong = True, StaticStop = False, Para
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
+    #Approximate Kinematics Constraint --- Disallow over-crossing of footsteps from y =0
 
-    ##Foot Step Constraint
-    #for PatchNum in range(Nsteps):
-    #    #Get Footstep Vector
-    #    P_vector = ca.vertcat(px[PatchNum],py[PatchNum],pz[PatchNum])
+    for step_cnt in range(Nsteps):
+        P_k_next = ca.vertcat(px[step_cnt],py[step_cnt],pz[step_cnt])
 
-    #    #Get Half Space Representation
-    #    SurfParaTemp = SurfParas[20+PatchNum*20:19+(PatchNum+1)*20+1]
-    #    SurfK = SurfParaTemp[0:11+1]
-    #    SurfK = ca.reshape(SurfK,3,4)
-    #    SurfK = SurfK.T #NOTE: This process is due to casadi naming convention to have first row to be x1,x2,x3
-    #    SurfE = SurfParaTemp[11+1:11+3+1]
-    #    Surfk = SurfParaTemp[14+1:14+4+1]
-    #    Surfe = SurfParaTemp[-1]
-    #
-    #    #FootStep Constraint
-    #    #Inequality
-    #    g.append(SurfK@P_vector - Surfk)
-    #    glb.append(np.full((4,),-np.inf))
-    #    gub.append(np.full((4,),0))
-    #    #print(FirstSurfK@p_next - FirstSurfk)
-    #
-    #    #Equality
-    #    g.append(SurfE.T@P_vector - Surfe)
-    #    glb.append(np.array([0]))
-    #    gub.append(np.array([0]))
+        if step_cnt%2 == 0: #even number steps
+            #If First Level Swing the Left, then the second level Even Number Phases (the first Phase) Swing the Right -> Left -> Right
+            #Left foot in contact for p_current, right foot is going to land as p_next
+            g.append(ca.if_else(ParaLeftSwingFlag,P_k_next[1],np.array([-1])))
+            glb.append(np.array([-np.inf]))
+            gub.append(np.array([-py_lower_limit]))
+
+            #If First Levvel Swing the Right, then the second level Even Number Phases (the first phase) Swing the Left -> Right -> Left
+            #Right foot in contact for p_current, left foot is going to land at p_next
+            g.append(ca.if_else(ParaRightSwingFlag,P_k_next[1],np.array([1])))
+            glb.append(np.array([py_lower_limit]))
+            gub.append(np.array([np.inf]))
+
+        elif step_cnt%2 == 1: #odd number steps
+            #If the first level swings the Left, then the second level for Odd Number Phases (the second phase) swings left -> Right -> Left
+            #Right foot in contact for p_current, left foot is going to land at p_next
+            g.append(ca.if_else(ParaLeftSwingFlag,P_k_next[1],np.array([1])))
+            glb.append(np.array([py_lower_limit]))
+            gub.append(np.array([np.inf]))
+
+            #If the first level swings the Right, then the second level for Odd Number Phases (the second phase) swings Right -> Left -> Right
+            #Left foot in contact for p_current, right foot is going to land as p_next
+            g.append(ca.if_else(ParaRightSwingFlag,P_k_next[1],np.array([-1])))
+            glb.append(np.array([-np.inf]))
+            gub.append(np.array([-py_lower_limit]))
 
     #Switching Time Constraint
     for phase_cnt in range(Nphase):

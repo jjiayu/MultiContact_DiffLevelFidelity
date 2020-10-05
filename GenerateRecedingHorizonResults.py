@@ -20,7 +20,7 @@ NumofRound = 14
 MinNumLookAhead = 1
 MaxNumLookAhead = 10
 
-NumofTrials = 10
+NumofTrials = 1
 
 ResultFolder = TerrainName + '_' + ChosenSolver + '_' + InitSeedType
 
@@ -63,7 +63,7 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         file_object.close()
 
         #print(output)
-        ProgramTime, TotalTime, FullCost, AccCost, MomentCost = GetStatsFromOutputStings(output_log = output)
+        ProgramTime, TotalTime, FullCost, AccCost, MomentCost, TotalCost, TerminalCost, End_X_pos, End_Y_pos, End_Z_pos = GetStatsFromOutputStrings(output_log = output)
 
         #Write Program Time and Total Time
         #write heads
@@ -80,7 +80,7 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
             row = row + 1
 
         #append empty till the max round number
-        if len(ProgramTime) < NumofRound - 1:
+        if len(ProgramTime)-1 < NumofRound - 1:
             for emptyIdx in range(NumofRound - len(ProgramTime)):
                 #print(emptyIdx+len(ProgramTime))
                 worksheet.write(row, col, 'Round ' + str(emptyIdx+len(ProgramTime)))
@@ -111,6 +111,21 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         row = row + 1
         worksheet.write(row, col, 'Momentum Cost')
         worksheet.write(row, col+1, MomentCost)
+        row = row + 1
+        worksheet.write(row, col, 'Total Cost')
+        worksheet.write(row, col+1, TotalCost)
+        row = row + 1
+        worksheet.write(row, col, 'Terminal Cost')
+        worksheet.write(row, col+1, TerminalCost)
+        row = row + 1
+        worksheet.write(row, col, 'Terminal X')
+        worksheet.write(row, col+1, End_X_pos)
+        row = row + 1
+        worksheet.write(row, col, 'Terminal Y')
+        worksheet.write(row, col+1, End_Y_pos)
+        row = row + 1
+        worksheet.write(row, col, 'Terminal Z')
+        worksheet.write(row, col+1, End_Z_pos)
         row = row + 1
 
 workbook.close()
