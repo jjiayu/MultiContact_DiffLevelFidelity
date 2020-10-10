@@ -87,8 +87,8 @@ Nrounds = len(ContactSeqs)
 
 #   Initial Condition of the Robot
 x_init = 0.6
-y_init = 0.0
-z_init = 0.6
+y_init = 0
+z_init = 0.75
 
 xdot_init = 0.0
 ydot_init = 0
@@ -103,16 +103,16 @@ Ldoty_init = 0
 Ldotz_init = 0
 
 PLx_init = 0.6
-PLy_init = 0.15
+PLy_init = 0.1
 PLz_init = 0
 
 PRx_init = 0.6
-PRy_init = -0.15
+PRy_init = -0.1
 PRz_init = 0
 
 x_end = 10
 y_end = 0
-z_end = 0.6
+z_end = 0.75
 
 xdot_end = 0
 ydot_end = 0

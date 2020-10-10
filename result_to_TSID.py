@@ -1,9 +1,14 @@
 import pickle
 import numpy as np
 
+import matplotlib.pyplot as plt #Matplotlib
+from mpl_toolkits.mplot3d import Axes3D
+
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_NLP_previous/5LookAhead_Trial0.p'
-#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/2LookAhead_Trial0.p'
-filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_NLP_previous_no_Lcost/9LookAhead_Trial0.p'
+#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous_regu_GoodSet_with567/5LookAhead_Trial0.p'
+filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_NLP_previous/4LookAhead_Trial0.p'
+
+#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/flat_CoM_previous/8LookAhead_Trial0.p'
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)
@@ -12,9 +17,16 @@ with open(filename, 'rb') as f:
 TISD_Trajectories = []
 
 Level1_VarIndex = data["VarIdx_of_All_Levels"]["Level1_Var_Index"]
+Level2_VarIndex = data["VarIdx_of_All_Levels"]["Level2_Var_Index"]
 
 Trajectories = data["Trajectory_of_All_Rounds"]
 CasadiParameters = data["CasadiParameters"]
+
+all_res = []
+
+timeseries = []
+
+time_offset = 0
 
 for roundIdx in range(len(Trajectories)):
 
@@ -38,11 +50,23 @@ for roundIdx in range(len(Trajectories)):
     Ldoty_traj = traj[Level1_VarIndex["Ldoty"][0]:Level1_VarIndex["Ldoty"][1]+1]
     Ldotz_traj = traj[Level1_VarIndex["Ldotz"][0]:Level1_VarIndex["Ldotz"][1]+1]
 
+    #clearflat = False
+    #Clear L Ldot
+    #if clearflat == True:
+    #    Lx_traj = np.full((len(Lx_traj),),0)
+    #    Ly_traj = np.full((len(Ly_traj),),0)
+    #    Lz_traj = np.full((len(Lz_traj),),0)
+
+    #    Ldotx_traj = np.full((len(Ldotx_traj),),0)
+    #    Ldoty_traj = np.full((len(Ldoty_traj),),0)
+    #    Ldotz_traj = np.full((len(Ldotz_traj),),0)
+
     px_res = traj[Level1_VarIndex["px"][0]:Level1_VarIndex["px"][1]+1]
     py_res = traj[Level1_VarIndex["py"][0]:Level1_VarIndex["py"][1]+1]
     pz_res = traj[Level1_VarIndex["pz"][0]:Level1_VarIndex["pz"][1]+1]
 
     Ts_res = traj[Level1_VarIndex["Ts"][0]:Level1_VarIndex["Ts"][1]+1]
+    #Ts_level2_res = traj[Level2_VarIndex["Ts"][0]:Level2_VarIndex["Ts"][1]+1]
 
     PLx_init = casadiParams[14]
     PLy_init = casadiParams[15]
@@ -59,6 +83,8 @@ for roundIdx in range(len(Trajectories)):
     Phase1_TimeSeries = np.linspace(0,Ts_res[0],8)
     Phase2_TimeSeries = np.linspace(Ts_res[0],Ts_res[1],8)
     Phase3_TimeSeries = np.linspace(Ts_res[1],Ts_res[2],8)
+    timeline = np.concatenate((time_offset+Phase1_TimeSeries,time_offset+Phase2_TimeSeries[1:],time_offset+Phase3_TimeSeries[1:]),axis=None)
+    time_offset = time_offset+Phase3_TimeSeries[-1]
 
     Phase1_x = x_traj[0:8]
     Phase2_x = x_traj[7:15]
@@ -164,7 +190,27 @@ for roundIdx in range(len(Trajectories)):
 
     TISD_Trajectories.append(TSIDTrajectory)
 
-    print("z_traj",z_traj)
+    #print(Ts_level2_res)
+    #print("y motion:", np.max(y_traj) - np.min(y_traj))
+    collected_traj = x_traj
+
+    if roundIdx == 0:
+        all_res.append(collected_traj)
+        timeseries.append(timeline)
+    else:
+        all_res.append(collected_traj[1:])
+        timeseries.append(timeline[1:])
+
+    #print("z_traj",z_traj)
+
+all_res = np.concatenate(all_res)
+timeseries = np.concatenate(timeseries)
+
+plt.plot(timeseries,all_res)
+
+plt.show()
+
+
 
 #Dump data into pickled file
 DumpedResult = {"TSID_Trajectories": TISD_Trajectories,

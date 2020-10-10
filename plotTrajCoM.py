@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_NLP_previous/5LookAhead_Trial0.p'
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/2LookAhead_Trial0.p'
-filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_CoM_previous/2LookAhead_Trial0.p'
+filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous_6Good/6LookAhead_Trial0.p'
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)
@@ -170,7 +170,7 @@ for roundIdx in range(len(Trajectories)):
 
     TimeSeries = np.concatenate((Phase1_TimeSeries, Phase2_TimeSeries[1:], Phase3_TimeSeries[1:]),axis=None) 
 
-    plt.plot(TimeSeries,Lx_traj)
+    plt.plot(TimeSeries,ydot_traj)
 
     plt.show()
 
