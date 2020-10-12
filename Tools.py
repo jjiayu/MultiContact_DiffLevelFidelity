@@ -6,6 +6,7 @@ def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
     cost_val=0
     cost_acc = 0
     cost_momentum = 0
+    cost_momentum_rate = 0
 
     #Number of NLP Phases
     NLPphase=3
@@ -35,6 +36,14 @@ def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
     Ly_res = np.array(Ly_res)
     Lz_res = x_opt[var_index["Lz"][0]:var_index["Lz"][1]+1]
     Lz_res = np.array(Lz_res)
+
+    Ldotx_res = x_opt[var_index["Ldotx"][0]:var_index["Ldotx"][1]+1]
+    Ldotx_res = np.array(Ldotx_res)
+    Ldoty_res = x_opt[var_index["Ldoty"][0]:var_index["Ldoty"][1]+1]
+    Ldoty_res = np.array(Ldoty_res)
+    Ldotz_res = x_opt[var_index["Ldotz"][0]:var_index["Ldotz"][1]+1]
+    Ldotz_res = np.array(Ldotz_res)
+
     FL1x_res = x_opt[var_index["FL1x"][0]:var_index["FL1x"][1]+1]
     FL1x_res = np.array(FL1x_res)
     FL1y_res = x_opt[var_index["FL1y"][0]:var_index["FL1y"][1]+1]
@@ -110,10 +119,12 @@ def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
                 cost_val = cost_val + h*Lx_res[k]**2 + h*Ly_res[k]**2 + h*Lz_res[k]**2 + h*(FL1x_res[k]/m+FL2x_res[k]/m+FL3x_res[k]/m+FL4x_res[k]/m+FR1x_res[k]/m+FR2x_res[k]/m+FR3x_res[k]/m+FR4x_res[k]/m)**2 + h*(FL1y_res[k]/m+FL2y_res[k]/m+FL3y_res[k]/m+FL4y_res[k]/m+FR1y_res[k]/m+FR2y_res[k]/m+FR3y_res[k]/m+FR4y_res[k]/m)**2 + h*(FL1z_res[k]/m+FL2z_res[k]/m+FL3z_res[k]/m+FL4z_res[k]/m+FR1z_res[k]/m+FR2z_res[k]/m+FR3z_res[k]/m+FR4z_res[k]/m - G)**2
                 cost_acc = cost_acc + h*(FL1x_res[k]/m+FL2x_res[k]/m+FL3x_res[k]/m+FL4x_res[k]/m+FR1x_res[k]/m+FR2x_res[k]/m+FR3x_res[k]/m+FR4x_res[k]/m)**2 + h*(FL1y_res[k]/m+FL2y_res[k]/m+FL3y_res[k]/m+FL4y_res[k]/m+FR1y_res[k]/m+FR2y_res[k]/m+FR3y_res[k]/m+FR4y_res[k]/m)**2 + h*(FL1z_res[k]/m+FL2z_res[k]/m+FL3z_res[k]/m+FL4z_res[k]/m+FR1z_res[k]/m+FR2z_res[k]/m+FR3z_res[k]/m+FR4z_res[k]/m - G)**2
                 cost_momentum = cost_momentum + h*Lx_res[k]**2 + h*Ly_res[k]**2 + h*Lz_res[k]**2
+                cost_momentum_rate = cost_momentum_rate + h*Ldotx_res[k]**2 + h*Ldoty_res[k]**2 + h*Ldotz_res[k]**2
 
     print("Full Cost Value: ",cost_val)
     print("Acceleration: ",cost_acc)
     print("Momentum: ",cost_momentum)
+    print("Momentum Rate: ",cost_momentum_rate)
 
     return cost_val,cost_acc,cost_momentum
 

@@ -311,6 +311,7 @@ NLP_Traj = {"timeseries":timeseries,
 
 #CoM result retrival
 #fullpath = folderpath + 'up_and_down_left_first_CoM_previous/' + filename
+#fullpath = folderpath + 'flat_CoM_previous/' + filename
 fullpath = folderpath + 'flat_CoM_previous/' + filename
 
 with open(fullpath, 'rb') as f:

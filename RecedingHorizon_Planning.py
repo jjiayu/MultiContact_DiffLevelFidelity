@@ -163,6 +163,11 @@ elif ChosenSolver == "CoM":
         solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
     else:
         solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "CoM_Dynamics", ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+elif ChosenSolver == "Mix":
+    if NumofLookAhead == 1:
+        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = None, ConservativeFirstStep = False, m = 95,NumSurfaces = Nstep_lookahead)
+    else:
+        solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index = BuildSolver(FirstLevel = "NLP_SingleStep", SecondLevel = "Mixure", ConservativeFirstStep = False, m = 95, NumSurfaces = Nstep_lookahead)
 
 #   Generate Initial Guess
 #   Random Initial Guess
