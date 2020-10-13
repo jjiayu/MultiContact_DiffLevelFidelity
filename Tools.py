@@ -278,12 +278,12 @@ def getQuaternion(Patch):
 
     #Case 1 all flat
     if p1[2] == p2[2] and p2[2] == p3[2] and p3[2] == p4[2] and p4[2] == p1[2]:
-        print("Flat Terrain, use the default set up of terrain tangent and norm")
+        #print("Flat Terrain, use the default set up of terrain tangent and norm")
         r = R.from_euler('x', 0, degrees=False) 
         quat = r.as_quat()
     #Case 2, tilt arond Y axis
     elif p1[2] == p4[2] and p2[2] == p3[2] and (not p1[2]-p2[2] == 0) and (not p4[2]-p3[2]==0):
-        print("tilt arond Y axis")
+        #print("tilt arond Y axis")
         tiltAngle = np.arctan2(p2[2]-p1[2],p1[0]-p2[0])
         r = R.from_euler('y', tiltAngle, degrees=False) 
         quat = r.as_quat()

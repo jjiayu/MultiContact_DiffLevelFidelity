@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+from Tools import *
 
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
@@ -134,6 +135,14 @@ for roundIdx in range(len(Trajectories)):
     Phase2_Ldotz = Ldotz_traj[7:15]
     Phase3_Ldotz = Ldotz_traj[14:]
 
+    #Get FootStep/Terrain Quaternions
+    Allpatches = data["TerrainModel"]
+    Allquat = []
+
+    for patch in Allpatches:
+        quat = getQuaternion(patch)
+        Allquat.append(quat)
+
     TSIDTrajectory = {}
     
     #Init Double Phase
@@ -183,8 +192,11 @@ for roundIdx in range(len(Trajectories)):
 
     #Contact config
     TSIDTrajectory["Init_PL"]=[PLx_init,PLy_init,PLz_init]
+    TSIDTrajectory["Init_PL_quat"]=np.array([0,0,0,1])
     TSIDTrajectory["Init_PR"]=[PRx_init,PRy_init,PRz_init]
+    TSIDTrajectory["Init_PR_quat"]=np.array([0,0,0,1])
     TSIDTrajectory["Landing_P"] = list(np.concatenate((px_res,py_res,pz_res),axis=None))
+    TSIDTrajectory["FootStep_Quaternions"] = Allquat
     TSIDTrajectory["LeftSwingFlag"]=LeftSwingFlag
     TSIDTrajectory["RightSwingFlag"]=RightSwingFlag
 
@@ -206,9 +218,9 @@ for roundIdx in range(len(Trajectories)):
 all_res = np.concatenate(all_res)
 timeseries = np.concatenate(timeseries)
 
-plt.plot(timeseries,all_res)
+#plt.plot(timeseries,all_res)
 
-plt.show()
+#plt.show()
 
 
 
