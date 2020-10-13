@@ -14,10 +14,11 @@ from mpl_toolkits.mplot3d import Axes3D
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/'
 folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/'
 #folderpath = '/home/jiayu/Desktop/ResultData/All_with_hrp2_kinematics/TSID_Almost_Symmetric_TestMotions/'
-filename = '2LookAhead_Trial0.p'
+filename = '3LookAhead_Trial0.p'
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
-fullpath = folderpath + 'flat_NLP_previous/' + filename
-query_traj = "ydot_result"
+#fullpath = folderpath + 'flat_NLP_previous/' + filename
+fullpath = folderpath + 'antfarm_firstLevel_left_start_NLP_previous/' + filename
+query_traj = "Lx_result"
 
 startStepNum = 0
 EndStepNum = 13
@@ -312,7 +313,8 @@ NLP_Traj = {"timeseries":timeseries,
 #CoM result retrival
 #fullpath = folderpath + 'up_and_down_left_first_CoM_previous/' + filename
 #fullpath = folderpath + 'flat_CoM_previous/' + filename
-fullpath = folderpath + 'flat_CoM_previous/' + filename
+#fullpath = folderpath + 'flat_CoM_previous/' + filename
+fullpath = folderpath + 'antfarm_firstLevel_left_start_CoM_previous/' + filename
 
 with open(fullpath, 'rb') as f:
     data = pickle.load(f)

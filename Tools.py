@@ -256,3 +256,48 @@ def GetStatsFromOutputStrings(output_log = None):
     print("Terminal Z position: ", Terminal_Z_pos)
 
     return ProgramTime, TotalTime, FullCost, AccCost, MomentCost, TotalCost, TerminalCost, Terminal_X_pos, Terminal_Y_pos, Terminal_Z_pos
+
+
+def getQuaternion(Patch):
+    #Input Format
+    #p2---------------------p1
+    # |                      |
+    # |                      |
+    # |                      |
+    #p3---------------------p4
+
+    p1 = Patch[0]
+    p2 = Patch[1]
+    p3 = Patch[2]
+    p4 = Patch[3]
+
+    #Unrotated Terrain Norm and Tangents
+    #TerrainTangentX = np.array([1,0,0])
+    #TerrainTangentY = np.array([0,1,0])
+    #TerrainNorm = np.array([0,0,1])
+
+    #Case 1 all flat
+    if p1[2] == p2[2] and p2[2] == p3[2] and p3[2] == p4[2] and p4[2] == p1[2]:
+        print("Flat Terrain, use the default set up of terrain tangent and norm")
+        r = R.from_euler('x', 0, degrees=False) 
+        quat = r.as_quat()
+    #Case 2, tilt arond Y axis
+    elif p1[2] == p4[2] and p2[2] == p3[2] and (not p1[2]-p2[2] == 0) and (not p4[2]-p3[2]==0):
+        print("tilt arond Y axis")
+        tiltAngle = np.arctan2(p2[2]-p1[2],p1[0]-p2[0])
+        r = R.from_euler('y', tiltAngle, degrees=False) 
+        quat = r.as_quat()
+        #TerrainTangentX = r.as_matrix()@TerrainTangentX
+        #TerrainNorm = r.as_matrix()@TerrainNorm
+    #Case 3, tilt around X axis    
+    elif p1[2] == p2[2] and p3[2] == p4[2] and (not p2[2]-p3[2] == 0) and (not p1[2]-p4[2]==0):
+        tiltAngle = np.arctan2(p1[2]-p4[2],p1[1]-p4[1])
+        r = R.from_euler('x', tiltAngle, degrees=False) 
+        quat = r.as_quat()
+        #TerrainTangentY = r.as_matrix()@TerrainTangentY
+        #TerrainNorm = r.as_matrix()@TerrainNorm
+        #print("tilt arond X axis")
+    else:
+        raise Exception("Un-defined Terrain Type")
+
+    return quat

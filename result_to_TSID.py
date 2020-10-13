@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_NLP_previous/5LookAhead_Trial0.p'
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous_regu_GoodSet_with567/5LookAhead_Trial0.p'
-filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/9LookAhead_Trial0.p'
+filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/2LookAhead_Trial0.p'
 
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/flat_CoM_previous/8LookAhead_Trial0.p'
 
