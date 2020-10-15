@@ -1867,14 +1867,25 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                     P_k_next_Norm = SurfNorms[3:6]
                 else:
                     P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
-                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
                     P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
-                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_Norm = SurfNorms[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+
+                    #P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
+                    #P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+
+                    #P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
+                    #P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+
 
                 if ((Nph-1-1)//2)%2 == 0: #even number steps
                     #If First Level Swing the Left, then the second level Even Number Phases (the first Phase) Swing the Right -> Left -> Right
@@ -2433,7 +2444,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False):
+def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False):
     
     print("Using Ponton's to approximate Angular Momentum Rate")
     #-----------------------------------------------------------------------------------------------------------------------
@@ -3643,21 +3654,36 @@ def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 5, Nsteps = 1, ParameterList = N
                     P_k_current_TangentX = SurfTangentsX[0:3]
                     P_k_current_TangentY = SurfTangentsY[0:3]
                     P_k_current_Norm = SurfNorms[0:3]
+
                     #!!!!!!
                     P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
                     P_k_next_TangentX = SurfTangentsX[3:6]
                     P_k_next_TangentY = SurfTangentsY[3:6]
                     P_k_next_Norm = SurfNorms[3:6]
+
                 else:
+
                     P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
-                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
                     P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
-                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_Norm = SurfNorms[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+
+                    #P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
+                    #P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+
+                    #P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
+                    #P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+
+
 
                 if ((Nph-1-1)//2)%2 == 0: #even number steps
                     #If First Level Swing the Left, then the second level Even Number Phases (the first Phase) Swing the Right -> Left -> Right
@@ -5201,14 +5227,24 @@ def CoM_Dynamics_Four_Points(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
                     P_k_next_Norm = SurfNorms[3:6]
                 else:
                     P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
-                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
                     P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
-                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_Norm = SurfNorms[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    
+                    #P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
+                    #P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+
+                    #P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
+                    #P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
                 if ((Nph-1-1)//2)%2 == 0: #even number steps
                     #If First Level Swing the Left, then the second level Even Number Phases (the first Phase) Swing the Right -> Left -> Right
@@ -6672,14 +6708,24 @@ def CoM_Dynamics_SinglePoint(m = 95, Nsteps = 1, StandAlong = True, StaticStop =
                     P_k_next_Norm = SurfNorms[3:6]
                 else:
                     P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
-                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
-                    P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    P_k_current_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_current_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
                     P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
-                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
-                    P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    P_k_next_TangentX = SurfTangentsX[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_TangentY = SurfTangentsY[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+                    P_k_next_Norm = SurfNorms[((Nph-1)//2 + 1)*3:((Nph-1)//2 + 1)*3+3]
+
+                    #P_k_current = ca.vertcat(px[(Nph-1)//2-1],py[(Nph-1)//2-1],pz[(Nph-1)//2-1])
+                    #P_k_current_TangentX = SurfTangentsX[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_TangentY = SurfTangentsY[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+                    #P_k_current_Norm = SurfNorms[((Nph-1)//2-1)*3:((Nph-1)//2-1)*3+3]
+
+                    #P_k_next = ca.vertcat(px[(Nph-1)//2],py[(Nph-1)//2],pz[(Nph-1)//2])
+                    #P_k_next_TangentX = SurfTangentsX[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_TangentY = SurfTangentsY[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
+                    #P_k_next_Norm = SurfNorms[((Nph-1)//2)*3:((Nph-1)//2)*3+3]
 
 
                 if ((Nph-1-1)//2)%2 == 0: #even number steps

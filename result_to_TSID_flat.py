@@ -1,11 +1,14 @@
 import pickle
 import numpy as np
-from Tools import *
 
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/5LookAhead_Trial0.p"
+#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_NLP_previous/5LookAhead_Trial0.p'
+#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous_regu_GoodSet_with567/5LookAhead_Trial0.p'
+filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/5LookAhead_Trial0.p'
+
+#filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/flat_CoM_previous/8LookAhead_Trial0.p'
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)
@@ -25,17 +28,13 @@ timeseries = []
 
 time_offset = 0
 
-Terrain_flag = False
-
 for roundIdx in range(len(Trajectories)):
 
     #print(roundIdx)
 
     traj = Trajectories[roundIdx]
     casadiParams = CasadiParameters[roundIdx]
-    casadiPrevParams = []
-    if roundIdx > 0:
-        casadiPrevParams = CasadiParameters[roundIdx - 1]
+
     #Get raw data
     x_traj = traj[Level1_VarIndex["x"][0]:Level1_VarIndex["x"][1]+1]
     y_traj = traj[Level1_VarIndex["y"][0]:Level1_VarIndex["y"][1]+1]
@@ -135,19 +134,6 @@ for roundIdx in range(len(Trajectories)):
     Phase2_Ldotz = Ldotz_traj[7:15]
     Phase3_Ldotz = Ldotz_traj[14:]
 
-    #Get FootStep/Terrain Quaternions
-    if "TerrainModel" in data:
-        Allpatches = data["TerrainModel"]
-        Allquat = []
-
-        for patch in Allpatches:
-            quat = getQuaternion(patch)
-            Allquat.append(quat)
-        if len(Allquat) < 2:
-            Terrain_flag = False
-        else:
-            Terrain_flag = True
-
     TSIDTrajectory = {}
     
     #Init Double Phase
@@ -197,46 +183,11 @@ for roundIdx in range(len(Trajectories)):
 
     #Contact config
     TSIDTrajectory["Init_PL"]=[PLx_init,PLy_init,PLz_init]
-    
     TSIDTrajectory["Init_PR"]=[PRx_init,PRy_init,PRz_init]
-    
     TSIDTrajectory["Landing_P"] = list(np.concatenate((px_res,py_res,pz_res),axis=None))
     TSIDTrajectory["LeftSwingFlag"]=LeftSwingFlag
     TSIDTrajectory["RightSwingFlag"]=RightSwingFlag
 
-    if Terrain_flag == False:
-        TSIDTrajectory["Init_L_quat"]=np.array([0,0,0,1])
-        TSIDTrajectory["Init_R_quat"]=np.array([0,0,0,1])
-        TSIDTrajectory["Landing_quat"]=np.array([0,0,0,1])
-    else:   
-        if (roundIdx == 0) or (roundIdx > len(Trajectories)-2):
-            TSIDTrajectory["Init_L_quat"]=np.array([0,0,0,1])
-            TSIDTrajectory["Init_R_quat"]=np.array([0,0,0,1])
-        elif (roundIdx == 1):
-            if casadiPrevParams[0] == 1.0:
-                TSIDTrajectory["Init_L_quat"]= Allquat[roundIdx-1]
-                TSIDTrajectory["Init_R_quat"]=np.array([0,0,0,1])   
-            else:
-                TSIDTrajectory["Init_R_quat"]= Allquat[roundIdx-1]
-                TSIDTrajectory["Init_L_quat"]= np.array([0,0,0,1])  
-        else:
-            if casadiPrevParams[0] == 1.0:
-                TSIDTrajectory["Init_L_quat"]= Allquat[roundIdx-1]
-                TSIDTrajectory["Init_R_quat"]= Allquat[roundIdx-2]
-            else:
-                TSIDTrajectory["Init_R_quat"]= Allquat[roundIdx-1]
-                TSIDTrajectory["Init_L_quat"]= Allquat[roundIdx-2]    
-
-        if (roundIdx < len(Trajectories) - 3):
-            TSIDTrajectory["Landing_quat"] = Allquat[roundIdx]
-        else:
-            TSIDTrajectory["Landing_quat"] = Allquat[len(Trajectories) -3]    
-
-    print ("Phase #", roundIdx)
-    print ("Init_R", TSIDTrajectory["Init_R_quat"])
-    print ("Init_L", TSIDTrajectory["Init_L_quat"])
-    print ("Landing_quat", TSIDTrajectory["Landing_quat"])
-    print ("")
     TISD_Trajectories.append(TSIDTrajectory)
 
     #print(Ts_level2_res)
@@ -255,9 +206,9 @@ for roundIdx in range(len(Trajectories)):
 all_res = np.concatenate(all_res)
 timeseries = np.concatenate(timeseries)
 
-#plt.plot(timeseries,all_res)
+plt.plot(timeseries,all_res)
 
-#plt.show()
+plt.show()
 
 
 
@@ -265,8 +216,3 @@ timeseries = np.concatenate(timeseries)
 DumpedResult = {"TSID_Trajectories": TISD_Trajectories,
 }
 pickle.dump(DumpedResult, open("/home/jiayu/Desktop/icra2021/TSID_Trajectory"'.p', "wb"))  # save it into a file named save.p
-
-
-
-
-
