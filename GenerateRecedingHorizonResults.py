@@ -63,7 +63,7 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         file_object.close()
 
         #print(output)
-        ProgramTime, TotalTime, FullCost, AccCost, MomentCost, TotalCost, TerminalCost, End_X_pos, End_Y_pos, End_Z_pos = GetStatsFromOutputStrings(output_log = output)
+        ProgramTime, TotalTime, AccCost, MomentCost, MomentumRateCost, TotalCost, TerminalCost, End_X_pos, End_Y_pos, End_Z_pos = GetStatsFromOutputStrings(output_log = output)
 
         #Write Program Time and Total Time
         #write heads
@@ -103,14 +103,20 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         row = row + 1
 
         #write cost info
-        worksheet.write(row, col, 'Full Cost')
-        worksheet.write(row, col+1, FullCost)
-        row = row + 1
         worksheet.write(row, col, 'Acc Cost')
         worksheet.write(row, col+1, AccCost)
         row = row + 1
         worksheet.write(row, col, 'Momentum Cost')
         worksheet.write(row, col+1, MomentCost)
+        row = row + 1
+        worksheet.write(row, col, 'Momentum Rate Cost')
+        worksheet.write(row, col+1, MomentumRateCost)
+        row = row + 1
+        worksheet.write(row, col, 'Acc AM')
+        worksheet.write(row, col+1, AccCost + MomentCost)
+        row = row + 1
+        worksheet.write(row, col, 'Acc AM Rate')
+        worksheet.write(row, col+1, AccCost + MomentumRateCost)
         row = row + 1
         worksheet.write(row, col, 'Total Cost')
         worksheet.write(row, col+1, TotalCost)

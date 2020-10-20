@@ -121,12 +121,12 @@ def FirstLevelCost(Nk_Local=5,x_opt=None,var_index=None,G = 9.80665,m=95):
                 cost_momentum = cost_momentum + h*Lx_res[k]**2 + h*Ly_res[k]**2 + h*Lz_res[k]**2
                 cost_momentum_rate = cost_momentum_rate + h*Ldotx_res[k]**2 + h*Ldoty_res[k]**2 + h*Ldotz_res[k]**2
 
-    print("Full Cost Value: ",cost_val)
+    #print("Full Cost Value: ",cost_val)
     print("Acceleration: ",cost_acc)
     print("Momentum: ",cost_momentum)
     print("Momentum Rate: ",cost_momentum_rate)
 
-    return cost_val,cost_acc,cost_momentum
+    return cost_acc,cost_momentum,cost_momentum_rate
 
 def getTerrainTagents_and_Norm(Patch):
     #Input Format
@@ -209,15 +209,15 @@ def GetStatsFromOutputStrings(output_log = None):
             TotalTime.append(float(line[21:27]))
             #print(float(line[21:27]))
 
-        if "Accumulated Full Cost is:" in line:
-            FullCost = float(line[27:33])
-
         if "Accumulated Acc Cost is:" in line:
             AccCost = float(line[26:32])
 
         if "Accumulated Momentum Cost is:" in line:
             MomentCost = float(line[31:37])
-    
+
+        if "Accumulated Momentum Rate Cost is:" in line:
+            MomentumRateCost = float(line[34:])
+
         if "Total Cost is:" in line:
             TotalCost = float(line[16:])
         
@@ -239,13 +239,15 @@ def GetStatsFromOutputStrings(output_log = None):
     print("Total Computation Time:")
     print(TotalTime)
 
-    print("Full Cost: ",FullCost)
-
     print("Acc Cost: ", AccCost)
 
     print("Moment Cost: ", MomentCost)
 
-    print("Total Cost: ", TotalCost)
+    print("Momentum Rate Cost: ", MomentumRateCost)
+
+    print("Full Cost (Acc + AM rate): ",AccCost + MomentumRateCost)
+
+    #print("Total Cost: ", TotalCost)
 
     print("Terminal Cost: ",TerminalCost)
 
@@ -255,7 +257,7 @@ def GetStatsFromOutputStrings(output_log = None):
 
     print("Terminal Z position: ", Terminal_Z_pos)
 
-    return ProgramTime, TotalTime, FullCost, AccCost, MomentCost, TotalCost, TerminalCost, Terminal_X_pos, Terminal_Y_pos, Terminal_Z_pos
+    return ProgramTime, TotalTime, AccCost, MomentCost, MomentumRateCost, TotalCost, TerminalCost, Terminal_X_pos, Terminal_Y_pos, Terminal_Z_pos
 
 
 def getQuaternion(Patch):

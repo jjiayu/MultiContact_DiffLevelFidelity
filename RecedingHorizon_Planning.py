@@ -134,6 +134,7 @@ Pz_fullres = []
 Fullcosts = []
 Acc_cost = []
 Momentum_Cost = []
+MomentumRate_Cost = []
 TerminalCost = []
 CasadiParameters = []
 
@@ -429,11 +430,12 @@ for roundNum in range(Nrounds):
         Py_fullres.append(x_opt[var_index_Level1["py"][0]:var_index_Level1["py"][1]+1])
         Pz_fullres.append(x_opt[var_index_Level1["pz"][0]:var_index_Level1["pz"][1]+1])
         #Get Cost
-        firstLevelFullCost,firstLevelAccCost,firstLevelMomentumCost = FirstLevelCost(x_opt=x_opt,var_index=var_index,G = 9.80665,m=95)
-        Fullcosts.append(firstLevelFullCost)
+        firstLevelAccCost,firstLevelMomentumCost,firstLevelMomentumRateCost = FirstLevelCost(x_opt=x_opt,var_index=var_index,G = 9.80665,m=95)
+        #Fullcosts.append(firstLevelFullCost)
         Acc_cost.append(firstLevelAccCost)
         Momentum_Cost.append(firstLevelMomentumCost)
-        TerminalCost.append(10*(x_fullres[-1][-1]-x_end)**2 + 10*(y_fullres[-1][-1]-y_end)**2 + 10*(z_fullres[-1][-1]-z_end)**2)
+        MomentumRate_Cost.append(firstLevelMomentumRateCost)
+        TerminalCost.append(10*(x_fullres[-1][-1]-x_end)**2 + 10*(y_fullres[-1][-1]-y_end)**2 + 1000*(z_fullres[-1][-1]-z_end)**2)
         #Save the trajectory of current round
         AllRoundTrajectory.append(x_opt)
         CasadiParameters.append(ParaList)
@@ -472,15 +474,15 @@ if ShowFigure == "True":
 #Compute Total Cost
 TotalCost = TerminalCost[-1]+np.sum(Fullcosts)
 #Calculate Accumulated Cost
-AccumFullCost = round(np.sum(Fullcosts),4)
 AccumAccCost = round(np.sum(Acc_cost),4)
 AccumMomentumCost = round(np.sum(Momentum_Cost),4)
+AccumMomentumRateCost = round(np.sum(MomentumRate_Cost),4)
 Terminal_X_pos = round(x_fullres[-1][-1],4)
 Terminal_Y_pos = round(y_fullres[-1][-1],4)
 Terminal_Z_pos = round(z_fullres[-1][-1],4)
-print("Accumulated Full Cost is: ", AccumFullCost)
 print("Accumulated Acc Cost is: ", AccumAccCost)
 print("Accumulated Momentum Cost is: ", AccumMomentumCost)
+print("Accumulated Momentum Rate Cost is: ",AccumMomentumRateCost)
 print("Total Cost is: ",round(TotalCost,4))
 print("Terminal Cost is: ", round(TerminalCost[-1],4))
 print("Terminal X position is: ", Terminal_X_pos)
@@ -493,9 +495,9 @@ DumpedResult = {"TerrainModel": AllPatches,
                 "Trajectory_of_All_Rounds":AllRoundTrajectory,
                 "TotalCost":TotalCost,
                 "TerminalCost":TerminalCost,
-                "Accmulated_Full_Cost":AccumFullCost,
                 "Accumulated_Acc_Cost":AccumAccCost,
                 "Accumulated_Momentum_Cost":AccumMomentumCost,
+                "Accumulated_MomentumRate_Cost":AccumMomentumRateCost,
                 "StopRound":StopRound,
                 "SwingLeftFirst":SwingLeftFirst,
                 "SwingRightFirst":SwingRightFirst,
