@@ -5,8 +5,8 @@ from Tools import *
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_MixPonton_previous/5LookAhead_Trial0.p"
-#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_MixPonton_previous/5LookAhead_Trial0.p"
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Good_Computationt-Time_Diff/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodResults/antfarm_2Knots_firstLevel_left_start_CoM_previous/10LookAhead_Trial0.p"
 
 with open(filename, 'rb') as f:
