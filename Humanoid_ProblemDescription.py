@@ -64,7 +64,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #Minimum y-axis foot location
     py_lower_limit = 0.08
     #Lowest z
-    z_lowest = 0.75
+    z_lowest = 0.7
     z_highest = 0.8
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -1117,7 +1117,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     #Minimum y-axis foot location
     py_lower_limit = 0.06
     #Lowest Z
-    z_lowest = 0.75
+    z_lowest = 0.7
     z_highest = 0.8
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
@@ -2484,7 +2484,7 @@ def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
     #Minimum y-axis foot location
     py_lower_limit = 0.06
     #Lowest Z
-    z_lowest = 0.75
+    z_lowest = 0.7
     z_highest = 0.8
     #Phase duration
     h_initialdouble = 0.3
@@ -4082,8 +4082,10 @@ def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
             
             #Add Cost Terms
             if k < N_K - 1:
-                #Acc only
-                J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2 + 1*(h*(1/4*(cL1x_p[k]-cL1x_q[k]))**2 + h*(1/4*(cL1y_p[k]-cL1y_q[k]))**2 + h*(1/4*(cL1z_p[k]-cL1z_q[k]))**2 + h*(1/4*(cL2x_p[k]-cL2x_q[k]))**2 + h*(1/4*(cL2y_p[k]-cL2y_q[k]))**2 + h*(1/4*(cL2z_p[k]-cL2z_q[k]))**2 + h*(1/4*(cL3x_p[k]-cL3x_q[k]))**2 + h*(1/4*(cL3y_p[k]-cL3y_q[k]))**2 + h*(1/4*(cL3z_p[k]-cL3z_q[k]))**2 + h*(1/4*(cL4x_p[k]-cL4x_q[k]))**2 + h*(1/4*(cL4y_p[k]-cL4y_q[k]))**2 + h*(1/4*(cL4z_p[k]-cL4z_q[k]))**2 + h*(1/4*(cR1x_p[k]-cR1x_q[k]))**2 + h*(1/4*(cR1y_p[k]-cR1y_q[k]))**2 + h*(1/4*(cR1z_p[k]-cR1z_q[k]))**2 + h*(1/4*(cR2x_p[k]-cR2x_q[k]))**2 + h*(1/4*(cR2y_p[k]-cR2y_q[k]))**2 + h*(1/4*(cR2z_p[k]-cR2z_q[k]))**2 + h*(1/4*(cR3x_p[k]-cR3x_q[k]))**2 + h*(1/4*(cR3y_p[k]-cR3y_q[k]))**2 + h*(1/4*(cR3z_p[k]-cR3z_q[k]))**2 + h*(1/4*(cR4x_p[k]-cR4x_q[k]))**2 + h*(1/4*(cR4y_p[k]-cR4y_q[k]))**2 + h*(1/4*(cR4z_p[k]-cR4z_q[k]))**2)
+                #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2 + 1*(h*(1/4*(cL1x_p[k]-cL1x_q[k]))**2 + h*(1/4*(cL1y_p[k]-cL1y_q[k]))**2 + h*(1/4*(cL1z_p[k]-cL1z_q[k]))**2 + h*(1/4*(cL2x_p[k]-cL2x_q[k]))**2 + h*(1/4*(cL2y_p[k]-cL2y_q[k]))**2 + h*(1/4*(cL2z_p[k]-cL2z_q[k]))**2 + h*(1/4*(cL3x_p[k]-cL3x_q[k]))**2 + h*(1/4*(cL3y_p[k]-cL3y_q[k]))**2 + h*(1/4*(cL3z_p[k]-cL3z_q[k]))**2 + h*(1/4*(cL4x_p[k]-cL4x_q[k]))**2 + h*(1/4*(cL4y_p[k]-cL4y_q[k]))**2 + h*(1/4*(cL4z_p[k]-cL4z_q[k]))**2 + h*(1/4*(cR1x_p[k]-cR1x_q[k]))**2 + h*(1/4*(cR1y_p[k]-cR1y_q[k]))**2 + h*(1/4*(cR1z_p[k]-cR1z_q[k]))**2 + h*(1/4*(cR2x_p[k]-cR2x_q[k]))**2 + h*(1/4*(cR2y_p[k]-cR2y_q[k]))**2 + h*(1/4*(cR2z_p[k]-cR2z_q[k]))**2 + h*(1/4*(cR3x_p[k]-cR3x_q[k]))**2 + h*(1/4*(cR3y_p[k]-cR3y_q[k]))**2 + h*(1/4*(cR3z_p[k]-cR3z_q[k]))**2 + h*(1/4*(cR4x_p[k]-cR4x_q[k]))**2 + h*(1/4*(cR4y_p[k]-cR4y_q[k]))**2 + h*(1/4*(cR4z_p[k]-cR4z_q[k]))**2)
+                #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2 + h*(1/4*(cL1x_p[k]-cL1x_q[k]) + 1/4*(cL2x_p[k]-cL2x_q[k]) + 1/4*(cL3x_p[k]-cL3x_q[k]) + 1/4*(cL4x_p[k]-cL4x_q[k]) + 1/4*(cR1x_p[k]-cR1x_q[k]) + 1/4*(cR2x_p[k]-cR2x_q[k]) + 1/4*(cR3x_p[k]-cR3x_q[k]) + 1/4*(cR4x_p[k]-cR4x_q[k]))**2 + h*(1/4*(cL1y_p[k]-cL1y_q[k]) + 1/4*(cL2y_p[k]-cL2y_q[k]) + 1/4*(cL3y_p[k]-cL3y_q[k]) + 1/4*(cL4y_p[k]-cL4y_q[k]) + 1/4*(cR1y_p[k]-cR1y_q[k]) + 1/4*(cR2y_p[k]-cR2y_q[k]) + 1/4*(cR3y_p[k]-cR3y_q[k]) + 1/4*(cR4y_p[k]-cR4y_q[k]))**2 + h*(1/4*(cL1z_p[k]-cL1z_q[k]) + 1/4*(cL2z_p[k]-cL2z_q[k]) + 1/4*(cL3z_p[k]-cL3z_q[k]) + 1/4*(cL4z_p[k]-cL4z_q[k]) + 1/4*(cR1z_p[k]-cR1z_q[k]) + 1/4*(cR2z_p[k]-cR2z_q[k]) + 1/4*(cR3z_p[k]-cR3z_q[k]) + 1/4*(cR4z_p[k]-cR4z_q[k]))**2
+                J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2 + h*(cL1x_p[k]**2 + cL1x_q[k]**2 + cL1y_p[k]**2 + cL1y_q[k]**2 + cL1z_p[k]**2 + cL1z_q[k]**2 + cL2x_p[k]**2 + cL2x_q[k]**2 + cL2y_p[k]**2 + cL2y_q[k]**2 + cL2z_p[k]**2 + cL2z_q[k]**2 + cL3x_p[k]**2 + cL3x_q[k]**2 + cL3y_p[k]**2 + cL3y_q[k]**2 + cL3z_p[k]**2 + cL3z_q[k]**2 + cL4x_p[k]**2 + cL4x_q[k]**2 + cL4y_p[k]**2 + cL4y_q[k]**2 + cL4z_p[k]**2 + cL4z_q[k]**2 + cR1x_p[k]**2 + cR1x_q[k]**2 + cR1y_p[k]**2 + cR1y_q[k]**2 + cR1z_p[k]**2 + cR1z_q[k]**2 + cR2x_p[k]**2 + cR2x_q[k]**2 + cR2y_p[k]**2 + cR2y_q[k]**2 + cR2z_p[k]**2 + cR2z_q[k]**2 + cR3x_p[k]**2 + cR3x_q[k]**2 + cR3y_p[k]**2 + cR3y_q[k]**2 + cR3z_p[k]**2 + cR3z_q[k]**2 + cR4x_p[k]**2 + cR4x_q[k]**2 + cR4y_p[k]**2 + cR4y_q[k]**2 + cR4z_p[k]**2 + cR4z_q[k]**2)
+                #J = J + h*((FL1x[k]/m)**2+(FL2x[k]/m)**2+(FL3x[k]/m)**2+(FL4x[k]/m)**2+(FR1x[k]/m)**2+(FR2x[k]/m)**2+(FR3x[k]/m)**2+(FR4x[k]/m)**2) + h*((FL1y[k]/m)**2+(FL2y[k]/m)**2+(FL3y[k]/m)**2+(FL4y[k]/m)**2+(FR1y[k]/m)**2+(FR2y[k]/m)**2+(FR3y[k]/m)**2+(FR4y[k]/m)**2) + h*((FL1z[k]/m)**2+(FL2z[k]/m)**2+(FL3z[k]/m)**2+(FL4z[k]/m)**2+(FR1z[k]/m)**2+(FR2z[k]/m)**2+(FR3z[k]/m)**2+(FR4z[k]/m)**2) + h*(cL1x_p[k]**2 + cL1x_q[k]**2 + cL1y_p[k]**2 + cL1y_q[k]**2 + cL1z_p[k]**2 + cL1z_q[k]**2 + cL2x_p[k]**2 + cL2x_q[k]**2 + cL2y_p[k]**2 + cL2y_q[k]**2 + cL2z_p[k]**2 + cL2z_q[k]**2 + cL3x_p[k]**2 + cL3x_q[k]**2 + cL3y_p[k]**2 + cL3y_q[k]**2 + cL3z_p[k]**2 + cL3z_q[k]**2 + cL4x_p[k]**2 + cL4x_q[k]**2 + cL4y_p[k]**2 + cL4y_q[k]**2 + cL4z_p[k]**2 + cL4z_q[k]**2 + cR1x_p[k]**2 + cR1x_q[k]**2 + cR1y_p[k]**2 + cR1y_q[k]**2 + cR1z_p[k]**2 + cR1z_q[k]**2 + cR2x_p[k]**2 + cR2x_q[k]**2 + cR2y_p[k]**2 + cR2y_q[k]**2 + cR2z_p[k]**2 + cR2z_q[k]**2 + cR3x_p[k]**2 + cR3x_q[k]**2 + cR3y_p[k]**2 + cR3y_q[k]**2 + cR3z_p[k]**2 + cR3z_q[k]**2 + cR4x_p[k]**2 + cR4x_q[k]**2 + cR4y_p[k]**2 + cR4y_q[k]**2 + cR4z_p[k]**2 + cR4z_q[k]**2)
 
     #-------------------------------------
     #Relative Footstep Constraint

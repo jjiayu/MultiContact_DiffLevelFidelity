@@ -594,7 +594,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY = []
         AllTerrainNorm = []
 
-        HightVariation =0.06
+        HightVariation =0.07
         HorizontanIncrease = 0.6
 
         Patch1 = np.array([[1, 0.5, 0.], [-1, 0.5, 0.], [-1, -0.5, 0.], [1, -0.5, 0.]])
