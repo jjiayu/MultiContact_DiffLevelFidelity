@@ -13,7 +13,7 @@ InitSeedType = sys.argv[2]
 
 ChosenSolver = sys.argv[3]
 
-ShowFigure =  'False'
+ShowFigure =  'True'
 
 NumofRound = 14
 

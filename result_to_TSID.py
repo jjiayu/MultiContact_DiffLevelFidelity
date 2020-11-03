@@ -9,7 +9,11 @@ from mpl_toolkits.mplot3d import Axes3D
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/4LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodResults/antfarm_2Knots_firstLevel_left_start_CoM_previous/10LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/darpa_like_left_first_CoM_previous/5LookAhead_Trial0.p"
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/SymmetricLFPoltyope/darpa_like_left_first_CoM_previous/5LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/SymmetricLFPoltyope/darpa_like_left_first_CoM_previous/5LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/up_and_down_left_first_CoM_previous/5LookAhead_Trial0.p"
+
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_CoM_previous/4LookAhead_Trial0.p"
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)

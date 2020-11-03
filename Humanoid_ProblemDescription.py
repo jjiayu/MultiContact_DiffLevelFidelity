@@ -62,7 +62,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     Ldotlb = -Ldot_bound
 
     #Minimum y-axis foot location
-    py_lower_limit = 0.08
+    py_lower_limit = 0.04
     #Lowest z
     z_lowest = 0.7
     z_highest = 0.8
@@ -1115,7 +1115,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     Ldotub = Ldot_bound
     Ldotlb = -Ldot_bound
     #Minimum y-axis foot location
-    py_lower_limit = 0.06
+    py_lower_limit = 0.04
     #Lowest Z
     z_lowest = 0.7
     z_highest = 0.8
@@ -2482,7 +2482,7 @@ def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
     Fzlb = -F_bound
     Fzub = F_bound
     #Minimum y-axis foot location
-    py_lower_limit = 0.06
+    py_lower_limit = 0.04
     #Lowest Z
     z_lowest = 0.7
     z_highest = 0.8
@@ -9875,7 +9875,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nsteps = 1, StandAlong = True, StaticStop =
             # #Add Cost Terms
             if k < N_K - 1:
                 #acceleration only
-                J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2
+                #J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2
                 #acceleration with y-axis displacement
                 #J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2 + 1000*h*y[k]**2
                 #acceleration with y-axis vel higher weight
@@ -9888,10 +9888,9 @@ def CoM_Dynamics_SinglePoint(m = 95, Nsteps = 1, StandAlong = True, StaticStop =
                 #Add reference trajectory
 
                 #if the First Level Swing the Left, then the second Level start from Right Swing
-                #J = J + 0.0001*(h*(ca.if_else(ParaLeftSwingFlag, xdot[k] - RightStartRefMotion["RightStart_xdot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, ydot[k] - RightStartRefMotion["RightStart_ydot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, zdot[k] - RightStartRefMotion["RightStart_zdot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, y[k] - RightStartRefMotion["RightStart_y"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, z[k] - RightStartRefMotion["RightStart_z"][k], 0))**2)
-                
+                J = J + h*(ca.if_else(ParaLeftSwingFlag, xdot[k] - RightStartRefMotion["RightStart_xdot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, ydot[k] - RightStartRefMotion["RightStart_ydot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, zdot[k] - RightStartRefMotion["RightStart_zdot"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, y[k] - RightStartRefMotion["RightStart_y"][k], 0))**2 + h*(ca.if_else(ParaLeftSwingFlag, z[k] - RightStartRefMotion["RightStart_z"][k], 0))**2
                 #if the First Level Swing the Right, then the second Level start from Left Swing
-                #J = J + 0.0001*(h*(ca.if_else(ParaRightSwingFlag, xdot[k] - LeftStartRefMotion["LeftStart_xdot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, ydot[k] - LeftStartRefMotion["LeftStart_ydot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, zdot[k] - LeftStartRefMotion["LeftStart_zdot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, y[k] - LeftStartRefMotion["LeftStart_y"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, z[k] - LeftStartRefMotion["LeftStart_z"][k], 0))**2)
+                J = J + h*(ca.if_else(ParaRightSwingFlag, xdot[k] - LeftStartRefMotion["LeftStart_xdot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, ydot[k] - LeftStartRefMotion["LeftStart_ydot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, zdot[k] - LeftStartRefMotion["LeftStart_zdot"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, y[k] - LeftStartRefMotion["LeftStart_y"][k], 0))**2 + h*(ca.if_else(ParaRightSwingFlag, z[k] - LeftStartRefMotion["LeftStart_z"][k], 0))**2
 
     #-------------------------------------
     #Relative Footstep Constraint
