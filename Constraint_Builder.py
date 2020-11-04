@@ -4,6 +4,37 @@
 import numpy as np #Numpy
 import casadi as ca #Casadi
 
+def CoM_Kinematics(g = None, glb = None, gub = None, SwingLegIndicator = None, K_polytope = None, k_polytope = None, CoM_k = None, p = None):
+    g.append(ca.if_else(SwingLegIndicator,K_polytope@(CoM_k-p)-ca.DM(k_polytope),np.full((len(k_polytope),),-1)))
+    glb.append(np.full((len(k_polytope),),-np.inf))
+    gub.append(np.full((len(k_polytope),),0))
+
+    return g, glb, gub
+
+def Angular_Momentum_Rate_DoubleSupport(g = None, glb = None, gub = None, SwingLegIndicator = None, Ldot_next = None, Ldot_current = None, h = None, PL = None, PL_TangentX = None, PL_TangentY = None, PR = None, PR_TangentX = None, PR_TangentY = None, CoM_k = None, FL1_k = None, FL2_k = None, FL3_k = None, FL4_k = None, FR1_k = None, FR2_k = None, FR3_k = None, FR4_k = None):
+    g.append(ca.if_else(SwingLegIndicator,Ldot_next - Ldot_current - h*(ca.cross((PL+0.11*PL_TangentX+0.06*PL_TangentY-CoM_k),FL1_k) + 
+                                                                        ca.cross((PL+0.11*PL_TangentX-0.06*PL_TangentY-CoM_k),FL2_k) + 
+                                                                        ca.cross((PL-0.11*PL_TangentX+0.06*PL_TangentY-CoM_k),FL3_k) + 
+                                                                        ca.cross((PL-0.11*PL_TangentX-0.06*PL_TangentY-CoM_k),FL4_k) + 
+                                                                        ca.cross((PR+0.11*PR_TangentX+0.06*PR_TangentY-CoM_k),FR1_k) + 
+                                                                        ca.cross((PR+0.11*PR_TangentX-0.06*PR_TangentY-CoM_k),FR2_k) + 
+                                                                        ca.cross((PR-0.11*PR_TangentX+0.06*PR_TangentY-CoM_k),FR3_k) + 
+                                                                        ca.cross((PR-0.11*PR_TangentX-0.06*PR_TangentY-CoM_k),FR4_k)),np.array([0,0,0])))
+    glb.append(np.array([0,0,0]))
+    gub.append(np.array([0,0,0]))
+
+    return g, glb, gub
+
+def Angular_Momentum_Rate_Swing(g = None, glb = None, gub = None, SwingLegIndicator = None, Ldot_next = None, Ldot_current = None, h = None, P = None, P_TangentX = None, P_TangentY = None, CoM_k = None, F1_k = None, F2_k = None, F3_k = None, F4_k = None):
+    g.append(ca.if_else(SwingLegIndicator,Ldot_next - Ldot_current - h*(ca.cross((P+0.11*P_TangentX+0.06*P_TangentY-CoM_k),F1_k) + 
+                                                                        ca.cross((P+0.11*P_TangentX-0.06*P_TangentY-CoM_k),F2_k) + 
+                                                                        ca.cross((P-0.11*P_TangentX+0.06*P_TangentY-CoM_k),F3_k) + 
+                                                                        ca.cross((P-0.11*P_TangentX-0.06*P_TangentY-CoM_k),F4_k)),np.array([0,0,0])))
+    glb.append(np.array([0,0,0]))
+    gub.append(np.array([0,0,0]))
+
+    return g, glb, gub
+
 #Ponton's Convexfication Constraint
 def Ponton_Concex_Constraint(g = None, glb = None, gub = None, SwingLegIndicator = None, x_p_bar = None,x_q_bar = None, y_p_bar = None,y_q_bar = None, z_p_bar = None,z_q_bar = None, l = None,f = None):
     l_length = 1.5
