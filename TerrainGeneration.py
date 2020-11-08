@@ -34,7 +34,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         #Terrain Definition/Surface Sequence
         #Define Patches
         #NOTE: The rectangle always stat from Top Right Corner, and the vertex move counterclockwise, it should be a list of numpy arrays
-        Patch1 = np.array([[10, 0.5, 0.], [-0.5, 0.5, 0.], [-0.5, -0.5, 0.], [10, -0.5, 0.]])
+        Patch1 = np.array([[50, 0.5, 0.], [-0.5, 0.5, 0.], [-0.5, -0.5, 0.], [50, -0.5, 0.]])
         Patch1_TangentX, Patch1_TangentY, Patch1_Norm = getTerrainTagents_and_Norm(Patch1)
         #Patch1_TangentX = np.array([1,0,0])
         #Patch1_TangentY = np.array([0,1,0])
@@ -221,7 +221,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
-        Patch12 = np.array([[12.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch12 = np.array([[50.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
         AllPatchesName.append("Patch12")
@@ -363,7 +363,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
 
         #--------------------------------------
 
-        Patch12 = np.array([[12.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch12 = np.array([[50.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
         AllPatchesName.append("Patch12")
@@ -470,7 +470,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
-        Patch12 = np.array([[12.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch12 = np.array([[50.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
         AllPatchesName.append("Patch12")
@@ -577,7 +577,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
-        Patch12 = np.array([[12.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch12 = np.array([[50.0, 0.5, 0.], [4, 0.5, 0.], [4, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
         AllPatchesName.append("Patch12")
@@ -685,7 +685,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
-        Patch12 = np.array([[12.0, 0.5, 0.], [1+5*HorizontanIncrease, 0.5, 0.], [1+5*HorizontanIncrease, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch12 = np.array([[50.0, 0.5, 0.], [1+5*HorizontanIncrease, 0.5, 0.], [1+5*HorizontanIncrease, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch12_TangentX, Patch12_TangentY, Patch12_Norm = getTerrainTagents_and_Norm(Patch12)
         AllPatches.append(Patch12)
         AllPatchesName.append("Patch12")
@@ -795,7 +795,7 @@ def TerrainSelection(name = None, NumRounds = 1, NumContactSequence = 2):
         AllTerrainTangentsY.append(Patch11_TangentY)
         AllTerrainNorm.append(Patch11_Norm)
 
-        Patch14 = np.array([[12.0, 0.5, 0.], [1+5*HorizontanIncrease, 0.5, 0.], [1+5*HorizontanIncrease, -0.5, 0.], [12.0, -0.5, 0.]])
+        Patch14 = np.array([[50.0, 0.5, 0.], [1+5*HorizontanIncrease, 0.5, 0.], [1+5*HorizontanIncrease, -0.5, 0.], [50.0, -0.5, 0.]])
         Patch14_TangentX, Patch14_TangentY, Patch14_Norm = getTerrainTagents_and_Norm(Patch14)
         AllPatches.append(Patch14)
         AllPatchesName.append("Patch14")

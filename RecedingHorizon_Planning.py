@@ -14,6 +14,7 @@ from TerrainGeneration import *
 import os as os
 import sys
 import pickle
+from NLP_Ref_Traj_Constructor import *
 
 #Initialization and Porblem Setup
 
@@ -110,7 +111,7 @@ PRx_init = 0.6
 PRy_init = -0.1
 PRz_init = 0
 
-x_end = 10
+x_end = 20
 y_end = 0
 z_end = 0.75
 
@@ -214,6 +215,9 @@ for roundNum in range(Nrounds):
         #Lamp all variables together
         HalfSpaceSeq = np.concatenate(HalfSpaceSeq,axis=None)
         #print(HalfSpaceSeq)
+
+        #Get Reference Trajectory
+        x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
         
         ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
             x_init,y_init,z_init,
@@ -227,7 +231,13 @@ for roundNum in range(Nrounds):
             HalfSpaceSeq,
             TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
             PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-            PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+            PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+            x_traj_ref,y_traj_ref,z_traj_ref,
+            xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+            FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+            FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+            SwitchingTimeVec_ref,
+            Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
         
         res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
 
@@ -356,6 +366,9 @@ for roundNum in range(Nrounds):
         ##FirstRoundFlag
         #FirstRoundFlag = 0
 
+        #Get Reference Trajectory
+        x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+
         #Build Parameter Vector
         ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
             x_init,y_init,z_init,
@@ -369,7 +382,13 @@ for roundNum in range(Nrounds):
             HalfSpaceSeq,
             TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
             PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-            PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+            PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+            x_traj_ref,y_traj_ref,z_traj_ref,
+            xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+            FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+            FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+            SwitchingTimeVec_ref,
+            Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator
