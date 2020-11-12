@@ -6,7 +6,14 @@ from mpl_toolkits.mplot3d import Axes3D
 
 def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
 
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_Fixed_PhaseDurationBoth/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_Fixed_PhaseDurationBoth/4LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_varPhaseBoth_NoTerminalCostWight/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/UnevenTerrain_Ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/antfarm_ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/flat_ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/Uneven_Flat_Ref/10LookAhead_Trial0.p"
+
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/antfarm_ref/10LookAhead_Trial0.p"
 
     with open(filename, 'rb') as f:
         data = pickle.load(f)
@@ -169,7 +176,7 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
 
     #Convert to Numpy Array
 
-    #plt.plot(ydot_traj)
+    #plt.plot(zdot_traj)
 
     # print(len(x_traj))
     # print(len(y_traj))
@@ -195,5 +202,55 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
     # print(len(SwitchingTimeVec))
 
     #plt.show()
+
+    return  x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec
+
+
+def NLP_ref_trajectory_from_SecondLevel(StartStepNum = None, LookAheadSteps = None):
+
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_Fixed_PhaseDurationBoth/4LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_varPhaseBoth_NoTerminalCostWight/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/UnevenTerrain_Ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/antfarm_ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/flat_ref/10LookAhead_Trial0.p"
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/Uneven_Flat_Ref/10LookAhead_Trial0.p"
+
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/antfarm_ref/" + str(LookAheadSteps)+"LookAhead_Trial0.p"
+
+    with open(filename, 'rb') as f:
+        data = pickle.load(f)
+
+    #Get Result Data
+    Level1_VarIndex = data["VarIdx_of_All_Levels"]["Level1_Var_Index"]
+    Level2_VarIndex = data["VarIdx_of_All_Levels"]["Level2_Var_Index"]
+
+    Trajectories = data["Trajectory_of_All_Rounds"]
+
+    traj = Trajectories[StartStepNum]
+
+    traj_secondlevel = traj[Level1_VarIndex["Ts"][1]+1:]
+
+    x_traj = traj_secondlevel[Level2_VarIndex["x"][0]:Level2_VarIndex["x"][1]+1]
+    y_traj = traj_secondlevel[Level2_VarIndex["y"][0]:Level2_VarIndex["y"][1]+1]
+    z_traj = traj_secondlevel[Level2_VarIndex["z"][0]:Level2_VarIndex["z"][1]+1]
+
+    xdot_traj = traj_secondlevel[Level2_VarIndex["xdot"][0]:Level2_VarIndex["xdot"][1]+1]
+    ydot_traj = traj_secondlevel[Level2_VarIndex["ydot"][0]:Level2_VarIndex["ydot"][1]+1]
+    zdot_traj = traj_secondlevel[Level2_VarIndex["zdot"][0]:Level2_VarIndex["zdot"][1]+1]
+
+
+    FLx_traj = traj_secondlevel[Level2_VarIndex["FL1x"][0]:Level2_VarIndex["FL1x"][1]+1] + traj_secondlevel[Level2_VarIndex["FL2x"][0]:Level2_VarIndex["FL2x"][1]+1] + traj_secondlevel[Level2_VarIndex["FL3x"][0]:Level2_VarIndex["FL3x"][1]+1] + traj_secondlevel[Level2_VarIndex["FL4x"][0]:Level2_VarIndex["FL4x"][1]+1]
+    FLy_traj = traj_secondlevel[Level2_VarIndex["FL1y"][0]:Level2_VarIndex["FL1y"][1]+1] + traj_secondlevel[Level2_VarIndex["FL2y"][0]:Level2_VarIndex["FL2y"][1]+1] + traj_secondlevel[Level2_VarIndex["FL3y"][0]:Level2_VarIndex["FL3y"][1]+1] + traj_secondlevel[Level2_VarIndex["FL4y"][0]:Level2_VarIndex["FL4y"][1]+1]
+    FLz_traj = traj_secondlevel[Level2_VarIndex["FL1z"][0]:Level2_VarIndex["FL1z"][1]+1] + traj_secondlevel[Level2_VarIndex["FL2z"][0]:Level2_VarIndex["FL2z"][1]+1] + traj_secondlevel[Level2_VarIndex["FL3z"][0]:Level2_VarIndex["FL3z"][1]+1] + traj_secondlevel[Level2_VarIndex["FL4z"][0]:Level2_VarIndex["FL4z"][1]+1]
+
+    FRx_traj = traj_secondlevel[Level2_VarIndex["FR1x"][0]:Level2_VarIndex["FR1x"][1]+1] + traj_secondlevel[Level2_VarIndex["FR2x"][0]:Level2_VarIndex["FR2x"][1]+1] + traj_secondlevel[Level2_VarIndex["FR3x"][0]:Level2_VarIndex["FR3x"][1]+1] + traj_secondlevel[Level2_VarIndex["FR4x"][0]:Level2_VarIndex["FR4x"][1]+1]
+    FRy_traj = traj_secondlevel[Level2_VarIndex["FR1y"][0]:Level2_VarIndex["FR1y"][1]+1] + traj_secondlevel[Level2_VarIndex["FR2y"][0]:Level2_VarIndex["FR2y"][1]+1] + traj_secondlevel[Level2_VarIndex["FR3y"][0]:Level2_VarIndex["FR3y"][1]+1] + traj_secondlevel[Level2_VarIndex["FR4y"][0]:Level2_VarIndex["FR4y"][1]+1]
+    FRz_traj = traj_secondlevel[Level2_VarIndex["FR1z"][0]:Level2_VarIndex["FR1z"][1]+1] + traj_secondlevel[Level2_VarIndex["FR2z"][0]:Level2_VarIndex["FR2z"][1]+1] + traj_secondlevel[Level2_VarIndex["FR3z"][0]:Level2_VarIndex["FR3z"][1]+1] + traj_secondlevel[Level2_VarIndex["FR4z"][0]:Level2_VarIndex["FR4z"][1]+1]
+
+    Px_seq = traj_secondlevel[Level2_VarIndex["px"][0]:Level2_VarIndex["px"][1]+1]
+    Py_seq = traj_secondlevel[Level2_VarIndex["py"][0]:Level2_VarIndex["py"][1]+1]
+    Pz_seq = traj_secondlevel[Level2_VarIndex["pz"][0]:Level2_VarIndex["pz"][1]+1]
+
+    SwitchingTimeVec = traj_secondlevel[Level2_VarIndex["Ts"][0]:Level2_VarIndex["Ts"][1]+1]
 
     return  x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec

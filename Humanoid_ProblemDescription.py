@@ -876,7 +876,11 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 #No Angular momentum
                 #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #With Angular momentum rate
-                J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #With Angular momentum and angular momentum together
+                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #J = J + Lx[k]**2 + Ly[k]**2 + Lz[k]**2 + Ldotx[k]**2 + Ldoty[k]**2 + Ldotz[k]**2 + (FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + (FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + (FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+
 
     #Relative Foot Constraints
     #   For init phase
@@ -1211,23 +1215,23 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
     SurfTangentsX = ParameterList["SurfTangentsX"]
     SurfTangentsY = ParameterList["SurfTangentsY"]
 
-    #Refrence Trajectories
-    x_ref = ParameterList["x_ref"]
-    y_ref = ParameterList["y_ref"]
-    z_ref = ParameterList["z_ref"]
-    xdot_ref = ParameterList["xdot_ref"]
-    ydot_ref = ParameterList["ydot_ref"]
-    zdot_ref = ParameterList["zdot_ref"]
-    FLx_ref = ParameterList["FLx_ref"]
-    FLy_ref = ParameterList["FLy_ref"]
-    FLz_ref = ParameterList["FLz_ref"]
-    FRx_ref = ParameterList["FRx_ref"]
-    FRy_ref = ParameterList["FRy_ref"]
-    FRz_ref = ParameterList["FRz_ref"]
-    SwitchingTimeVec_ref = ParameterList["SwitchingTimeVec_ref"]
-    Px_seq_ref = ParameterList["Px_seq_ref"]
-    Py_seq_ref = ParameterList["Py_seq_ref"]
-    Pz_seq_ref = ParameterList["Pz_seq_ref"]
+    # #Refrence Trajectories
+    # x_ref = ParameterList["x_ref"]
+    # y_ref = ParameterList["y_ref"]
+    # z_ref = ParameterList["z_ref"]
+    # xdot_ref = ParameterList["xdot_ref"]
+    # ydot_ref = ParameterList["ydot_ref"]
+    # zdot_ref = ParameterList["zdot_ref"]
+    # FLx_ref = ParameterList["FLx_ref"]
+    # FLy_ref = ParameterList["FLy_ref"]
+    # FLz_ref = ParameterList["FLz_ref"]
+    # FRx_ref = ParameterList["FRx_ref"]
+    # FRy_ref = ParameterList["FRy_ref"]
+    # FRz_ref = ParameterList["FRz_ref"]
+    # SwitchingTimeVec_ref = ParameterList["SwitchingTimeVec_ref"]
+    # Px_seq_ref = ParameterList["Px_seq_ref"]
+    # Py_seq_ref = ParameterList["Py_seq_ref"]
+    # Pz_seq_ref = ParameterList["Pz_seq_ref"]
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Variables and Bounds, Parameters
@@ -2135,9 +2139,11 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                 #with angular momentum
                 #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #with angular momentum rate
-                J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #No Angular momentum
                 #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #With Angular momentum and angular momentum together
+                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
 
     #-------------------------------------
     #Relative Footstep Constraint
@@ -3791,7 +3797,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
 
     PhaseDurationVec = [0.3, 0.5, 0.3]*(Nsteps)
 
-    print(PhaseDurationVec)
+    #print(PhaseDurationVec)
 
     #   Number of Phases
     Nphase = len(GaitPattern)
@@ -4600,31 +4606,31 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             J = J + (z[k]-z_ref[k])**2
             #for xdot 
             J = J + (xdot[k]-xdot_ref[k])**2
-            #for y position
+            #for ydot
             J = J + (ydot[k]-ydot_ref[k])**2
-            #for z position
+            #for zdot
             J = J + (zdot[k]-zdot_ref[k])**2
-            ##for FLx
-            #J = J + (FLx[k]-FLx_ref[k])**2
-            ##for FLy
-            #J = J + (FLy[k]-FLy_ref[k])**2
-            ##for FLz
-            #J = J + (FLz[k]-FLz_ref[k])**2
-            ##for FRx
-            #J = J + (FRx[k]-FRx_ref[k])**2
-            ##for FRy
-            #J = J + (FRy[k]-FRy_ref[k])**2
-            ##for FRz
-            #J = J + (FRz[k]-FRz_ref[k])**2
-    #----------------------------------
+            # ##for FLx
+            # J = J + (FLx[k]-FLx_ref[k])**2
+            # ##for FLy
+            # J = J + (FLy[k]-FLy_ref[k])**2
+            # ##for FLz
+            # J = J + (FLz[k]-FLz_ref[k])**2
+            # ##for FRx
+            # J = J + (FRx[k]-FRx_ref[k])**2
+            # ##for FRy
+            # J = J + (FRy[k]-FRy_ref[k])**2
+            # ##for FRz
+            # J = J + (FRz[k]-FRz_ref[k])**2
+    # #----------------------------------
     #Cost Term for Tracking Constact Locations
-    #for step_Count in range(len(px)):
-    #    #For Px
-    #    J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
-    #    #For py
-    #    J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
-    #    #For pz
-    #    J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
+    for step_Count in range(len(px)):
+        #For Px
+        J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
+        #For py
+        J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
+        #For pz
+        J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
 
     #-------------------------------------
     #Relative Footstep Constraint
@@ -6940,79 +6946,134 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     ##   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
     #FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
     #   Collect all Parameters
-    ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
-                "RightSwingFlag":ParaRightSwingFlag,
-                "x_init":x_init,
-                "y_init":y_init,
-                "z_init":z_init,
-                "xdot_init":xdot_init,
-                "ydot_init":ydot_init,
-                "zdot_init":zdot_init,
-                "Lx_init":Lx_init,
-                "Ly_init":Ly_init,
-                "Lz_init":Lz_init,
-                "Ldotx_init":Ldotx_init,
-                "Ldoty_init":Ldoty_init,
-                "Ldotz_init":Ldotz_init,
-                "PLx_init":PLx_init,
-                "PLy_init":PLy_init,
-                "PLz_init":PLz_init,
-                "PRx_init":PRx_init,
-                "PRy_init":PRy_init,
-                "PRz_init":PRz_init,
-                "x_end":x_end,
-                "y_end":y_end,
-                "z_end":z_end,
-                "xdot_end":xdot_end,
-                "ydot_end":ydot_end,
-                "zdot_end":zdot_end,
-                "SurfParas":SurfParas,
-                "SurfTangentsX":SurfTangentsX,
-                "SurfTangentsY":SurfTangentsY,
-                "SurfNorms":SurfNorms,
-                "PL_init_TangentX":PL_init_TangentX,
-                "PL_init_TangentY":PL_init_TangentY,
-                "PL_init_Norm":PL_init_Norm,
-                "PR_init_TangentX":PR_init_TangentX,
-                "PR_init_TangentY":PR_init_TangentY,
-                "PR_init_Norm":PR_init_Norm,
-                "x_ref":x_ref,
-                "y_ref":y_ref,
-                "z_ref":z_ref,
-                "xdot_ref":xdot_ref,
-                "ydot_ref":ydot_ref,
-                "zdot_ref":zdot_ref,
-                "FLx_ref":FLx_ref,
-                "FLy_ref":FLy_ref,
-                "FLz_ref":FLz_ref,
-                "FRx_ref":FRx_ref,
-                "FRy_ref":FRy_ref,
-                "FRz_ref":FRz_ref,
-                "SwitchingTimeVec_ref":SwitchingTimeVec_ref,
-                "Px_seq_ref":Px_seq_ref,
-                "Py_seq_ref":Py_seq_ref,
-                "Pz_seq_ref":Pz_seq_ref,
-    }
-    #            "FirstRoundFlag":FirstRoundFlag,
-    #Collect all Parameters
-    paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
-                       x_init,y_init,z_init,
-                       xdot_init,ydot_init,zdot_init,
-                       Lx_init,Ly_init,Lz_init,
-                       Ldotx_init,Ldoty_init,Ldotz_init,
-                       PLx_init,PLy_init,PLz_init,
-                       PRx_init,PRy_init,PRz_init,
-                       x_end,y_end,z_end,
-                       xdot_end,ydot_end,zdot_end,
-                       SurfParas,SurfTangentsX,SurfTangentsY,SurfNorms,
-                       PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                       PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-                       x_ref,y_ref,z_ref,
-                       xdot_ref,ydot_ref,zdot_ref,
-                       FLx_ref,FLy_ref,FLz_ref,
-                       FRx_ref,FRy_ref,FRz_ref,
-                       SwitchingTimeVec_ref,
-                       Px_seq_ref,Py_seq_ref,Pz_seq_ref)
+
+    if SecondLevel == "CoM_Dynamics":
+
+        ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
+                    "RightSwingFlag":ParaRightSwingFlag,
+                    "x_init":x_init,
+                    "y_init":y_init,
+                    "z_init":z_init,
+                    "xdot_init":xdot_init,
+                    "ydot_init":ydot_init,
+                    "zdot_init":zdot_init,
+                    "Lx_init":Lx_init,
+                    "Ly_init":Ly_init,
+                    "Lz_init":Lz_init,
+                    "Ldotx_init":Ldotx_init,
+                    "Ldoty_init":Ldoty_init,
+                    "Ldotz_init":Ldotz_init,
+                    "PLx_init":PLx_init,
+                    "PLy_init":PLy_init,
+                    "PLz_init":PLz_init,
+                    "PRx_init":PRx_init,
+                    "PRy_init":PRy_init,
+                    "PRz_init":PRz_init,
+                    "x_end":x_end,
+                    "y_end":y_end,
+                    "z_end":z_end,
+                    "xdot_end":xdot_end,
+                    "ydot_end":ydot_end,
+                    "zdot_end":zdot_end,
+                    "SurfParas":SurfParas,
+                    "SurfTangentsX":SurfTangentsX,
+                    "SurfTangentsY":SurfTangentsY,
+                    "SurfNorms":SurfNorms,
+                    "PL_init_TangentX":PL_init_TangentX,
+                    "PL_init_TangentY":PL_init_TangentY,
+                    "PL_init_Norm":PL_init_Norm,
+                    "PR_init_TangentX":PR_init_TangentX,
+                    "PR_init_TangentY":PR_init_TangentY,
+                    "PR_init_Norm":PR_init_Norm,
+                    "x_ref":x_ref,
+                    "y_ref":y_ref,
+                    "z_ref":z_ref,
+                    "xdot_ref":xdot_ref,
+                    "ydot_ref":ydot_ref,
+                    "zdot_ref":zdot_ref,
+                    "FLx_ref":FLx_ref,
+                    "FLy_ref":FLy_ref,
+                    "FLz_ref":FLz_ref,
+                    "FRx_ref":FRx_ref,
+                    "FRy_ref":FRy_ref,
+                    "FRz_ref":FRz_ref,
+                    "SwitchingTimeVec_ref":SwitchingTimeVec_ref,
+                    "Px_seq_ref":Px_seq_ref,
+                    "Py_seq_ref":Py_seq_ref,
+                    "Pz_seq_ref":Pz_seq_ref,
+        }
+        #            "FirstRoundFlag":FirstRoundFlag,
+        #Collect all Parameters
+        paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
+                        x_init,y_init,z_init,
+                        xdot_init,ydot_init,zdot_init,
+                        Lx_init,Ly_init,Lz_init,
+                        Ldotx_init,Ldoty_init,Ldotz_init,
+                        PLx_init,PLy_init,PLz_init,
+                        PRx_init,PRy_init,PRz_init,
+                        x_end,y_end,z_end,
+                        xdot_end,ydot_end,zdot_end,
+                        SurfParas,SurfTangentsX,SurfTangentsY,SurfNorms,
+                        PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                        PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                        x_ref,y_ref,z_ref,
+                        xdot_ref,ydot_ref,zdot_ref,
+                        FLx_ref,FLy_ref,FLz_ref,
+                        FRx_ref,FRy_ref,FRz_ref,
+                        SwitchingTimeVec_ref,
+                        Px_seq_ref,Py_seq_ref,Pz_seq_ref)
+    else: 
+        ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
+                    "RightSwingFlag":ParaRightSwingFlag,
+                    "x_init":x_init,
+                    "y_init":y_init,
+                    "z_init":z_init,
+                    "xdot_init":xdot_init,
+                    "ydot_init":ydot_init,
+                    "zdot_init":zdot_init,
+                    "Lx_init":Lx_init,
+                    "Ly_init":Ly_init,
+                    "Lz_init":Lz_init,
+                    "Ldotx_init":Ldotx_init,
+                    "Ldoty_init":Ldoty_init,
+                    "Ldotz_init":Ldotz_init,
+                    "PLx_init":PLx_init,
+                    "PLy_init":PLy_init,
+                    "PLz_init":PLz_init,
+                    "PRx_init":PRx_init,
+                    "PRy_init":PRy_init,
+                    "PRz_init":PRz_init,
+                    "x_end":x_end,
+                    "y_end":y_end,
+                    "z_end":z_end,
+                    "xdot_end":xdot_end,
+                    "ydot_end":ydot_end,
+                    "zdot_end":zdot_end,
+                    "SurfParas":SurfParas,
+                    "SurfTangentsX":SurfTangentsX,
+                    "SurfTangentsY":SurfTangentsY,
+                    "SurfNorms":SurfNorms,
+                    "PL_init_TangentX":PL_init_TangentX,
+                    "PL_init_TangentY":PL_init_TangentY,
+                    "PL_init_Norm":PL_init_Norm,
+                    "PR_init_TangentX":PR_init_TangentX,
+                    "PR_init_TangentY":PR_init_TangentY,
+                    "PR_init_Norm":PR_init_Norm
+        }
+        #            "FirstRoundFlag":FirstRoundFlag,
+        #Collect all Parameters
+        paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
+                        x_init,y_init,z_init,
+                        xdot_init,ydot_init,zdot_init,
+                        Lx_init,Ly_init,Lz_init,
+                        Ldotx_init,Ldoty_init,Ldotz_init,
+                        PLx_init,PLy_init,PLz_init,
+                        PRx_init,PRy_init,PRz_init,
+                        x_end,y_end,z_end,
+                        xdot_end,ydot_end,zdot_end,
+                        SurfParas,SurfTangentsX,SurfTangentsY,SurfNorms,
+                        PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                        PR_init_TangentX,PR_init_TangentY,PR_init_Norm)
 
     #-----------------------------------------------------------------------------------------------------------------
     #Identify the Fidelity Type of the whole framework, Used to tell the First Level to set Constraints Accordingly
@@ -7053,7 +7114,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #xdot_Level1 = var_Level1[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
         #ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
         #zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
+        
         J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+        
         #J = J + 100*(x_Level1[-1]-x_end)**2
     else:#With Second level
         #Summation of the all running cost
@@ -7067,7 +7130,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #    zdot_Level2 = var_Level2[var_index_Level2["zdot"][0]:var_index_Level2["zdot"][1]+1]
         #Add terminal cost
         #J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2 + 100*(xdot_Level2[-1])**2 + 100*(ydot_Level2[-1])**2 + 100*(zdot_Level2[-1])**2
+        
         J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+        
         #J = J + 100*(x_Level2[-1]-x_end)**2
         
         #Deal with Connections between the first level and the second level

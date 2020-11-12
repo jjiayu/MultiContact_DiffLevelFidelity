@@ -118,6 +118,9 @@ for NumLookAhead in range(MinNumLookAhead,MaxNumLookAhead+1):
         worksheet.write(row, col, 'Acc AM Rate')
         worksheet.write(row, col+1, AccCost + MomentumRateCost)
         row = row + 1
+        worksheet.write(row, col, 'Cost All Terms: Acc AM AM Rate')
+        worksheet.write(row, col+1, AccCost + MomentCost + MomentumRateCost)
+        row = row + 1
         worksheet.write(row, col, 'Total Cost')
         worksheet.write(row, col+1, TotalCost)
         row = row + 1

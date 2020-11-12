@@ -217,27 +217,45 @@ for roundNum in range(Nrounds):
         #print(HalfSpaceSeq)
 
         #Get Reference Trajectory
-        x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
-        
-        ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
-            x_init,y_init,z_init,
-            xdot_init,ydot_init,zdot_init,
-            Lx_init,Ly_init,Lz_init,
-            Ldotx_init,Ldoty_init,Ldotz_init,
-            PLx_init,PLy_init,PLz_init,
-            PRx_init,PRy_init,PRz_init,
-            x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,
-            HalfSpaceSeq,
-            TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
-            PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-            PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-            x_traj_ref,y_traj_ref,z_traj_ref,
-            xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
-            FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
-            FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
-            SwitchingTimeVec_ref,
-            Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+        if ChosenSolver == "CoM":
+            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+
+            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                x_init,y_init,z_init,
+                xdot_init,ydot_init,zdot_init,
+                Lx_init,Ly_init,Lz_init,
+                Ldotx_init,Ldoty_init,Ldotz_init,
+                PLx_init,PLy_init,PLz_init,
+                PRx_init,PRy_init,PRz_init,
+                x_end,y_end,z_end,
+                xdot_end,ydot_end,zdot_end,
+                HalfSpaceSeq,
+                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                x_traj_ref,y_traj_ref,z_traj_ref,
+                xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+                FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+                FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+                SwitchingTimeVec_ref,
+                Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+            
+        else:
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                x_init,y_init,z_init,
+                xdot_init,ydot_init,zdot_init,
+                Lx_init,Ly_init,Lz_init,
+                Ldotx_init,Ldoty_init,Ldotz_init,
+                PLx_init,PLy_init,PLz_init,
+                PRx_init,PRy_init,PRz_init,
+                x_end,y_end,z_end,
+                xdot_end,ydot_end,zdot_end,
+                HalfSpaceSeq,
+                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+
         
         res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
 
@@ -367,28 +385,44 @@ for roundNum in range(Nrounds):
         #FirstRoundFlag = 0
 
         #Get Reference Trajectory
-        x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+        if ChosenSolver == "CoM":
+            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
 
-        #Build Parameter Vector
-        ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
-            x_init,y_init,z_init,
-            xdot_init,ydot_init,zdot_init,
-            Lx_init,Ly_init,Lz_init,
-            Ldotx_init,Ldoty_init,Ldotz_init,
-            PLx_init,PLy_init,PLz_init,
-            PRx_init,PRy_init,PRz_init,
-            x_end,y_end,z_end,
-            xdot_end,ydot_end,zdot_end,
-            HalfSpaceSeq,
-            TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
-            PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-            PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-            x_traj_ref,y_traj_ref,z_traj_ref,
-            xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
-            FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
-            FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
-            SwitchingTimeVec_ref,
-            Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                x_init,y_init,z_init,
+                xdot_init,ydot_init,zdot_init,
+                Lx_init,Ly_init,Lz_init,
+                Ldotx_init,Ldoty_init,Ldotz_init,
+                PLx_init,PLy_init,PLz_init,
+                PRx_init,PRy_init,PRz_init,
+                x_end,y_end,z_end,
+                xdot_end,ydot_end,zdot_end,
+                HalfSpaceSeq,
+                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                x_traj_ref,y_traj_ref,z_traj_ref,
+                xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+                FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+                FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+                SwitchingTimeVec_ref,
+                Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+            
+        else:
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                x_init,y_init,z_init,
+                xdot_init,ydot_init,zdot_init,
+                Lx_init,Ly_init,Lz_init,
+                Ldotx_init,Ldoty_init,Ldotz_init,
+                PLx_init,PLy_init,PLz_init,
+                PRx_init,PRy_init,PRz_init,
+                x_end,y_end,z_end,
+                xdot_end,ydot_end,zdot_end,
+                HalfSpaceSeq,
+                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator

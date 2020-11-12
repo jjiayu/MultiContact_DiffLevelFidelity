@@ -247,6 +247,7 @@ def GetStatsFromOutputStrings(output_log = None):
 
     print("Full Cost (Acc + AM rate): ",AccCost + MomentumRateCost)
 
+    print("Full Cost (Acc + AM+ AM rate): ",AccCost + MomentCost + MomentumRateCost)
     #print("Total Cost: ", TotalCost)
 
     print("Terminal Cost: ",TerminalCost)

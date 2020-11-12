@@ -14,7 +14,24 @@ from mpl_toolkits.mplot3d import Axes3D
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/up_and_down_left_first_CoM_previous/5LookAhead_Trial0.p"
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_CoM_previous/4LookAhead_Trial0.p"
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/7LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/7LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/up_and_down_left_first_CoM_previous/8LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/3LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/darpa_like_left_first_NLP_previous/3LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/Tracking_CoMCoMdot_Only/Flat_Uneven_Ref/antfarm_firstLevel_left_start_CoM_previous/6LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/Tracking_CoMCoMdot_Only/Flat_Uneven_Ref/darpa_like_left_first_CoM_previous/10LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/Tracking_CoM_CoMdot_ContactPosition/Flat_Uneven_Ref/up_and_down_left_first_CoM_previous/4LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Old_Results/Result_Ref_Traj_Tracking/Tracking_CoM_CoMdot_ContactPosition/Flat_Uneven_Ref/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
+
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/3LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_10x_TerminalCost/Uneven_Tracking_Uneven_Flat_Ref/antfarm_CoM_Tracking_Uneven_Flat/5LookAhead_Trial0.p"
+
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)

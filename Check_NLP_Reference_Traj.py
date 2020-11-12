@@ -8,7 +8,9 @@ from mpl_toolkits.mplot3d import Axes3D
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_NLP_previous/5LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/darpa_like_left_first_NLP_previous/2LookAhead_Trial0.p"
 
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_Fixed_PhaseDurationBoth/10LookAhead_Trial0.p"
+#filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/Flat_Fixed_PhaseDurationBoth/10LookAhead_Trial0.p"
+
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/AM_Rate_Only_Ref/Flat_Fixed_PhaseDurationBoth_10x_TerminalCost/5LookAhead_Trial0.p"
 
 with open(filename, 'rb') as f:
     data = pickle.load(f)
@@ -19,19 +21,19 @@ TISD_Trajectories = []
 Level1_VarIndex = data["VarIdx_of_All_Levels"]["Level1_Var_Index"]
 
 Trajectories = data["Trajectory_of_All_Rounds"]
-Contacts = data["Px_fullres"]
+Contacts = data["Py_fullres"]
 
-#print(Contacts)
+print(Contacts)
 
 #print(Contacts[2]-Contacts[0])
 #print(Contacts[4]-Contacts[2])
 #print(Contacts[6]-Contacts[4])
 #print(Contacts[8]-Contacts[6])
 
-label = "xdot"
+label = "Lz"
 
 #Plot Constact
-for roundIdx in range(0,25):
+for roundIdx in range(0,len(Contacts)):
 
     #roundIdx = 9
 
@@ -43,7 +45,7 @@ plt.show()
 
 #Plot trajectories
 
-for roundIdx in range(0,25):
+for roundIdx in range(0,len(Trajectories)):
     #For traj only
     traj = Trajectories[roundIdx]
     temptraj = traj[Level1_VarIndex[label][0]:Level1_VarIndex[label][1]+1]
