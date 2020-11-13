@@ -14,15 +14,14 @@ from mpl_toolkits.mplot3d import Axes3D
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/'
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/'
 #folderpath = '/home/jiayu/Desktop/ResultData/All_with_hrp2_kinematics/TSID_Almost_Symmetric_TestMotions/'
-filename = '5LookAhead_Trial0.p'
+filename = '7LookAhead_Trial0.p'
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
 #fullpath = folderpath + 'flat_NLP_previous/' + filename
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
-fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_10x_TerminalCost/Uneven_Tracking_Uneven_Flat_Ref/antfarm_Full_NLP/" + filename
+fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + filename
 
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
-
 
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
 query_traj = "Lx_result"
@@ -323,7 +322,6 @@ NLP_Traj = {"timeseries":timeseries,
 #fullpath = folderpath + 'flat_CoM_previous/' + filename
 #fullpath = folderpath + 'flat_Mix_previous/' + filename
 #fullpath = folderpath + 'up_and_down_left_first_CoM_previous/' + filename
-
 fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + filename
 
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_CoM_previous/" + filename

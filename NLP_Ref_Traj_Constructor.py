@@ -13,7 +13,7 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/flat_ref/10LookAhead_Trial0.p"
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/Uneven_Flat_Ref/10LookAhead_Trial0.p"
 
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/antfarm_ref/10LookAhead_Trial0.p"
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/antfarm_ref/10LookAhead_Trial0.p"
 
     with open(filename, 'rb') as f:
         data = pickle.load(f)
