@@ -507,6 +507,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #glb.append(np.array([0]))
     #gub.append(np.array([0]))
 
+
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
         #Decide Number of Knots
@@ -526,361 +527,359 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             k = Nph*Nk_Local + Local_k_Count
             #print(k)
 
-            #------------------------------------------
-            #Build useful vectors
-            #   Forces
-            FL1_k = ca.vertcat(FL1x[k],FL1y[k],FL1z[k])
-            FL2_k = ca.vertcat(FL2x[k],FL2y[k],FL2z[k])
-            FL3_k = ca.vertcat(FL3x[k],FL3y[k],FL3z[k])
-            FL4_k = ca.vertcat(FL4x[k],FL4y[k],FL4z[k])
+            # #------------------------------------------
+            # #Build useful vectors
+            # #   Forces
+            # FL1_k = ca.vertcat(FL1x[k],FL1y[k],FL1z[k])
+            # FL2_k = ca.vertcat(FL2x[k],FL2y[k],FL2z[k])
+            # FL3_k = ca.vertcat(FL3x[k],FL3y[k],FL3z[k])
+            # FL4_k = ca.vertcat(FL4x[k],FL4y[k],FL4z[k])
 
-            FR1_k = ca.vertcat(FR1x[k],FR1y[k],FR1z[k])
-            FR2_k = ca.vertcat(FR2x[k],FR2y[k],FR2z[k])
-            FR3_k = ca.vertcat(FR3x[k],FR3y[k],FR3z[k])
-            FR4_k = ca.vertcat(FR4x[k],FR4y[k],FR4z[k])
-            #   CoM
-            CoM_k = ca.vertcat(x[k],y[k],z[k])
-            #   Angular Momentum
-            if k<N_K-1: #N_K-1 the enumeration of the last knot, k<N_K-1 the one before the last knot
-                Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
-                Ldot_next = ca.vertcat(Ldotz[k+1],Ldotz[k+1],Ldotz[k+1])
-            #-------------------------------------------
+            # FR1_k = ca.vertcat(FR1x[k],FR1y[k],FR1z[k])
+            # FR2_k = ca.vertcat(FR2x[k],FR2y[k],FR2z[k])
+            # FR3_k = ca.vertcat(FR3x[k],FR3y[k],FR3z[k])
+            # FR4_k = ca.vertcat(FR4x[k],FR4y[k],FR4z[k])
+            # #   CoM
+            # CoM_k = ca.vertcat(x[k],y[k],z[k])
+            # #   Angular Momentum
+            # if k<N_K-1: #N_K-1 the enumeration of the last knot, k<N_K-1 the one before the last knot
+            #     Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
+            #     Ldot_next = ca.vertcat(Ldotz[k+1],Ldotz[k+1],Ldotz[k+1])
+            # #-------------------------------------------
 
-            #-------------------------------------------
-            #Phase dependent Constraints (CoM Kinematics and Angular Dynamics)
-            if GaitPattern[Nph]=='InitialDouble':
-                #Kinematics Constraint
-                #   CoM in the Left foot
-                g.append(K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left))
-                glb.append(np.full((len(k_CoM_Left),),-np.inf))
-                gub.append(np.full((len(k_CoM_Left),),0))
+            # #-------------------------------------------
+            # #Phase dependent Constraints (CoM Kinematics and Angular Dynamics)
+            # if GaitPattern[Nph]=='InitialDouble':
+            #     #Kinematics Constraint
+            #     #   CoM in the Left foot
+            #     g.append(K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left))
+            #     glb.append(np.full((len(k_CoM_Left),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Left),),0))
 
-                #   CoM in the Right foot
-                g.append(K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right))
-                glb.append(np.full((len(k_CoM_Right),),-np.inf))
-                gub.append(np.full((len(k_CoM_Right),),0))
+            #     #   CoM in the Right foot
+            #     g.append(K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right))
+            #     glb.append(np.full((len(k_CoM_Right),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Right),),0))
                 
-                #Angular Dynamics
-                #Definition of Contact Points of a foot
-                #P3----------------P1
-                #|                  |
-                #|                  |
-                #|                  |
-                #P4----------------P2
+            #     #Angular Dynamics
+            #     #Definition of Contact Points of a foot
+            #     #P3----------------P1
+            #     #|                  |
+            #     #|                  |
+            #     #|                  |
+            #     #P4----------------P2
 
-                if k<N_K-1: #double check the knot number is valid
-                    g.append(Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                           ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                           ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                           ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) + 
-                                                           ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                           ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                           ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                           ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)))
-                    #g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
-                else:
-                    print("Initial Double Stage - Angular Dynamics Constraint - Knot number exceeds limit")
+            #     if k<N_K-1: #double check the knot number is valid
+            #         g.append(Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+            #                                                ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+            #                                                ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+            #                                                ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) + 
+            #                                                ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+            #                                                ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+            #                                                ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+            #                                                ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)))
+            #         #g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
+            #         glb.append(np.array([0,0,0]))
+            #         gub.append(np.array([0,0,0]))
+            #     else:
+            #         print("Initial Double Stage - Angular Dynamics Constraint - Knot number exceeds limit")
                 
-                #Unilateral Force Constraints for all Suppport foot
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL1_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL2_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL3_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL4_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR1_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR2_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR3_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR4_k, TerrainNorm = PR_init_Norm)
+            #     #Unilateral Force Constraints for all Suppport foot
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL1_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL2_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL3_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL4_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR1_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR2_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR3_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FR4_k, TerrainNorm = PR_init_Norm)
 
-                #Friction Cone
-                #Initial phase, no Leg Swing First Inidcators
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     #Friction Cone
+            #     #Initial phase, no Leg Swing First Inidcators
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
 
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
 
-            elif GaitPattern[Nph]=='Swing':
-                #Kinematics Constraint and Angular Dynamics Constraint
+            # elif GaitPattern[Nph]=='Swing':
+            #     #Kinematics Constraint and Angular Dynamics Constraint
 
-                #IF LEFT Foot is SWING (RIGHT FOOT is STATIONARY)
-                #Kinematics Constraint
-                #   CoM in the RIGHT Foot
-                g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
-                glb.append(np.full((len(k_CoM_Right),),-np.inf))
-                gub.append(np.full((len(k_CoM_Right),),0))
+            #     #IF LEFT Foot is SWING (RIGHT FOOT is STATIONARY)
+            #     #Kinematics Constraint
+            #     #   CoM in the RIGHT Foot
+            #     g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
+            #     glb.append(np.full((len(k_CoM_Right),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Right),),0))
 
-                #Angular Dynamics (Right Support)
-                if k<N_K-1:
-                    g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next-Ldot_current-h*(ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)), np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+            #     #Angular Dynamics (Right Support)
+            #     if k<N_K-1:
+            #         g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+            #                                                                              ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+            #                                                                              ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+            #                                                                              ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
+            #         #g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next-Ldot_current-h*(ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)), np.array([0,0,0])))
+            #         glb.append(np.array([0,0,0]))
+            #         gub.append(np.array([0,0,0]))
 
-                #If RIGHT foot is SWING (LEFT is STATIONARY), Then LEFT Foot is the Support FOOT
-                #Kinematics Constraint
-                #   CoM in the Left foot
-                g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
-                glb.append(np.full((len(k_CoM_Left),),-np.inf))
-                gub.append(np.full((len(k_CoM_Left),),0))
+            #     #If RIGHT foot is SWING (LEFT is STATIONARY), Then LEFT Foot is the Support FOOT
+            #     #Kinematics Constraint
+            #     #   CoM in the Left foot
+            #     g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
+            #     glb.append(np.full((len(k_CoM_Left),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Left),),0))
 
-                #Angular Dynamics (Left Support)
-                if k<N_K-1:
-                    g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                                                          ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)), np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+            #     #Angular Dynamics (Left Support)
+            #     if k<N_K-1:
+            #         g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+            #                                                                               ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+            #                                                                               ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+            #                                                                               ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k)), np.array([0,0,0])))
+            #         #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)), np.array([0,0,0])))
+            #         glb.append(np.array([0,0,0]))
+            #         gub.append(np.array([0,0,0]))
 
-                #Unilateral Constraint
-                #
-                # if the Left foot Swings, then the right foot should have unilateral constraints
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainNorm = PR_init_Norm)
-                # if the Right foot Swings, then the Left foot should have unilateral constraints
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainNorm = PL_init_Norm)
+            #     #Unilateral Constraint
+            #     #
+            #     # if the Left foot Swings, then the right foot should have unilateral constraints
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainNorm = PR_init_Norm)
+            #     # if the Right foot Swings, then the Left foot should have unilateral constraints
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainNorm = PL_init_Norm)
 
-                #Zero Force Constrain
-                # if the Left Foot Swings, then the Left foot should have zero forces
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k)
+            #     #Zero Force Constrain
+            #     # if the Left Foot Swings, then the Left foot should have zero forces
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k)
 
-                # if the Right Foot Swing, then the Right foot should have zero forces
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k)
-                g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k)
+            #     # if the Right Foot Swing, then the Right foot should have zero forces
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k)
+            #     g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k)
 
-                #Friction Cone Constraint
-                #If swing the Left foot first, then friction cone enforced on the Right Foot
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                #If swing the Right Foot First, then the friction cone enforced on the Left Foot
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     #Friction Cone Constraint
+            #     #If swing the Left foot first, then friction cone enforced on the Right Foot
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     #If swing the Right Foot First, then the friction cone enforced on the Left Foot
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
 
-            elif GaitPattern[Nph]=='DoubleSupport':
-                #Kinematic Constraint and Angular Dynamics
+            # elif GaitPattern[Nph]=='DoubleSupport':
+            #     #Kinematic Constraint and Angular Dynamics
                 
-                #IF LEFT Foot is SWING (RIGHT FOOT is STATIONARY)
-                #Kinematics Constraint
-                #   CoM in the RIGHT Foot (Init Foot)
-                g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
-                glb.append(np.full((len(k_CoM_Right),),-np.inf))
-                gub.append(np.full((len(k_CoM_Right),),0))
-                #   CoM in the LEFT foot (Moved/Swing - PL_k)
-                PL_k = ca.vertcat(*px,*py,*pz) #Moved/Swing Foot landing position
-                g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Left@(CoM_k-PL_k)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
-                glb.append(np.full((len(k_CoM_Left),),-np.inf))
-                gub.append(np.full((len(k_CoM_Left),),0))
-                #Angular Dynamics (Double Support)
-                #Terrain Tangent and Norm
-                PL_k_Norm = SurfNorms[0:3]
-                PL_k_TangentX = SurfTangentsX[0:3]
-                PL_k_TangentY = SurfTangentsY[0:3]
+            #     #IF LEFT Foot is SWING (RIGHT FOOT is STATIONARY)
+            #     #Kinematics Constraint
+            #     #   CoM in the RIGHT Foot (Init Foot)
+            #     g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right), np.full((len(k_CoM_Right),),-1)))
+            #     glb.append(np.full((len(k_CoM_Right),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Right),),0))
+            #     #   CoM in the LEFT foot (Moved/Swing - PL_k)
+            #     PL_k = ca.vertcat(*px,*py,*pz) #Moved/Swing Foot landing position
+            #     g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Left@(CoM_k-PL_k)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
+            #     glb.append(np.full((len(k_CoM_Left),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Left),),0))
+            #     #Angular Dynamics (Double Support)
+            #     #Terrain Tangent and Norm
+            #     PL_k_Norm = SurfNorms[0:3]
+            #     PL_k_TangentX = SurfTangentsX[0:3]
+            #     PL_k_TangentY = SurfTangentsY[0:3]
                 
-                if k<N_K-1:
-                    g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_k+0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL1_k) + 
-                                                                                         ca.cross((PL_k+0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL2_k) + 
-                                                                                         ca.cross((PL_k-0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL3_k) + 
-                                                                                         ca.cross((PL_k-0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL4_k) +
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaLeftSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_k+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_k+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_k+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_k+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+            #     if k<N_K-1:
+            #         g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_k+0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL1_k) + 
+            #                                                                              ca.cross((PL_k+0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL2_k) + 
+            #                                                                              ca.cross((PL_k-0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL3_k) + 
+            #                                                                              ca.cross((PL_k-0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL4_k) +
+            #                                                                              ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+            #                                                                              ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+            #                                                                              ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+            #                                                                              ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
+            #         #g.append(ca.if_else(ParaLeftSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_k+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_k+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_k+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_k+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
+            #         glb.append(np.array([0,0,0]))
+            #         gub.append(np.array([0,0,0]))
                 
-                #if RIGHT Foot is SWING (LEFT FOOT is STATIONARY)
-                #Kinematics Constraint
-                #   CoM in the Left foot (Init Foot)
-                g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left),np.full((len(k_CoM_Left),),-1)))
-                glb.append(np.full((len(k_CoM_Left),),-np.inf))
-                gub.append(np.full((len(k_CoM_Left),),0))
-                #   CoM in the Right foot (Moved/Swing - PR_k) 
-                PR_k = ca.vertcat(*px,*py,*pz) #Moved/Swing Foot landing position
-                g.append(ca.if_else(ParaRightSwingFlag,K_CoM_Right@(CoM_k-PR_k)-ca.DM(k_CoM_Right),np.full((len(k_CoM_Right),),-1)))
-                glb.append(np.full((len(k_CoM_Right),),-np.inf))
-                gub.append(np.full((len(k_CoM_Right),),0))
+            #     #if RIGHT Foot is SWING (LEFT FOOT is STATIONARY)
+            #     #Kinematics Constraint
+            #     #   CoM in the Left foot (Init Foot)
+            #     g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left),np.full((len(k_CoM_Left),),-1)))
+            #     glb.append(np.full((len(k_CoM_Left),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Left),),0))
+            #     #   CoM in the Right foot (Moved/Swing - PR_k) 
+            #     PR_k = ca.vertcat(*px,*py,*pz) #Moved/Swing Foot landing position
+            #     g.append(ca.if_else(ParaRightSwingFlag,K_CoM_Right@(CoM_k-PR_k)-ca.DM(k_CoM_Right),np.full((len(k_CoM_Right),),-1)))
+            #     glb.append(np.full((len(k_CoM_Right),),-np.inf))
+            #     gub.append(np.full((len(k_CoM_Right),),0))
 
-                #Angular Dynamics (Double Support)
-                #Terrain Tangent and Norm
-                PR_k_Norm = SurfNorms[0:3]
-                PR_k_TangentX = SurfTangentsX[0:3]
-                PR_k_TangentY = SurfTangentsY[0:3]
+            #     #Angular Dynamics (Double Support)
+            #     #Terrain Tangent and Norm
+            #     PR_k_Norm = SurfNorms[0:3]
+            #     PR_k_TangentX = SurfTangentsX[0:3]
+            #     PR_k_TangentY = SurfTangentsY[0:3]
                 
-                if k<N_K-1:
-                    g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                                                          ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) +
-                                                                                          ca.cross((PR_k+0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR1_k) + 
-                                                                                          ca.cross((PR_k+0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR2_k) + 
-                                                                                          ca.cross((PR_k-0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR3_k) + 
-                                                                                          ca.cross((PR_k-0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))                    
-                    #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_k+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_k+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_k+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_k+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+            #     if k<N_K-1:
+            #         g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+            #                                                                               ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+            #                                                                               ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+            #                                                                               ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) +
+            #                                                                               ca.cross((PR_k+0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR1_k) + 
+            #                                                                               ca.cross((PR_k+0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR2_k) + 
+            #                                                                               ca.cross((PR_k-0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR3_k) + 
+            #                                                                               ca.cross((PR_k-0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))                    
+            #         #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_k+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_k+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_k+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_k+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
+            #         glb.append(np.array([0,0,0]))
+            #         gub.append(np.array([0,0,0]))
 
-                #Unilater Constraints
-                # Norm at the new landing surface
-                Pnext_Norm = SurfNorms[0:3]
-                Pnext_TangentX = SurfTangentsX[0:3]
-                Pnext_TangentY = SurfTangentsY[0:3]
+            #     #Unilater Constraints
+            #     # Norm at the new landing surface
+            #     Pnext_Norm = SurfNorms[0:3]
+            #     Pnext_TangentX = SurfTangentsX[0:3]
+            #     Pnext_TangentY = SurfTangentsY[0:3]
 
-                #Case 1 
-                # if swing the Left foot first, then the Left foot obey unilateral constraint on the New SurfaceNorm
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k, TerrainNorm = Pnext_Norm)
-                # Then the Right foot oby the unilateral constraints on the Init Surface Norm
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainNorm = PR_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainNorm = PR_init_Norm)
+            #     #Case 1 
+            #     # if swing the Left foot first, then the Left foot obey unilateral constraint on the New SurfaceNorm
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k, TerrainNorm = Pnext_Norm)
+            #     # Then the Right foot oby the unilateral constraints on the Init Surface Norm
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainNorm = PR_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainNorm = PR_init_Norm)
                 
-                #Case 2
-                # if swing the Right foot first, then the Right foot obey unilateral constraint on the New SurfaceNorm
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k, TerrainNorm = Pnext_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k, TerrainNorm = Pnext_Norm)
-                # Then the Left foot oby the unilateral constraints on the Init Surface Norm
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainNorm = PL_init_Norm)
-                g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainNorm = PL_init_Norm)
+            #     #Case 2
+            #     # if swing the Right foot first, then the Right foot obey unilateral constraint on the New SurfaceNorm
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k, TerrainNorm = Pnext_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k, TerrainNorm = Pnext_Norm)
+            #     # Then the Left foot oby the unilateral constraints on the Init Surface Norm
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainNorm = PL_init_Norm)
+            #     g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainNorm = PL_init_Norm)
 
-                #Friction Cone
+            #     #Friction Cone
                 
-                #Case 1
-                #If Swing the Left foot first, then the Left foot obey the friction cone constraint in the new landing place
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                #Then the Right foot obey the fricition cone constraint in the initial landing place
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     #Case 1
+            #     #If Swing the Left foot first, then the Left foot obey the friction cone constraint in the new landing place
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL3_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL4_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     #Then the Right foot obey the fricition cone constraint in the initial landing place
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR3_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR4_k, TerrainTangentX = PR_init_TangentX, TerrainTangentY = PR_init_TangentY, TerrainNorm = PR_init_Norm, miu = miu)
 
-                #Case 2
-                #If swing the Right foot first, then the Right foot obey the friction cone constraint in the new landing place
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
-                # then the Left foot obey the constaint on the initial landing place
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
-                g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     #Case 2
+            #     #If swing the Right foot first, then the Right foot obey the friction cone constraint in the new landing place
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR3_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR4_k, TerrainTangentX = Pnext_TangentX, TerrainTangentY = Pnext_TangentY, TerrainNorm = Pnext_Norm, miu = miu)
+            #     # then the Left foot obey the constaint on the initial landing place
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
+            #     g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
 
-            #-------------------------------------
-            #Dynamics Constraint
-            if k < N_K - 1: #N_k - 1 the enumeration of the last knot, -1 the knot before the last knot
-                #First-order Dynamics x-axis
-                g.append(x[k+1] - x[k] - h*xdot[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            # #-------------------------------------
+            # #Dynamics Constraint
+            # if k < N_K - 1: #N_k - 1 the enumeration of the last knot, -1 the knot before the last knot
+            #     #First-order Dynamics x-axis
+            #     g.append(x[k+1] - x[k] - h*xdot[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #First-order Dynamics y-axis
-                g.append(y[k+1] - y[k] - h*ydot[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #First-order Dynamics y-axis
+            #     g.append(y[k+1] - y[k] - h*ydot[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #First-order Dynamics z-axis
-                g.append(z[k+1] - z[k] - h*zdot[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #First-order Dynamics z-axis
+            #     g.append(z[k+1] - z[k] - h*zdot[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #First-order Angular Momentum Dynamics x-axis
-                g.append(Lx[k+1] - Lx[k] - h*Ldotx[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #First-order Angular Momentum Dynamics x-axis
+            #     g.append(Lx[k+1] - Lx[k] - h*Ldotx[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #First-order Angular Momentum Dynamics y-axis
-                g.append(Ly[k+1] - Ly[k] - h*Ldoty[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #First-order Angular Momentum Dynamics y-axis
+            #     g.append(Ly[k+1] - Ly[k] - h*Ldoty[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #First-order Angular Momentum Dynamics z-axis
-                g.append(Lz[k+1] - Lz[k] - h*Ldotz[k])
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #First-order Angular Momentum Dynamics z-axis
+            #     g.append(Lz[k+1] - Lz[k] - h*Ldotz[k])
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #Second-order Dynamics x-axis
-                g.append(xdot[k+1] - xdot[k] - h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m))
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #Second-order Dynamics x-axis
+            #     g.append(xdot[k+1] - xdot[k] - h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m))
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #Second-order Dynamics y-axis
-                g.append(ydot[k+1] - ydot[k] - h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m))
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #Second-order Dynamics y-axis
+            #     g.append(ydot[k+1] - ydot[k] - h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m))
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
 
-                #Second-order Dynamics z-axis
-                g.append(zdot[k+1] - zdot[k] - h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G))
-                glb.append(np.array([0]))
-                gub.append(np.array([0]))
+            #     #Second-order Dynamics z-axis
+            #     g.append(zdot[k+1] - zdot[k] - h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G))
+            #     glb.append(np.array([0]))
+            #     gub.append(np.array([0]))
             
-                ##Constant Acceleration
-                #Accx_1  = FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m
-                #Accx_2  = FL1x[k+1]/m+FL2x[k+1]/m+FL3x[k+1]/m+FL4x[k+1]/m+FR1x[k+1]/m+FR2x[k+1]/m+FR3x[k+1]/m+FR4x[k+1]/m
+            #     ##Constant Acceleration
+            #     #Accx_1  = FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m
+            #     #Accx_2  = FL1x[k+1]/m+FL2x[k+1]/m+FL3x[k+1]/m+FL4x[k+1]/m+FR1x[k+1]/m+FR2x[k+1]/m+FR3x[k+1]/m+FR4x[k+1]/m
                 
-                #Accy_1  = FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m
-                #Accy_2  = FL1y[k+1]/m+FL2y[k+1]/m+FL3y[k+1]/m+FL4y[k+1]/m+FR1y[k+1]/m+FR2y[k+1]/m+FR3y[k+1]/m+FR4y[k+1]/m
+            #     #Accy_1  = FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m
+            #     #Accy_2  = FL1y[k+1]/m+FL2y[k+1]/m+FL3y[k+1]/m+FL4y[k+1]/m+FR1y[k+1]/m+FR2y[k+1]/m+FR3y[k+1]/m+FR4y[k+1]/m
 
-                #Accz_1  = FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m
-                #Accz_2  = FL1z[k+1]/m+FL2z[k+1]/m+FL3z[k+1]/m+FL4z[k+1]/m+FR1z[k+1]/m+FR2z[k+1]/m+FR3z[k+1]/m+FR4z[k+1]/m
+            #     #Accz_1  = FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m
+            #     #Accz_2  = FL1z[k+1]/m+FL2z[k+1]/m+FL3z[k+1]/m+FL4z[k+1]/m+FR1z[k+1]/m+FR2z[k+1]/m+FR3z[k+1]/m+FR4z[k+1]/m
 
-                #g.append(Accx_1-Accx_2)
-                #glb.append(np.array([0]))
-                #gub.append(np.array([0]))
+            #     #g.append(Accx_1-Accx_2)
+            #     #glb.append(np.array([0]))
+            #     #gub.append(np.array([0]))
 
-                #g.append(Accy_1-Accy_2)
-                #glb.append(np.array([0]))
-                #gub.append(np.array([0]))
+            #     #g.append(Accy_1-Accy_2)
+            #     #glb.append(np.array([0]))
+            #     #gub.append(np.array([0]))
 
-                #g.append(Accz_1-Accz_2)
-                #glb.append(np.array([0]))
-                #gub.append(np.array([0]))
-            #Add Cost Terms
-            if k < N_K - 1:
-                #with angular momentum
-                #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #No Angular momentum
-                #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #With Angular momentum rate
-                #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #With Angular momentum and angular momentum together
-                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #J = J + Lx[k]**2 + Ly[k]**2 + Lz[k]**2 + Ldotx[k]**2 + Ldoty[k]**2 + Ldotz[k]**2 + (FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + (FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + (FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-
+            #     #g.append(Accz_1-Accz_2)
+            #     #glb.append(np.array([0]))
+            #     #gub.append(np.array([0]))
+            # #Add Cost Terms
+            # #if k < N_K - 1:
+            #     #with angular momentum
+            #     #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+            #     #No Angular momentum
+            #     #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+            #     #With Angular momentum rate
+            #     #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+            #     #With Angular momentum and angular momentum together
+            #     #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
 
     #Relative Foot Constraints
     #   For init phase
@@ -1805,8 +1804,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                     else: #For other Steps, indexed as 1,2,3,4
                         p_stance = ca.vertcat(px[StepCnt-1],py[StepCnt-1],pz[StepCnt-1])
                         p_stance_TangentX = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stance_TangentY = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stance_Norm = SurfTangentsX[StepCnt*3:StepCnt*3+3]
+                        p_stance_TangentY = SurfTangentsY[StepCnt*3:StepCnt*3+3]
+                        p_stance_Norm = SurfNorms[StepCnt*3:StepCnt*3+3]
 
                     #Give Constraint according to even and odd steps
                     if StepCnt%2 == 0: #Even Number of Steps
@@ -1925,19 +1924,19 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
 
                         p_land = ca.vertcat(px[StepCnt],py[StepCnt],pz[StepCnt])
                         p_land_TangentX = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_TangentY = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_Norm = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_TangentY = SurfTangentsY[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_Norm = SurfNorms[(StepCnt+1)*3:(StepCnt+1)*3+3]
                 
                     else: #For other steps, indexed as 1,2,3,4
                         p_stationary = ca.vertcat(px[StepCnt-1],py[StepCnt-1],pz[StepCnt-1])
                         p_stationary_TangentX = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stationary_TangentY = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stationary_Norm = SurfTangentsX[StepCnt*3:StepCnt*3+3]
+                        p_stationary_TangentY = SurfTangentsY[StepCnt*3:StepCnt*3+3]
+                        p_stationary_Norm = SurfNorms[StepCnt*3:StepCnt*3+3]
 
                         p_land = ca.vertcat(px[StepCnt],py[StepCnt],pz[StepCnt])
                         p_land_TangentX = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_TangentY = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_Norm = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_TangentY = SurfTangentsY[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_Norm = SurfNorms[(StepCnt+1)*3:(StepCnt+1)*3+3]
 
                     #Give Constraint according to even and odd steps
                     if StepCnt%2 == 0: #Even Number of Steps
@@ -3828,7 +3827,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
     py_lower_limit = 0.04
     #Lowest Z
     z_lowest = 0.7
-    z_highest = 0.8
+    z_highest = 0.85
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -4127,6 +4126,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
     #glb.append(np.array([0]))
     #gub.append(np.array([0]))
 
+
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
         #Decide Number of Knots
@@ -4169,9 +4169,18 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             
             #Get Step Counter
             StepCnt = Nph//3
+            #print("Knot ", k)
+            #print("Belongs to Phase", Nph)
+            #print("Phase Type ", GaitPattern[Nph])
+            #print("Belongs to Step", StepCnt)
 
             #NOTE: The first phase (Initial Double) --- Needs special care
             if Nph == 0 and GaitPattern[Nph]=='InitialDouble':
+
+                print("Knot ", k)
+                print("Belongs to Phase", Nph)
+                print("Phase Type ", GaitPattern[Nph])
+                print("Belongs to Step", StepCnt)
 
                 #initial support foot (the landing foot from the first phase)
                 p_init = ca.vertcat(px_init,py_init,pz_init)
@@ -4224,6 +4233,12 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             #All other phases
             else:
                 if GaitPattern[Nph]=='InitialDouble':
+
+                    print("Knot ", k)
+                    print("Belongs to Phase", Nph)
+                    print("Phase Type ", GaitPattern[Nph])
+                    print("Belongs to Step", StepCnt)
+
                     #Get contact location
                     if StepCnt == 1: #Step 1 needs special care (NOTE: Step Count Start from 0)
                         p_previous = ca.vertcat(px_init,py_init,pz_init)
@@ -4334,6 +4349,11 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
                         g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR_k, TerrainTangentX = p_previous_TangentX, TerrainTangentY = p_previous_TangentY, TerrainNorm = p_previous_Norm, miu = miu)
 
                 elif GaitPattern[Nph]== 'Swing':
+                    print("Knot ", k)
+                    print("Belongs to Phase", Nph)
+                    print("Phase Type ", GaitPattern[Nph])
+                    print("Belongs to Step", StepCnt)
+
                     #Get contact location
                     if StepCnt == 0:#Special Case for the First Step (NOTE:Step 0)
                         p_stance = ca.vertcat(px_init,py_init,pz_init)
@@ -4344,8 +4364,8 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
                     else: #For other Steps, indexed as 1,2,3,4
                         p_stance = ca.vertcat(px[StepCnt-1],py[StepCnt-1],pz[StepCnt-1])
                         p_stance_TangentX = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stance_TangentY = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stance_Norm = SurfTangentsX[StepCnt*3:StepCnt*3+3]
+                        p_stance_TangentY = SurfTangentsY[StepCnt*3:StepCnt*3+3]
+                        p_stance_Norm = SurfNorms[StepCnt*3:StepCnt*3+3]
 
                     #Give Constraint according to even and odd steps
                     if StepCnt%2 == 0: #Even Number of Steps
@@ -4419,6 +4439,10 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
                         g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL_k, TerrainTangentX = p_stance_TangentX, TerrainTangentY = p_stance_TangentY, TerrainNorm = p_stance_Norm, miu = miu)
 
                 elif GaitPattern[Nph]=='DoubleSupport':
+                    print("Knot ", k)
+                    print("Belongs to Phase", Nph)
+                    print("Phase Type ", GaitPattern[Nph])
+                    print("Belongs to Step", StepCnt)
                     #Get contact location
                     if StepCnt == 0: #Special Case for the First Step (NOTE: Step 0)
                         p_stationary = ca.vertcat(px_init,py_init,pz_init)
@@ -4428,19 +4452,19 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
 
                         p_land = ca.vertcat(px[StepCnt],py[StepCnt],pz[StepCnt])
                         p_land_TangentX = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_TangentY = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_Norm = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_TangentY = SurfTangentsY[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_Norm = SurfNorms[(StepCnt+1)*3:(StepCnt+1)*3+3]
                 
                     else: #For other steps, indexed as 1,2,3,4
                         p_stationary = ca.vertcat(px[StepCnt-1],py[StepCnt-1],pz[StepCnt-1])
                         p_stationary_TangentX = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stationary_TangentY = SurfTangentsX[StepCnt*3:StepCnt*3+3]
-                        p_stationary_Norm = SurfTangentsX[StepCnt*3:StepCnt*3+3]
+                        p_stationary_TangentY = SurfTangentsY[StepCnt*3:StepCnt*3+3]
+                        p_stationary_Norm = SurfNorms[StepCnt*3:StepCnt*3+3]
 
                         p_land = ca.vertcat(px[StepCnt],py[StepCnt],pz[StepCnt])
                         p_land_TangentX = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_TangentY = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
-                        p_land_Norm = SurfTangentsX[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_TangentY = SurfTangentsY[(StepCnt+1)*3:(StepCnt+1)*3+3]
+                        p_land_Norm = SurfNorms[(StepCnt+1)*3:(StepCnt+1)*3+3]
                 
                     #Give Constraint according to even and odd steps
                     if StepCnt%2 == 0: #Even Number of Steps
@@ -4597,7 +4621,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             #    J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2
 
             #-------------------
-            #Tracking Traj Cost
+            # #Tracking Traj Cost
             #for x position
             J = J + (x[k]-x_ref[k])**2
             #for y position
@@ -4610,27 +4634,54 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             J = J + (ydot[k]-ydot_ref[k])**2
             #for zdot
             J = J + (zdot[k]-zdot_ref[k])**2
-            # ##for FLx
-            # J = J + (FLx[k]-FLx_ref[k])**2
-            # ##for FLy
-            # J = J + (FLy[k]-FLy_ref[k])**2
-            # ##for FLz
-            # J = J + (FLz[k]-FLz_ref[k])**2
-            # ##for FRx
-            # J = J + (FRx[k]-FRx_ref[k])**2
-            # ##for FRy
-            # J = J + (FRy[k]-FRy_ref[k])**2
-            # ##for FRz
-            # J = J + (FRz[k]-FRz_ref[k])**2
-    # #----------------------------------
-    #Cost Term for Tracking Constact Locations
-    for step_Count in range(len(px)):
-        #For Px
-        J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
-        #For py
-        J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
-        #For pz
-        J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
+            ##for FLx
+            J = J + (FLx[k]-FLx_ref[k])**2
+            ##for FLy
+            J = J + (FLy[k]-FLy_ref[k])**2
+            ##for FLz
+            J = J + (FLz[k]-FLz_ref[k])**2
+            ##for FRx
+            J = J + (FRx[k]-FRx_ref[k])**2
+            ##for FRy
+            J = J + (FRy[k]-FRy_ref[k])**2
+            ##for FRz
+            J = J + (FRz[k]-FRz_ref[k])**2
+    #----------------------------------
+    # #Cost Term for Tracking Constact Locations
+    # for step_Count in range(len(px)):
+    #     #For Px
+    #     J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
+    #     #For py
+    #     J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
+    #     #For pz
+    #     J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
+
+    
+    # #Initial Condition Constraint
+    # #for x position
+    g.append(x[0]-x_ref[0])
+    glb.append([0])
+    gub.append([0])
+    # #for y position
+    g.append(y[0]-y_ref[0])
+    glb.append([0])
+    gub.append([0])    
+    # #for z position
+    g.append(z[0]-z_ref[0])
+    glb.append([0])
+    gub.append([0])    
+    # #for xdot 
+    g.append(xdot[0]-xdot_ref[0])
+    glb.append([0])
+    gub.append([0]) 
+    #for ydot
+    g.append(ydot[0]-ydot_ref[0])
+    glb.append([0])
+    gub.append([0]) 
+    # #for zdot
+    g.append(zdot[0]-zdot_ref[0])
+    glb.append([0])
+    gub.append([0]) 
 
     #-------------------------------------
     #Relative Footstep Constraint
@@ -6923,7 +6974,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     
     x_ref = ca.SX.sym('x_ref',TotalKnotsNum_SecondLevel)
     y_ref = ca.SX.sym('y_ref',TotalKnotsNum_SecondLevel)
-    z_ref = ca.SX.sym('y_ref',TotalKnotsNum_SecondLevel)
+    z_ref = ca.SX.sym('z_ref',TotalKnotsNum_SecondLevel)
 
     xdot_ref = ca.SX.sym('xdot_ref',TotalKnotsNum_SecondLevel)
     ydot_ref = ca.SX.sym('ydot_ref',TotalKnotsNum_SecondLevel)
@@ -7115,8 +7166,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
         #zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
         
-        J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
-        
+        #------
+        #Terminal Cost
+        #J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+        #---------
+
         #J = J + 100*(x_Level1[-1]-x_end)**2
     else:#With Second level
         #Summation of the all running cost
@@ -7131,28 +7185,32 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #Add terminal cost
         #J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2 + 100*(xdot_Level2[-1])**2 + 100*(ydot_Level2[-1])**2 + 100*(zdot_Level2[-1])**2
         
-        J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
-        
+        #---------
+        #Terminal Cost
+        #J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+        #----------
+
         #J = J + 100*(x_Level2[-1]-x_end)**2
         
         #Deal with Connections between the first level and the second level
         gConnect = []
         gConnect_lb = []
         gConnect_ub = []
-        #   Initial Condition x-axis (Connect to the First Level)
-        gConnect.append(var_Level2[var_index_Level2["x"][0]]-var_Level1[var_index_Level1["x"][-1]])
-        gConnect_lb.append(np.array([0]))
-        gConnect_ub.append(np.array([0]))
+        
+        # #   Initial Condition x-axis (Connect to the First Level)
+        # gConnect.append(var_Level2[var_index_Level2["x"][0]]-var_Level1[var_index_Level1["x"][-1]])
+        # gConnect_lb.append(np.array([0]))
+        # gConnect_ub.append(np.array([0]))
 
-        #   Initial Condition y-axis (Connect to the First Level)
-        gConnect.append(var_Level2[var_index_Level2["y"][0]]-var_Level1[var_index_Level1["y"][-1]])
-        gConnect_lb.append(np.array([0]))
-        gConnect_ub.append(np.array([0]))
+        # #   Initial Condition y-axis (Connect to the First Level)
+        # gConnect.append(var_Level2[var_index_Level2["y"][0]]-var_Level1[var_index_Level1["y"][-1]])
+        # gConnect_lb.append(np.array([0]))
+        # gConnect_ub.append(np.array([0]))
 
-        #   Initial Condition z-axis (Connect to the First Level)
-        gConnect.append(var_Level2[var_index_Level2["z"][0]]-var_Level1[var_index_Level1["z"][-1]])
-        gConnect_lb.append(np.array([0]))
-        gConnect_ub.append(np.array([0]))
+        # #   Initial Condition z-axis (Connect to the First Level)
+        # gConnect.append(var_Level2[var_index_Level2["z"][0]]-var_Level1[var_index_Level1["z"][-1]])
+        # gConnect_lb.append(np.array([0]))
+        # gConnect_ub.append(np.array([0]))
 
         #   Initial Contact Location x-axis (Connect to the First Level)
         gConnect.append(var_Level2[var_index_Level2["px_init"][0]]-var_Level1[var_index_Level1["px"][-1]])
@@ -7170,21 +7228,21 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         gConnect_ub.append(np.array([0]))
 
         #   xdot,ydot,zdot_end according to the choice of second level
-        if SecondLevel == "CoM_Dynamics" or SecondLevel == "NLP_SecondLevel" or SecondLevel == "Mixure":
-            #   xdot
-            gConnect.append(var_Level2[var_index_Level2["xdot"][0]]-var_Level1[var_index_Level1["xdot"][-1]])
-            gConnect_lb.append(np.array([0]))
-            gConnect_ub.append(np.array([0]))
+        # if SecondLevel == "CoM_Dynamics" or SecondLevel == "NLP_SecondLevel" or SecondLevel == "Mixure":
+        #     #   xdot
+        #     gConnect.append(var_Level2[var_index_Level2["xdot"][0]]-var_Level1[var_index_Level1["xdot"][-1]])
+        #     gConnect_lb.append(np.array([0]))
+        #     gConnect_ub.append(np.array([0]))
 
-            #   ydot
-            gConnect.append(var_Level2[var_index_Level2["ydot"][0]]-var_Level1[var_index_Level1["ydot"][-1]])
-            gConnect_lb.append(np.array([0]))
-            gConnect_ub.append(np.array([0]))
+        #     #   ydot
+        #     gConnect.append(var_Level2[var_index_Level2["ydot"][0]]-var_Level1[var_index_Level1["ydot"][-1]])
+        #     gConnect_lb.append(np.array([0]))
+        #     gConnect_ub.append(np.array([0]))
 
-            #   zdot
-            gConnect.append(var_Level2[var_index_Level2["zdot"][0]]-var_Level1[var_index_Level1["zdot"][-1]])
-            gConnect_lb.append(np.array([0]))
-            gConnect_ub.append(np.array([0]))
+        #     #   zdot
+        #     gConnect.append(var_Level2[var_index_Level2["zdot"][0]]-var_Level1[var_index_Level1["zdot"][-1]])
+        #     gConnect_lb.append(np.array([0]))
+        #     gConnect_ub.append(np.array([0]))
         
         if SecondLevel == "NLP_SecondLevel" or SecondLevel == "MixureNLP":
             #Lx
