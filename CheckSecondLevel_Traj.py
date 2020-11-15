@@ -8,8 +8,8 @@ from NLP_Ref_Traj_Constructor import *
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_No_TerminalCost_AntfarmRef/5LookAhead_Trial0.p"
 
-NumLookAhead = 3
-RoundNum = 0
+NumLookAhead = 2
+RoundNum = 5
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_Tracking_SecondLevel/"+str(NumLookAhead)+"LookAhead_Trial0.p"
 filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/"+str(NumLookAhead)+"LookAhead_Trial0.p"

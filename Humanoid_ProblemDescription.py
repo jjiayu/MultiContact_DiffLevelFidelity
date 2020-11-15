@@ -22,7 +22,7 @@ from sl1m.planner_scenarios.talos.constraints import *
 #FUNCTION: Build a single step NLP problem
 #Parameters:
 #   m: robot mass, default value set as the one of Talos
-def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterList = None, CentralY = False):
+def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, ParameterList = None, CentralY = False):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
@@ -435,20 +435,20 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     glb.append(np.array([0]))
     gub.append(np.array([0]))
 
-    #   Initial Angular Momentum rate x-axis
-    g.append(Ldotx[0]-Ldotx_init)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    # #   Initial Angular Momentum rate x-axis
+    # g.append(Ldotx[0]-Ldotx_init)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
 
-    #   Initial Angular Momentum rate y-axis
-    g.append(Ldoty[0]-Ldoty_init)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    # #   Initial Angular Momentum rate y-axis
+    # g.append(Ldoty[0]-Ldoty_init)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
 
-    #   Initial Angular Momentum rate z-axis
-    g.append(Ldotz[0]-Ldotz_init)
-    glb.append(np.array([0]))
-    gub.append(np.array([0]))
+    # #   Initial Angular Momentum rate z-axis
+    # g.append(Ldotz[0]-Ldotz_init)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
 
     #if StandAlong == True:
     #    #   Terminal CoM y-axis
@@ -477,20 +477,36 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
-    #   Terminal Angular Momentum x-axis
-    #g.append(Lx[-1]-Lx_end)
-    #glb.append(np.array([0]))
-    #gub.append(np.array([0]))
 
-    #   Terminal Angular Momentum y-axis
-    #g.append(Ly[-1]-Ly_end)
-    #glb.append(np.array([0]))
-    #gub.append(np.array([0]))
+        #   Terminal CoM Velocity x-axis
+        g.append(xdot[-1]-xdot_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
 
-    #   Terminal Angular Momentum z-axis
-    #g.append(Lz[-1]-Lz_end)
-    #glb.append(np.array([0]))
-    #gub.append(np.array([0]))
+        #   Terminal CoM Velocity y-axis
+        g.append(ydot[-1]-ydot_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #   Terminal CoM Velocity z-axis
+        g.append(zdot[-1]-zdot_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #  Terminal Angular Momentum x-axis
+        g.append(Lx[-1]-Lx_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #  Terminal Angular Momentum y-axis
+        g.append(Ly[-1]-Ly_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #  Terminal Angular Momentum z-axis
+        g.append(Lz[-1]-Lz_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
 
     #   Terminal Angular Momentum Rate x-axis
     #g.append(Ldotx[-1]-Ldotx_end)
@@ -507,6 +523,51 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
     #glb.append(np.array([0]))
     #gub.append(np.array([0]))
 
+    # #---------------------
+    # #Terminal Conditions
+    # g.append(x[-1]-0.7578)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(y[-1]-3.7915e-02)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(z[-1]-0.7658)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(xdot[-1]-0.3647)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(ydot[-1]-0.1572)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(zdot[-1]-0.0218)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(Lx[-1]+1.1823e-03)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(Ly[-1]+1.1943e-04)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(Lz[-1]-1.6479e-10)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(px[0]-0.9267)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
+
+    # g.append(py[0]-0.148)
+    # glb.append(np.array([0]))
+    # gub.append(np.array([0]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -544,7 +605,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
             #   Angular Momentum
             if k<N_K-1: #N_K-1 the enumeration of the last knot, k<N_K-1 the one before the last knot
                 Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
-                Ldot_next = ca.vertcat(Ldotz[k+1],Ldotz[k+1],Ldotz[k+1])
+                Ldot_next = ca.vertcat(Ldotx[k+1],Ldotx[k+1],Ldotx[k+1])
             #-------------------------------------------
 
             #-------------------------------------------
@@ -570,17 +631,18 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 #P4----------------P2
 
                 if k<N_K-1: #double check the knot number is valid
-                    g.append(Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                           ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                           ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                           ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) + 
-                                                           ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                           ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                           ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                           ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)))
-                    #g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = None, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                    # g.append(L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+                    #                                        ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+                    #                                        ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+                    #                                        ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) + 
+                    #                                        ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+                    #                                        ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+                    #                                        ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+                    #                                        ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)))
+                    # #g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
+                    # glb.append(np.array([0,0,0]))
+                    # gub.append(np.array([0,0,0]))
                 else:
                     print("Initial Double Stage - Angular Dynamics Constraint - Knot number exceeds limit")
                 
@@ -618,13 +680,15 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
 
                 #Angular Dynamics (Right Support)
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next-Ldot_current-h*(ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)), np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, P = PR_init, P_TangentX = PR_init_TangentX, P_TangentY = PR_init_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+
+                    # g.append(ca.if_else(ParaLeftSwingFlag, L_next - L_current - h*(ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+                    #                                                                      ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+                    #                                                                      ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+                    #                                                                      ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
+                    # #g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next-Ldot_current-h*(ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)), np.array([0,0,0])))
+                    # glb.append(np.array([0,0,0]))
+                    # gub.append(np.array([0,0,0]))
 
                 #If RIGHT foot is SWING (LEFT is STATIONARY), Then LEFT Foot is the Support FOOT
                 #Kinematics Constraint
@@ -635,13 +699,15 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
 
                 #Angular Dynamics (Left Support)
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                                                          ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)), np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, P = PL_init, P_TangentX = PL_init_TangentX, P_TangentY = PL_init_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+
+                    # g.append(ca.if_else(ParaRightSwingFlag, L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+                    #                                                                       ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+                    #                                                                       ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+                    #                                                                       ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k)), np.array([0,0,0])))
+                    # #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)), np.array([0,0,0])))
+                    # glb.append(np.array([0,0,0]))
+                    # gub.append(np.array([0,0,0]))
 
                 #Unilateral Constraint
                 #
@@ -702,17 +768,19 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 PL_k_TangentY = SurfTangentsY[0:3]
                 
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaLeftSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_k+0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL1_k) + 
-                                                                                         ca.cross((PL_k+0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL2_k) + 
-                                                                                         ca.cross((PL_k-0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL3_k) + 
-                                                                                         ca.cross((PL_k-0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL4_k) +
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
-                                                                                         ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
-                                                                                         ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
-                    #g.append(ca.if_else(ParaLeftSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_k+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_k+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_k+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_k+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_k, PL_TangentX = PL_k_TangentX, PL_TangentY = PL_k_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+
+                    # g.append(ca.if_else(ParaLeftSwingFlag, L_next - L_current - h*(ca.cross((PL_k+0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL1_k) + 
+                    #                                                                      ca.cross((PL_k+0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL2_k) + 
+                    #                                                                      ca.cross((PL_k-0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL3_k) + 
+                    #                                                                      ca.cross((PL_k-0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL4_k) +
+                    #                                                                      ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
+                    #                                                                      ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
+                    #                                                                      ca.cross((PR_init-0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR3_k) + 
+                    #                                                                      ca.cross((PR_init-0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))
+                    # #g.append(ca.if_else(ParaLeftSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_k+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_k+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_k+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_k+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
+                    # glb.append(np.array([0,0,0]))
+                    # gub.append(np.array([0,0,0]))
                 
                 #if RIGHT Foot is SWING (LEFT FOOT is STATIONARY)
                 #Kinematics Constraint
@@ -733,17 +801,19 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = True, ParameterL
                 PR_k_TangentY = SurfTangentsY[0:3]
                 
                 if k<N_K-1:
-                    g.append(ca.if_else(ParaRightSwingFlag, Ldot_next - Ldot_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
-                                                                                          ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
-                                                                                          ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) +
-                                                                                          ca.cross((PR_k+0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR1_k) + 
-                                                                                          ca.cross((PR_k+0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR2_k) + 
-                                                                                          ca.cross((PR_k-0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR3_k) + 
-                                                                                          ca.cross((PR_k-0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))                    
-                    #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_k+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_k+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_k+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_k+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
-                    glb.append(np.array([0,0,0]))
-                    gub.append(np.array([0,0,0]))
+                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_k, PR_TangentX = PR_k_TangentX, PR_TangentY = PR_k_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+
+                    # g.append(ca.if_else(ParaRightSwingFlag, L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
+                    #                                                                       ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
+                    #                                                                       ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
+                    #                                                                       ca.cross((PL_init-0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL4_k) +
+                    #                                                                       ca.cross((PR_k+0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR1_k) + 
+                    #                                                                       ca.cross((PR_k+0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR2_k) + 
+                    #                                                                       ca.cross((PR_k-0.11*PR_k_TangentX+0.06*PR_k_TangentY-CoM_k),FR3_k) + 
+                    #                                                                       ca.cross((PR_k-0.11*PR_k_TangentX-0.06*PR_k_TangentY-CoM_k),FR4_k)), np.array([0,0,0])))                    
+                    # #g.append(ca.if_else(ParaRightSwingFlag,Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_k+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_k+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_k+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_k+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)),np.array([0,0,0])))
+                    # glb.append(np.array([0,0,0]))
+                    # gub.append(np.array([0,0,0]))
 
                 #Unilater Constraints
                 # Norm at the new landing surface
@@ -1550,7 +1620,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
             #   Angular Momentum
             if k<N_K-1: #N_K-1 the enumeration of the last knot, k<N_K-1 the one before the last knot
                 Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
-                Ldot_next = ca.vertcat(Ldotz[k+1],Ldotz[k+1],Ldotz[k+1])
+                Ldot_next = ca.vertcat(Ldotx[k+1],Ldoty[k+1],Ldotz[k+1])
             #-------------------------------------------
 
             #-------------------------------------------
@@ -1577,7 +1647,9 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = PR_init)
                 #Angular Dynamics
                 if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_init, PL_TangentX = p_init_TangentX, PL_TangentY = p_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_init, PL_TangentX = p_init_TangentX, PL_TangentY = p_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                    #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_init, PL_TangentX = p_init_TangentX, PL_TangentY = p_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+
                 #Unilateral Constraint
                 #If the first level swing the Left foot first, then the Left foot is the landing foot (p_init), Left foot obey the unilateral constraint on p_init
                 g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = p_init_Norm)
@@ -1610,7 +1682,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_init)
                 #Agnular Dynamics
                 if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = p_init, PR_TangentX = p_init_TangentX, PR_TangentY = p_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = p_init, PR_TangentX = p_init_TangentX, PR_TangentY = p_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                    #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = p_init, PR_TangentX = p_init_TangentX, PR_TangentY = p_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                 #Unilateral Constraint
                 #If the first level swings the Right foot first, then the right foot is the landing foot (p_init), Right foot obeys the unilateral constraint on p_init
                 g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k, TerrainNorm = p_init_Norm)
@@ -1671,7 +1744,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #If the first level swing the Left foot first, then the Left foot is the landing foot (p_current), Left foot obey the unilateral constraint on p_current
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = p_current_Norm)
@@ -1704,7 +1778,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_previous
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = p_previous_Norm)
@@ -1737,7 +1812,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_previous
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = p_previous_Norm)
@@ -1770,7 +1846,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_current
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = p_current_Norm)
@@ -1819,7 +1896,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
                         #Angular Dynamics (Left Stance)
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
                         #Zero Forces (Right Foot)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR1_k)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FR2_k)
@@ -1845,7 +1923,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
                         #Angular Dynamics(Right Stance)
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
                         #Zero Forces (Left Foot)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL2_k)
@@ -1872,7 +1951,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
                         #Angular Dynamics (Right Stance)
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
                         #Zero Forces (Left Foot)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL2_k)
@@ -1898,7 +1978,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
                         #Angular Dynamics (Left Stance)
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+                            g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
                         #Zero Forces (Right Foot)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR1_k)
                         g, glb, gub = ZeroForces(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FR2_k)
@@ -1953,7 +2034,9 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_stationary
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = p_stationary_Norm)
@@ -1989,7 +2072,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_land
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = p_land_Norm)
@@ -2026,7 +2110,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_land
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, F_k = FL1_k, TerrainNorm = p_land_Norm)
@@ -2062,7 +2147,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
                         #Angular Dynamics
                         if k<N_K-1:
-                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                            #g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = L_next, Ldot_current = L_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
                         #Unilateral Constraint
                         #Left foot obey the unilateral constraint on p_stationary
                         g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL1_k, TerrainNorm = p_stationary_Norm)
@@ -4624,29 +4710,29 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             #-------------------
             #Tracking Traj Cost
             #for x position
-            J = J + 1000*(x[k]-x_ref[k])**2
+            J = J + (x[k]-x_ref[k])**2
             #for y position
-            J = J + 1000*(y[k]-y_ref[k])**2
+            J = J + (y[k]-y_ref[k])**2
             #for z position
-            J = J + 1000*(z[k]-z_ref[k])**2
+            J = J + (z[k]-z_ref[k])**2
             #for xdot 
-            J = J + 1000*(xdot[k]-xdot_ref[k])**2
+            J = J + (xdot[k]-xdot_ref[k])**2
             #for ydot
-            J = J + 1000*(ydot[k]-ydot_ref[k])**2
+            J = J + (ydot[k]-ydot_ref[k])**2
             #for zdot
-            J = J + 1000*(zdot[k]-zdot_ref[k])**2
-            ##for FLx
-            J = J + (FLx[k]-FLx_ref[k])**2
-            ##for FLy
-            J = J + (FLy[k]-FLy_ref[k])**2
-            ##for FLz
-            J = J + (FLz[k]-FLz_ref[k])**2
-            ##for FRx
-            J = J + (FRx[k]-FRx_ref[k])**2
-            ##for FRy
-            J = J + (FRy[k]-FRy_ref[k])**2
-            ##for FRz
-            J = J + (FRz[k]-FRz_ref[k])**2
+            J = J + (zdot[k]-zdot_ref[k])**2
+            # ##for FLx
+            # J = J + (FLx[k]-FLx_ref[k])**2
+            # ##for FLy
+            # J = J + (FLy[k]-FLy_ref[k])**2
+            # ##for FLz
+            # J = J + (FLz[k]-FLz_ref[k])**2
+            # ##for FRx
+            # J = J + (FRx[k]-FRx_ref[k])**2
+            # ##for FRy
+            # J = J + (FRy[k]-FRy_ref[k])**2
+            # ##for FRz
+            # J = J + (FRz[k]-FRz_ref[k])**2
     #----------------------------------
     #Cost Term for Tracking Constact Locations
     for step_Count in range(len(px)):
@@ -4657,7 +4743,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
         #For pz
         J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
 
-    # #--------------
+    # # #--------------
     # # #Initial Condition Constraint (Align with Second Level)
     # # #for x position
     # g.append(x[0]-x_ref[0])
@@ -6995,6 +7081,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     Py_seq_ref = ca.SX.sym('Py_seq_ref',LookAhead_Num_SecondLevel)
     Pz_seq_ref = ca.SX.sym('Pz_seq_ref',LookAhead_Num_SecondLevel)
 
+
+
     ##   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
     #FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
     #   Collect all Parameters
@@ -7136,7 +7224,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
 
     #Bulding the First Level
     if FirstLevel == "NLP_SingleStep":
-        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = NLP_SingleStep(m = m, StandAlong = SingleFidelity, ConservativeEnd = ConservativeFirstStep, ParameterList = ParaList)
+        var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = NLP_SingleStep(m = m, StandAlong = SingleFidelity, ParameterList = ParaList)
     elif FirstLevel == "Pure_Kinematics_Check":
         var_Level1, var_lb_Level1, var_ub_Level1, J_Level1, g_Level1, glb_Level1, gub_Level1, var_index_Level1 = Pure_Kinematics_Check(StandAlong = SingleFidelity, ParameterList = ParaList)
     else:
@@ -7167,12 +7255,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #ydot_Level1 = var_Level1[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
         #zdot_Level1 = var_Level1[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
         
-        # #------
-        # #Terminal Cost
-        # J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
-        # #---------
+        #------
+        #Terminal Cost
+        #J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+        #---------
 
-        #J = J + 100*(x_Level1[-1]-x_end)**2
     else:#With Second level
         #Summation of the all running cost
         J = J_Level1 + J_Level2
@@ -7186,10 +7273,10 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #Add terminal cost
         #J = J + 100*(x_Level2[-1]-x_end)**2 + 100*(y_Level2[-1]-y_end)**2 + 100*(z_Level2[-1]-z_end)**2 + 100*(xdot_Level2[-1])**2 + 100*(ydot_Level2[-1])**2 + 100*(zdot_Level2[-1])**2
         
-        # #---------
-        # #Terminal Cost
-        # J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
-        # #----------
+        #---------
+        #Terminal Cost
+        #J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+        #----------
 
         #J = J + 100*(x_Level2[-1]-x_end)**2
         

@@ -282,14 +282,14 @@ for roundNum in range(Nrounds):
         Ly_res = x_opt[var_index_Level1["Ly"][0]:var_index_Level1["Ly"][1]+1]
         Ly_init = Ly_res[-1]
         Lz_res = x_opt[var_index_Level1["Lz"][0]:var_index_Level1["Lz"][1]+1]
-        Lz_init = Ly_res[-1]
+        Lz_init = Lz_res[-1]
 
         Ldotx_res = x_opt[var_index_Level1["Ldotx"][0]:var_index_Level1["Ldotx"][1]+1]
         Ldotx_init = Ldotx_res[-1]
         Ldoty_res = x_opt[var_index_Level1["Ldoty"][0]:var_index_Level1["Ldoty"][1]+1]
         Ldoty_init = Ldoty_res[-1]
         Ldotz_res = x_opt[var_index_Level1["Ldotz"][0]:var_index_Level1["Ldotz"][1]+1]
-        Ldotz_init = Ldoty_res[-1]
+        Ldotz_init = Ldotz_res[-1]
 
         xdot_res  = x_opt[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
         xdot_init = xdot_res[-1]
@@ -367,6 +367,9 @@ for roundNum in range(Nrounds):
                 PR_init_TangentX = TerrainTangentsX[roundNum-1][0]
                 PR_init_TangentY = TerrainTangentsY[roundNum-1][0]
                 PR_init_Norm = TerrainNorms[roundNum-1][0]
+
+        print("PL init: ", PLx_init, PLy_init, PLz_init)
+        print("PR init: ", PRx_init, PRy_init, PRz_init)
 
         #Get Parameters for Half-space representation of Patches
         #Convert to Half Space Representation

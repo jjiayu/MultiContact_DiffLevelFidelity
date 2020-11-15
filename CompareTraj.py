@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 
+np.set_printoptions(precision=4)
+
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TSID_Almost_Symmetric_TestMotions/flat_NLP_previous/5LookAhead_Trial0.p'
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous_regu_GoodSet_with567/5LookAhead_Trial0.p'
 #filename = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_NLP_previous/5LookAhead_Trial0.p'
@@ -14,20 +16,22 @@ from mpl_toolkits.mplot3d import Axes3D
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/'
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/'
 #folderpath = '/home/jiayu/Desktop/ResultData/All_with_hrp2_kinematics/TSID_Almost_Symmetric_TestMotions/'
-filename = '7LookAhead_Trial0.p'
+filename = '8LookAhead_Trial0.p'
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
 #fullpath = folderpath + 'flat_NLP_previous/' + filename
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
-fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + filename
-
+fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Knitro_flat_NLP_previous/" + '7LookAhead_Trial0.p'
+fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/" + '2LookAhead_Trial0.p'
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
 
+fullpath = fullpath1
+
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
-query_traj = "Lx_result"
+query_traj = "ydot_result"
 
 startStepNum = 0
-EndStepNum = 13
+EndStepNum = 14
 
 
 with open(fullpath, 'rb') as f:
@@ -85,6 +89,12 @@ FR2z_res  = []
 FR3z_res = []
 FR4z_res = []
 
+px_List = []
+py_List = []
+pz_List = []
+
+Ts_List = []
+
 timeseries = []
 
 time_offset = 0
@@ -111,6 +121,16 @@ for roundIdx in range(len(Trajectories)):
     Ldoty_traj = traj[Level1_VarIndex["Ldoty"][0]:Level1_VarIndex["Ldoty"][1]+1]
     Ldotz_traj = traj[Level1_VarIndex["Ldotz"][0]:Level1_VarIndex["Ldotz"][1]+1]
 
+    FL1x_traj = traj[Level1_VarIndex["FL1x"][0]:Level1_VarIndex["FL1x"][1]+1]
+    FL2x_traj = traj[Level1_VarIndex["FL2x"][0]:Level1_VarIndex["FL2x"][1]+1]
+    FL3x_traj = traj[Level1_VarIndex["FL3x"][0]:Level1_VarIndex["FL3x"][1]+1]
+    FL4x_traj = traj[Level1_VarIndex["FL4x"][0]:Level1_VarIndex["FL4x"][1]+1]
+
+    FR1x_traj = traj[Level1_VarIndex["FR1x"][0]:Level1_VarIndex["FR1x"][1]+1]
+    FR2x_traj = traj[Level1_VarIndex["FR2x"][0]:Level1_VarIndex["FR2x"][1]+1]
+    FR3x_traj = traj[Level1_VarIndex["FR3x"][0]:Level1_VarIndex["FR3x"][1]+1]
+    FR4x_traj = traj[Level1_VarIndex["FR4x"][0]:Level1_VarIndex["FR4x"][1]+1]
+
     FL1y_traj = traj[Level1_VarIndex["FL1y"][0]:Level1_VarIndex["FL1y"][1]+1]
     FL2y_traj = traj[Level1_VarIndex["FL2y"][0]:Level1_VarIndex["FL2y"][1]+1]
     FL3y_traj = traj[Level1_VarIndex["FL3y"][0]:Level1_VarIndex["FL3y"][1]+1]
@@ -120,6 +140,16 @@ for roundIdx in range(len(Trajectories)):
     FR2y_traj = traj[Level1_VarIndex["FR2y"][0]:Level1_VarIndex["FR2y"][1]+1]
     FR3y_traj = traj[Level1_VarIndex["FR3y"][0]:Level1_VarIndex["FR3y"][1]+1]
     FR4y_traj = traj[Level1_VarIndex["FR4y"][0]:Level1_VarIndex["FR4y"][1]+1]
+
+    FL1z_traj = traj[Level1_VarIndex["FL1z"][0]:Level1_VarIndex["FL1z"][1]+1]
+    FL2z_traj = traj[Level1_VarIndex["FL2z"][0]:Level1_VarIndex["FL2z"][1]+1]
+    FL3z_traj = traj[Level1_VarIndex["FL3z"][0]:Level1_VarIndex["FL3z"][1]+1]
+    FL4z_traj = traj[Level1_VarIndex["FL4z"][0]:Level1_VarIndex["FL4z"][1]+1]
+
+    FR1z_traj = traj[Level1_VarIndex["FR1z"][0]:Level1_VarIndex["FR1z"][1]+1]
+    FR2z_traj = traj[Level1_VarIndex["FR2z"][0]:Level1_VarIndex["FR2z"][1]+1]
+    FR3z_traj = traj[Level1_VarIndex["FR3z"][0]:Level1_VarIndex["FR3z"][1]+1]
+    FR4z_traj = traj[Level1_VarIndex["FR4z"][0]:Level1_VarIndex["FR4z"][1]+1]
 
     px_res = traj[Level1_VarIndex["px"][0]:Level1_VarIndex["px"][1]+1]
     py_res = traj[Level1_VarIndex["py"][0]:Level1_VarIndex["py"][1]+1]
@@ -266,22 +296,100 @@ for roundIdx in range(len(Trajectories)):
         Ldotx_result.append(Ldotx_traj)
         Ldoty_result.append(Ldoty_traj)
         Ldotz_result.append(Ldotz_traj)
+        px_List.append(px_res)
+        py_List.append(py_res)
+        pz_List.append(pz_res)
+        Ts_List.append(Ts_res)
+
+        FL1x_res.append(FL1x_traj)
+        FL1y_res.append(FL1y_traj)
+        FL1z_res.append(FL1z_traj)
+
+        FL2x_res.append(FL2x_traj)
+        FL2y_res.append(FL2y_traj)
+        FL2z_res.append(FL2z_traj)
+
+        FL3x_res.append(FL3x_traj)
+        FL3y_res.append(FL3y_traj)
+        FL3z_res.append(FL3z_traj)
+    
+        FL4x_res.append(FL4x_traj)
+        FL4y_res.append(FL4y_traj)
+        FL4z_res.append(FL4z_traj)
+
+        FR1x_res.append(FR1x_traj)
+        FR1y_res.append(FR1y_traj)
+        FR1z_res.append(FR1z_traj)
+
+        FR2x_res.append(FR2x_traj)
+        FR2y_res.append(FR2y_traj)
+        FR2z_res.append(FR2z_traj)
+
+        FR3x_res.append(FR3x_traj)
+        FR3y_res.append(FR3y_traj)
+        FR3z_res.append(FR3z_traj)
+    
+        FR4x_res.append(FR4x_traj)
+        FR4y_res.append(FR4y_traj)
+        FR4z_res.append(FR4z_traj)
 
         timeseries.append(timeline)
     else:
-        x_result.append(x_traj[1:])
-        y_result.append(y_traj[1:])
-        z_result.append(z_traj[1:])
-        xdot_result.append(xdot_traj[1:])
-        ydot_result.append(ydot_traj[1:])
-        zdot_result.append(zdot_traj[1:])
-        Lx_result.append(Lx_traj[1:])
-        Ly_result.append(Ly_traj[1:])
-        Lz_result.append(Lz_traj[1:])
-        Ldotx_result.append(Ldotx_traj[1:])
-        Ldoty_result.append(Ldoty_traj[1:])
-        Ldotz_result.append(Ldotz_traj[1:])
-        timeseries.append(timeline[1:])
+        x_result.append(x_traj)
+        y_result.append(y_traj)
+        z_result.append(z_traj)
+        xdot_result.append(xdot_traj)
+        ydot_result.append(ydot_traj)
+        zdot_result.append(zdot_traj)
+        Lx_result.append(Lx_traj)
+        Ly_result.append(Ly_traj)
+        Lz_result.append(Lz_traj)
+        Ldotx_result.append(Ldotx_traj)
+        Ldoty_result.append(Ldoty_traj)
+        Ldotz_result.append(Ldotz_traj)
+        px_List.append(px_res)
+        py_List.append(py_res)
+        pz_List.append(pz_res)
+        Ts_List.append(Ts_res)
+        timeseries.append(timeline)
+
+        FL1x_res.append(FL1x_traj)
+        FL1y_res.append(FL1y_traj)
+        FL1z_res.append(FL1z_traj)
+
+        FL2x_res.append(FL2x_traj)
+        FL2y_res.append(FL2y_traj)
+        FL2z_res.append(FL2z_traj)
+
+        FL3x_res.append(FL3x_traj)
+        FL3y_res.append(FL3y_traj)
+        FL3z_res.append(FL3z_traj)
+    
+        FL4x_res.append(FL4x_traj)
+        FL4y_res.append(FL4y_traj)
+        FL4z_res.append(FL4z_traj)
+
+        FR1x_res.append(FR1x_traj)
+        FR1y_res.append(FR1y_traj)
+        FR1z_res.append(FR1z_traj)
+
+        FR2x_res.append(FR2x_traj)
+        FR2y_res.append(FR2y_traj)
+        FR2z_res.append(FR2z_traj)
+
+        FR3x_res.append(FR3x_traj)
+        FR3y_res.append(FR3y_traj)
+        FR3z_res.append(FR3z_traj)
+    
+        FR4x_res.append(FR4x_traj)
+        FR4y_res.append(FR4y_traj)
+        FR4z_res.append(FR4z_traj)
+
+px_List = np.concatenate((px_List),axis=None)
+py_List = np.concatenate((py_List),axis=None)
+pz_List = np.concatenate((pz_List),axis=None)
+
+Ts_List = np.concatenate((Ts_List),axis=None)
 
     #print("z_traj",z_traj)
 
@@ -313,6 +421,34 @@ NLP_Traj = {"timeseries":timeseries,
             "Ldotx_result":Ldotx_result,
             "Ldoty_result":Ldoty_result,
             "Ldotz_result":Ldotz_result,
+            "px_result":px_List,
+            "py_result":py_List,
+            "pz_result":pz_List,
+            "Ts_result":Ts_List,
+            "FL1x_result":FL1x_res,
+            "FL1y_result":FL1y_res,
+            "FL1z_result":FL1z_res,
+            "FL2x_result":FL2x_res,
+            "FL2y_result":FL2y_res,
+            "FL2z_result":FL2z_res,
+            "FL3x_result":FL3x_res,
+            "FL3y_result":FL3y_res,
+            "FL3z_result":FL3z_res,
+            "FL4x_result":FL4x_res,
+            "FL4y_result":FL4y_res,
+            "FL4z_result":FL4z_res,
+            "FR1x_result":FR1x_res,
+            "FR1y_result":FR1y_res,
+            "FR1z_result":FR1z_res,
+            "FR2x_result":FR2x_res,
+            "FR2y_result":FR2y_res,
+            "FR2z_result":FR2z_res,
+            "FR3x_result":FR3x_res,
+            "FR3y_result":FR3y_res,
+            "FR3z_result":FR3z_res,
+            "FR4x_result":FR4x_res,
+            "FR4y_result":FR4y_res,
+            "FR4z_result":FR4z_res,
 }
 
 
@@ -322,7 +458,9 @@ NLP_Traj = {"timeseries":timeseries,
 #fullpath = folderpath + 'flat_CoM_previous/' + filename
 #fullpath = folderpath + 'flat_Mix_previous/' + filename
 #fullpath = folderpath + 'up_and_down_left_first_CoM_previous/' + filename
-fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + filename
+#fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + filename
+
+fullpath = fullpath2
 
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_CoM_previous/" + filename
 
@@ -384,6 +522,12 @@ FR2z_res  = []
 FR3z_res = []
 FR4z_res = []
 
+px_List = []
+py_List = []
+pz_List = []
+
+Ts_List = []
+
 time_offset = 0
 
 for roundIdx in range(len(Trajectories)):
@@ -408,6 +552,16 @@ for roundIdx in range(len(Trajectories)):
     Ldoty_traj = traj[Level1_VarIndex["Ldoty"][0]:Level1_VarIndex["Ldoty"][1]+1]
     Ldotz_traj = traj[Level1_VarIndex["Ldotz"][0]:Level1_VarIndex["Ldotz"][1]+1]
 
+    FL1x_traj = traj[Level1_VarIndex["FL1x"][0]:Level1_VarIndex["FL1x"][1]+1]
+    FL2x_traj = traj[Level1_VarIndex["FL2x"][0]:Level1_VarIndex["FL2x"][1]+1]
+    FL3x_traj = traj[Level1_VarIndex["FL3x"][0]:Level1_VarIndex["FL3x"][1]+1]
+    FL4x_traj = traj[Level1_VarIndex["FL4x"][0]:Level1_VarIndex["FL4x"][1]+1]
+
+    FR1x_traj = traj[Level1_VarIndex["FR1x"][0]:Level1_VarIndex["FR1x"][1]+1]
+    FR2x_traj = traj[Level1_VarIndex["FR2x"][0]:Level1_VarIndex["FR2x"][1]+1]
+    FR3x_traj = traj[Level1_VarIndex["FR3x"][0]:Level1_VarIndex["FR3x"][1]+1]
+    FR4x_traj = traj[Level1_VarIndex["FR4x"][0]:Level1_VarIndex["FR4x"][1]+1]
+
     FL1y_traj = traj[Level1_VarIndex["FL1y"][0]:Level1_VarIndex["FL1y"][1]+1]
     FL2y_traj = traj[Level1_VarIndex["FL2y"][0]:Level1_VarIndex["FL2y"][1]+1]
     FL3y_traj = traj[Level1_VarIndex["FL3y"][0]:Level1_VarIndex["FL3y"][1]+1]
@@ -417,6 +571,16 @@ for roundIdx in range(len(Trajectories)):
     FR2y_traj = traj[Level1_VarIndex["FR2y"][0]:Level1_VarIndex["FR2y"][1]+1]
     FR3y_traj = traj[Level1_VarIndex["FR3y"][0]:Level1_VarIndex["FR3y"][1]+1]
     FR4y_traj = traj[Level1_VarIndex["FR4y"][0]:Level1_VarIndex["FR4y"][1]+1]
+
+    FL1z_traj = traj[Level1_VarIndex["FL1z"][0]:Level1_VarIndex["FL1z"][1]+1]
+    FL2z_traj = traj[Level1_VarIndex["FL2z"][0]:Level1_VarIndex["FL2z"][1]+1]
+    FL3z_traj = traj[Level1_VarIndex["FL3z"][0]:Level1_VarIndex["FL3z"][1]+1]
+    FL4z_traj = traj[Level1_VarIndex["FL4z"][0]:Level1_VarIndex["FL4z"][1]+1]
+
+    FR1z_traj = traj[Level1_VarIndex["FR1z"][0]:Level1_VarIndex["FR1z"][1]+1]
+    FR2z_traj = traj[Level1_VarIndex["FR2z"][0]:Level1_VarIndex["FR2z"][1]+1]
+    FR3z_traj = traj[Level1_VarIndex["FR3z"][0]:Level1_VarIndex["FR3z"][1]+1]
+    FR4z_traj = traj[Level1_VarIndex["FR4z"][0]:Level1_VarIndex["FR4z"][1]+1]
 
     px_res = traj[Level1_VarIndex["px"][0]:Level1_VarIndex["px"][1]+1]
     py_res = traj[Level1_VarIndex["py"][0]:Level1_VarIndex["py"][1]+1]
@@ -560,24 +724,101 @@ for roundIdx in range(len(Trajectories)):
         Ldotx_result.append(Ldotx_traj)
         Ldoty_result.append(Ldoty_traj)
         Ldotz_result.append(Ldotz_traj)
+        px_List.append(px_res)
+        py_List.append(py_res)
+        pz_List.append(pz_res)
+        Ts_List.append(Ts_res)
+
+        FL1x_res.append(FL1x_traj)
+        FL1y_res.append(FL1y_traj)
+        FL1z_res.append(FL1z_traj)
+
+        FL2x_res.append(FL2x_traj)
+        FL2y_res.append(FL2y_traj)
+        FL2z_res.append(FL2z_traj)
+
+        FL3x_res.append(FL3x_traj)
+        FL3y_res.append(FL3y_traj)
+        FL3z_res.append(FL3z_traj)
+    
+        FL4x_res.append(FL4x_traj)
+        FL4y_res.append(FL4y_traj)
+        FL4z_res.append(FL4z_traj)
+
+        FR1x_res.append(FR1x_traj)
+        FR1y_res.append(FR1y_traj)
+        FR1z_res.append(FR1z_traj)
+
+        FR2x_res.append(FR2x_traj)
+        FR2y_res.append(FR2y_traj)
+        FR2z_res.append(FR2z_traj)
+
+        FR3x_res.append(FR3x_traj)
+        FR3y_res.append(FR3y_traj)
+        FR3z_res.append(FR3z_traj)
+    
+        FR4x_res.append(FR4x_traj)
+        FR4y_res.append(FR4y_traj)
+        FR4z_res.append(FR4z_traj)
 
         timeseries.append(timeline)
     else:
-        x_result.append(x_traj[1:])
-        y_result.append(y_traj[1:])
-        z_result.append(z_traj[1:])
-        xdot_result.append(xdot_traj[1:])
-        ydot_result.append(ydot_traj[1:])
-        zdot_result.append(zdot_traj[1:])
-        Lx_result.append(Lx_traj[1:])
-        Ly_result.append(Ly_traj[1:])
-        Lz_result.append(Lz_traj[1:])
-        Ldotx_result.append(Ldotx_traj[1:])
-        Ldoty_result.append(Ldoty_traj[1:])
-        Ldotz_result.append(Ldotz_traj[1:])
-        timeseries.append(timeline[1:])
+        x_result.append(x_traj)
+        y_result.append(y_traj)
+        z_result.append(z_traj)
+        xdot_result.append(xdot_traj)
+        ydot_result.append(ydot_traj)
+        zdot_result.append(zdot_traj)
+        Lx_result.append(Lx_traj)
+        Ly_result.append(Ly_traj)
+        Lz_result.append(Lz_traj)
+        Ldotx_result.append(Ldotx_traj)
+        Ldoty_result.append(Ldoty_traj)
+        Ldotz_result.append(Ldotz_traj)
+        px_List.append(px_res)
+        py_List.append(py_res)
+        pz_List.append(pz_res)
+        Ts_List.append(Ts_res)
+        timeseries.append(timeline)
+
+        FL1x_res.append(FL1x_traj)
+        FL1y_res.append(FL1y_traj)
+        FL1z_res.append(FL1z_traj)
+
+        FL2x_res.append(FL2x_traj)
+        FL2y_res.append(FL2y_traj)
+        FL2z_res.append(FL2z_traj)
+
+        FL3x_res.append(FL3x_traj)
+        FL3y_res.append(FL3y_traj)
+        FL3z_res.append(FL3z_traj)
+    
+        FL4x_res.append(FL4x_traj)
+        FL4y_res.append(FL4y_traj)
+        FL4z_res.append(FL4z_traj)
+
+        FR1x_res.append(FR1x_traj)
+        FR1y_res.append(FR1y_traj)
+        FR1z_res.append(FR1z_traj)
+
+        FR2x_res.append(FR2x_traj)
+        FR2y_res.append(FR2y_traj)
+        FR2z_res.append(FR2z_traj)
+
+        FR3x_res.append(FR3x_traj)
+        FR3y_res.append(FR3y_traj)
+        FR3z_res.append(FR3z_traj)
+    
+        FR4x_res.append(FR4x_traj)
+        FR4y_res.append(FR4y_traj)
+        FR4z_res.append(FR4z_traj)
 
     #print("z_traj",z_traj)
+
+px_List = np.concatenate((px_List),axis=None)
+py_List = np.concatenate((py_List),axis=None)
+pz_List = np.concatenate((pz_List),axis=None)
+Ts_List = np.concatenate((Ts_List),axis=None)
 
 #x_result = np.concatenate(x_result[startStepNum:EndStepNum+1])   
 #y_result = np.concatenate(y_result[startStepNum:EndStepNum+1]) 
@@ -607,11 +848,39 @@ CoM_Traj = {"timeseries":timeseries,
             "Ldotx_result":Ldotx_result,
             "Ldoty_result":Ldoty_result,
             "Ldotz_result":Ldotz_result,
+            "px_result":px_List,
+            "py_result":py_List,
+            "pz_result":pz_List,
+            "Ts_result":Ts_List,
+            "FL1x_result":FL1x_res,
+            "FL1y_result":FL1y_res,
+            "FL1z_result":FL1z_res,
+            "FL2x_result":FL2x_res,
+            "FL2y_result":FL2y_res,
+            "FL2z_result":FL2z_res,
+            "FL3x_result":FL3x_res,
+            "FL3y_result":FL3y_res,
+            "FL3z_result":FL3z_res,
+            "FL4x_result":FL4x_res,
+            "FL4y_result":FL4y_res,
+            "FL4z_result":FL4z_res,
+            "FR1x_result":FR1x_res,
+            "FR1y_result":FR1y_res,
+            "FR1z_result":FR1z_res,
+            "FR2x_result":FR2x_res,
+            "FR2y_result":FR2y_res,
+            "FR2z_result":FR2z_res,
+            "FR3x_result":FR3x_res,
+            "FR3y_result":FR3y_res,
+            "FR3z_result":FR3z_res,
+            "FR4x_result":FR4x_res,
+            "FR4y_result":FR4y_res,
+            "FR4z_result":FR4z_res,
 }
 
 #print(CoM_Traj["x_result"][8])
 
-for traj_idx in range(len(NLP_Traj["x_result"])):
+for traj_idx in range(startStepNum,EndStepNum):
     if traj_idx%2 == 0:
         if traj_idx == 0:
             if traj_idx <= len(NLP_Traj["x_result"])-1:
@@ -639,10 +908,31 @@ plt.title(filename + ' - ' + query_traj)
 print(len(NLP_Traj[query_traj]))
 
 plt.legend(loc="upper left")
+
+
+print("NLP_Contacts x: ", NLP_Traj["px_result"])
+print("CoM_Contacts x: ", CoM_Traj["px_result"])
+
+print("NLP_Contacts y: ", NLP_Traj["py_result"])
+print("CoM_Contacts y: ", CoM_Traj["py_result"])
+
+print("NLP_Contacts z: ", NLP_Traj["pz_result"])
+print("CoM_Contacts z: ", CoM_Traj["pz_result"])
+
+print("NLP Timing: ", NLP_Traj["Ts_result"])
+print("CoM Timing: ", CoM_Traj["Ts_result"])
+
 plt.show()
 
 
+plt.plot(NLP_Traj["py_result"],marker = 'o',label = 'NLP')
+plt.plot(CoM_Traj["py_result"],marker = 'o',label = 'CoM')
+plt.legend(loc="upper left")
+plt.show()
 
-
+plt.plot(NLP_Traj["px_result"],marker = 'o',label = 'NLP')
+plt.plot(CoM_Traj["px_result"],marker = 'o',label = 'CoM')
+plt.legend(loc="upper left")
+plt.show()
 
 

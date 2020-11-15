@@ -205,15 +205,18 @@ def GetStatsFromOutputStrings(output_log = None):
             ProgramTime.append(float(line[37:51]))
             #print(float(line[44:51]))
 
+        if "Total CPU secs in IPOPT (w/o function evaluations)" in line:
+            ProgramTime.append(float(line[54:]))
+
         if "Total Program Time: " in line:
             TotalTime.append(float(line[21:27]))
             #print(float(line[21:27]))
 
         if "Accumulated Acc Cost is:" in line:
-            AccCost = float(line[26:32])
+            AccCost = float(line[26:])
 
         if "Accumulated Momentum Cost is:" in line:
-            MomentCost = float(line[31:37])
+            MomentCost = float(line[31:])
 
         if "Accumulated Momentum Rate Cost is:" in line:
             MomentumRateCost = float(line[34:])
