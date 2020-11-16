@@ -13,12 +13,12 @@ InitSeedType = sys.argv[2]
 
 ChosenSolver = sys.argv[3]
 
-ShowFigure =  'True'
+ShowFigure =  'False'
 
 NumofRound = 14
 
 MinNumLookAhead = 1
-MaxNumLookAhead = 1
+MaxNumLookAhead = 10
 
 NumofTrials = 1
 

@@ -27,7 +27,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Old_Results/Result_Ref_Traj_Tracking/Tracking_CoM_CoMdot_ContactPosition/Flat_Uneven_Ref/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
 
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/2LookAhead_Trial0.p"
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + '5LookAhead_Trial0.p'
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_10x_TerminalCost/Uneven_Tracking_Uneven_Flat_Ref/antfarm_CoM_Tracking_Uneven_Flat/5LookAhead_Trial0.p"
 
@@ -174,6 +174,7 @@ for roundIdx in range(len(Trajectories)):
         else:
             Terrain_flag = True
 
+    #Terrain_flag = False
     TSIDTrajectory = {}
     
     #Init Double Phase

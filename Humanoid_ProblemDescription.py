@@ -172,6 +172,22 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
     SurfTangentsX = ParameterList["SurfTangentsX"]
     SurfTangentsY = ParameterList["SurfTangentsY"]
 
+    x_Level1_end = ParameterList["x_Level1_end"]
+    y_Level1_end = ParameterList["y_Level1_end"]
+    z_Level1_end = ParameterList["z_Level1_end"]
+
+    xdot_Level1_end = ParameterList["xdot_Level1_end"]
+    ydot_Level1_end = ParameterList["ydot_Level1_end"]
+    zdot_Level1_end = ParameterList["zdot_Level1_end"]
+
+    px_Level1 = ParameterList["px_Level1"]
+    py_Level1 = ParameterList["py_Level1"]
+    pz_Level1 = ParameterList["pz_Level1"]
+
+    Lx_Level1_end = ParameterList["Lx_Level1_end"]
+    Ly_Level1_end = ParameterList["Ly_Level1_end"]
+    Lz_Level1_end = ParameterList["Lz_Level1_end"]
+
     ##First Round Flag (If yes, we have an initial double support phase, if not, we don't have an initial double support phase)
     #ParaFirstRoundFlag = ParameterList["FirstRoundFlag"]
 
@@ -462,49 +478,61 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
     #    gub.append(np.array([0]))
 
     if ConservativeEnd == True:
-        #   Terminal CoM Velocity x-axis
-        g.append(xdot[-1]-xdot_end)
+        #   Terminal CoM  x-axis
+        g.append(x[-1]-x_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
-        #   Terminal CoM Velocity y-axis
-        g.append(ydot[-1]-ydot_end)
-        glb.append(np.array([0]))
-        gub.append(np.array([0]))
-
-        #   Terminal CoM Velocity z-axis
-        g.append(zdot[-1]-zdot_end)
-        glb.append(np.array([0]))
-        gub.append(np.array([0]))
-
-
-        #   Terminal CoM Velocity x-axis
-        g.append(xdot[-1]-xdot_end)
-        glb.append(np.array([0]))
-        gub.append(np.array([0]))
-
-        #   Terminal CoM Velocity y-axis
-        g.append(ydot[-1]-ydot_end)
+        #   Terminal CoM  y-axis
+        g.append(y[-1]-y_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
         #   Terminal CoM Velocity z-axis
-        g.append(zdot[-1]-zdot_end)
+        g.append(z[-1]-z_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
+
+        #   Terminal CoM Velocity x-axis
+        g.append(xdot[-1]-xdot_Level1_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #   Terminal CoM Velocity y-axis
+        g.append(ydot[-1]-ydot_Level1_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        #   Terminal CoM Velocity z-axis
+        g.append(zdot[-1]-zdot_Level1_end)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
+
+        # #   Contacts
+        # g.append(px[0]-px_Level1)
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        # g.append(py[0]-py_Level1)
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        # g.append(pz[0]-pz_Level1)
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
 
         #  Terminal Angular Momentum x-axis
-        g.append(Lx[-1]-Lx_end)
+        g.append(Lx[-1]-Lx_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
         #  Terminal Angular Momentum y-axis
-        g.append(Ly[-1]-Ly_end)
+        g.append(Ly[-1]-Ly_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
         #  Terminal Angular Momentum z-axis
-        g.append(Lz[-1]-Lz_end)
+        g.append(Lz[-1]-Lz_Level1_end)
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
@@ -4734,14 +4762,14 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             # ##for FRz
             # J = J + (FRz[k]-FRz_ref[k])**2
     #----------------------------------
-    #Cost Term for Tracking Constact Locations
-    for step_Count in range(len(px)):
-        #For Px
-        J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
-        #For py
-        J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
-        #For pz
-        J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
+    # #Cost Term for Tracking Constact Locations
+    # for step_Count in range(len(px)):
+    #     #For Px
+    #     J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
+    #     #For py
+    #     J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
+    #     #For pz
+    #     J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
 
     # # #--------------
     # # #Initial Condition Constraint (Align with Second Level)
@@ -7081,7 +7109,22 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     Py_seq_ref = ca.SX.sym('Py_seq_ref',LookAhead_Num_SecondLevel)
     Pz_seq_ref = ca.SX.sym('Pz_seq_ref',LookAhead_Num_SecondLevel)
 
+    #Level 1 terminal state
+    x_Level1_end = ca.SX.sym('x_Level1_end')
+    y_Level1_end = ca.SX.sym('y_Level1_end')
+    z_Level1_end = ca.SX.sym('z_Level1_end')
 
+    xdot_Level1_end = ca.SX.sym('xdot_Level1_end')
+    ydot_Level1_end = ca.SX.sym('ydot_Level1_end')
+    zdot_Level1_end = ca.SX.sym('zdot_Level1_end')
+
+    Lx_Level1_end = ca.SX.sym('Lx_Level1_end')
+    Ly_Level1_end = ca.SX.sym('Ly_Level1_end')
+    Lz_Level1_end = ca.SX.sym('Lz_Level1_end')
+
+    px_Level1 = ca.SX.sym('px_Level1')
+    py_Level1 = ca.SX.sym('py_Level1')
+    pz_Level1 = ca.SX.sym('pz_Level1')
 
     ##   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
     #FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
@@ -7141,6 +7184,18 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                     "Px_seq_ref":Px_seq_ref,
                     "Py_seq_ref":Py_seq_ref,
                     "Pz_seq_ref":Pz_seq_ref,
+                    "x_Level1_end":x_Level1_end,
+                    "y_Level1_end":y_Level1_end,
+                    "z_Level1_end":z_Level1_end,
+                    "xdot_Level1_end":xdot_Level1_end,
+                    "ydot_Level1_end":ydot_Level1_end,
+                    "zdot_Level1_end":zdot_Level1_end,
+                    "px_Level1":px_Level1,
+                    "py_Level1":py_Level1, 
+                    "pz_Level1":pz_Level1,
+                    "Lx_Level1_end":Lx_Level1_end,
+                    "Ly_Level1_end":Ly_Level1_end,
+                    "Lz_Level1_end":Lz_Level1_end,                    
         }
         #            "FirstRoundFlag":FirstRoundFlag,
         #Collect all Parameters
@@ -7161,7 +7216,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                         FLx_ref,FLy_ref,FLz_ref,
                         FRx_ref,FRy_ref,FRz_ref,
                         SwitchingTimeVec_ref,
-                        Px_seq_ref,Py_seq_ref,Pz_seq_ref)
+                        Px_seq_ref,Py_seq_ref,Pz_seq_ref,
+                        x_Level1_end,y_Level1_end,z_Level1_end,
+                        xdot_Level1_end,ydot_Level1_end,zdot_Level1_end,
+                        px_Level1,py_Level1,pz_Level1,
+                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end)
     else: 
         ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
                     "RightSwingFlag":ParaRightSwingFlag,
@@ -7198,7 +7257,19 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                     "PL_init_Norm":PL_init_Norm,
                     "PR_init_TangentX":PR_init_TangentX,
                     "PR_init_TangentY":PR_init_TangentY,
-                    "PR_init_Norm":PR_init_Norm
+                    "PR_init_Norm":PR_init_Norm,
+                    "x_Level1_end":x_Level1_end,
+                    "y_Level1_end":y_Level1_end,
+                    "z_Level1_end":z_Level1_end,
+                    "xdot_Level1_end":xdot_Level1_end,
+                    "ydot_Level1_end":ydot_Level1_end,
+                    "zdot_Level1_end":zdot_Level1_end,
+                    "px_Level1":px_Level1,
+                    "py_Level1":py_Level1, 
+                    "pz_Level1":pz_Level1,
+                    "Lx_Level1_end":Lx_Level1_end,
+                    "Ly_Level1_end":Ly_Level1_end,
+                    "Lz_Level1_end":Lz_Level1_end,
         }
         #            "FirstRoundFlag":FirstRoundFlag,
         #Collect all Parameters
@@ -7213,7 +7284,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                         xdot_end,ydot_end,zdot_end,
                         SurfParas,SurfTangentsX,SurfTangentsY,SurfNorms,
                         PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                        PR_init_TangentX,PR_init_TangentY,PR_init_Norm)
+                        PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                        x_Level1_end,y_Level1_end,z_Level1_end,
+                        xdot_Level1_end,ydot_Level1_end,zdot_Level1_end,
+                        px_Level1,py_Level1,pz_Level1,
+                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end)
 
     #-----------------------------------------------------------------------------------------------------------------
     #Identify the Fidelity Type of the whole framework, Used to tell the First Level to set Constraints Accordingly
@@ -7257,7 +7332,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         
         #------
         #Terminal Cost
-        #J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+        J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
         #---------
 
     else:#With Second level
@@ -7275,7 +7350,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         
         #---------
         #Terminal Cost
-        #J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+        J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
         #----------
 
         #J = J + 100*(x_Level2[-1]-x_end)**2
@@ -7407,10 +7482,15 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     #-----------------------------------------------------------------------------------------------------------------------
     #   Build Solvers
     #Build Solver
-    #opts = {}
+    opts = {}
+    #opts["knitro.presolve"] = 0
+    # opts["knitro.feastol"] = 1e-3
+    # opts["knitro.opttol"] = 1e-1
+    # opts["knitro.OptTolAbs"] = 1e-1
+    
     prob = {'x': DecisionVars, 'f': J, 'g': g, 'p': paras}
-    #solver = ca.nlpsol('solver', 'knitro', prob,opts)
-    solver = ca.nlpsol('solver', 'knitro', prob)
+    solver = ca.nlpsol('solver', 'knitro', prob,opts)
+    #solver = ca.nlpsol('solver', 'ipopt', prob)
 
     return solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index
 

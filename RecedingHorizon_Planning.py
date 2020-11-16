@@ -15,6 +15,7 @@ import os as os
 import sys
 import pickle
 from NLP_Ref_Traj_Constructor import *
+from getFirstLevelTerminal_State import *
 
 #Initialization and Porblem Setup
 
@@ -189,6 +190,9 @@ for roundNum in range(Nrounds):
 
     print("The ", roundNum, "Round:")
 
+    #Get Terminal State of the first level
+    x_end_level1,y_end_level1,z_end_level1,xdot_end_level1,ydot_end_level1,zdot_end_level1,px_level1,py_level1,pz_level1,Lx_end_level1,Ly_end_level1,Lz_end_level1 = GetFirstLevelTerminalState(RoundNum = roundNum)
+
     if roundNum == 0:
 
         if SwingLeftFirst == 1:
@@ -239,7 +243,11 @@ for roundNum in range(Nrounds):
                 FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
                 FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
                 SwitchingTimeVec_ref,
-                Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+                Px_seq_ref,Py_seq_ref,Pz_seq_ref,
+                x_end_level1,y_end_level1,z_end_level1,
+                xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                px_level1,py_level1,pz_level1,
+                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
             
         else:
                 ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -254,9 +262,18 @@ for roundNum in range(Nrounds):
                 HalfSpaceSeq,
                 TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
                 PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                x_end_level1,y_end_level1,z_end_level1,
+                xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                px_level1,py_level1,pz_level1,
+                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
 
         
+        #For 1 step lookahead checking local minima only
+        if NumofLookAhead  == 1 and InitSeedType == "random":
+            DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
+
+
         res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
 
         x_opt = res["x"]
@@ -410,7 +427,11 @@ for roundNum in range(Nrounds):
                 FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
                 FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
                 SwitchingTimeVec_ref,
-                Px_seq_ref,Py_seq_ref,Pz_seq_ref),axis=None)
+                Px_seq_ref,Py_seq_ref,Pz_seq_ref,
+                x_end_level1,y_end_level1,z_end_level1,
+                xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                px_level1,py_level1,pz_level1,
+                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
             
         else:
                 ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -425,13 +446,22 @@ for roundNum in range(Nrounds):
                 HalfSpaceSeq,
                 TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
                 PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                PR_init_TangentX,PR_init_TangentY,PR_init_Norm),axis=None)
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                x_end_level1,y_end_level1,z_end_level1,
+                xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                px_level1,py_level1,pz_level1,
+                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator
             np.random.seed()
             DecisionVarsShape = DecisionVars_lb.shape
             DecisionVars_init = DecisionVars_lb + np.multiply(np.random.rand(DecisionVarsShape[0],).flatten(),(DecisionVars_ub - DecisionVars_lb))#   Fixed Value Initial Guess
+            
+            #For 1 step lookahead checking local minima only
+            if NumofLookAhead  == 1:
+                DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
+
             res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
             x_opt = res["x"]
             x_opt = x_opt.full().flatten()  

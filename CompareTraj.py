@@ -16,13 +16,13 @@ np.set_printoptions(precision=4)
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/GoodFlat_1000y_Regu/'
 #folderpath = '/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/'
 #folderpath = '/home/jiayu/Desktop/ResultData/All_with_hrp2_kinematics/TSID_Almost_Symmetric_TestMotions/'
-filename = '8LookAhead_Trial0.p'
+filename = '5LookAhead_Trial0.p'
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
 #fullpath = folderpath + 'flat_NLP_previous/' + filename
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
-fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Knitro_flat_NLP_previous/" + '7LookAhead_Trial0.p'
-fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/flat_CoM_previous/" + '2LookAhead_Trial0.p'
+fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Large_DoubleSupportPhase/Knitro_antfarm_firstLevel_left_start_NLP_previous/" + '10LookAhead_Trial0.p'
+fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + '5LookAhead_Trial0.p'
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
 
 fullpath = fullpath1
@@ -928,11 +928,13 @@ plt.show()
 plt.plot(NLP_Traj["py_result"],marker = 'o',label = 'NLP')
 plt.plot(CoM_Traj["py_result"],marker = 'o',label = 'CoM')
 plt.legend(loc="upper left")
+plt.title('py')
 plt.show()
 
 plt.plot(NLP_Traj["px_result"],marker = 'o',label = 'NLP')
 plt.plot(CoM_Traj["px_result"],marker = 'o',label = 'CoM')
 plt.legend(loc="upper left")
+plt.title('px')
 plt.show()
 
 
