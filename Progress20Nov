@@ -1,0 +1,62 @@
+1. Correctness of Code
+    - First level only; 
+      tracking cost on ref traj --- Least square error of all decision variables towards ref ones 
+      (i.e. CoM, CoMdot, L, Ldot, Forces, Contact Locations, Contact timings) weighted as they are in different scale
+      overlapped traj
+    - First level and Second level together, No terminal cost
+      Tracking cost on both level 
+      overlapped traj in both level
+
+2. Roll back to the Monday setup:
+    - First level cost Acc + L + (Ldot) (integral cost --- bilinear --- need to multiply with h --- the time step derived from contact timing)
+    - Second level tracking cost (least square cost on Contact location from *The second step* + CoM + CoMdot; Contact timing is fixed) + No terminal cost
+    - This set up gives us bad TSID motion
+    - Recall Gait Pattern DS SS DS|DS SS DS ... 
+      The first step lands after the first SS phase finished, and the first step location is shared by both the DS phases of the first and the second level
+    - So, making the first step tracking a ref position as well, Note: No terminal cost
+    - Motion becomes very close to full NLP (There are small differences)
+
+3. Generalisation capability
+    - The ref motion is generated for antfarm uneven terrain with 6 degrees slope
+    - make the patches flat, the planner works (TSID) and takes slightly less time (around -0.1s); 
+      make the slope bigger (8 degrees), works (TSID), and takes slightly more time (+1s)
+    - The same ref motion can also generate motion for darpa
+
+4. Computation time (Not Ideal, but is this the limit?)
+    - For the new setup in 2, 2.5x to 3.8x faster (4,5 step lookahead, the same terrain where we generate the ref one)
+      With a parameter tuning of the solver, we can get 3x-4.4x times faster;
+      With long lookahead, we may get larger computation time gain
+    - Need to try all lookahead steps but I dont think magic will happen
+    - Observation: after making the angular dynamics correct, the NLP takes less time to compute, 
+      but the trakcing cost case, no matter what we change (i.e. add trakcing of the second step, trakcing cost in the first level), 
+      even with wrong angular dynamics, the computation time does not change that much.
+
+4.5 Second level only has a tracking cost, it seems like with 2-5 steps lookahead the cost is the same. then what is the point of have lookahead horizon in tracking cost scenario/
+
+5. Numerical Issues of NLP (Some consistent observation with Theo)
+
+    -Recall the problem on Monday:
+     I use cost of Acc+L+Ldot for full NLP
+     I then take the first level only, 
+     Initialise with the fist-step motion from full NLP solution
+     The solver converged to a different local minima
+
+    - Possibility 1:
+        - For large scale NLP, We get a solution of NLP, load it as an initial seed, the optimizer will complain there are feasibility error and optimality error (Theo also)
+        - This will make the solver to search a bit.
+        - If the landscape of the NLp is a clear big bowl, it will fall back to the initial seed (the tracking cost case?)
+        - If not:
+            - Multiple local minima are staying very close to each other/ the landscape is like cannal, then with this searching behavior, 
+              we are getting a diff local minima (Contact location, traj)
+
+    - Possibility 2:
+        - For large scale and complex NLP, if the absolute error of feasibility and optimality stays below a threshold and does not improve, 
+          and the relative errors below a threshold and does not improve, it will stop. 
+          So, we end up with a large absolute error (1e-4) and small relative error (1e-7) (Out full NLP case)
+        - When we only take the first step, maybe because of the reduced NLP size, the optimizer is able to reduce the absolute errors further, 
+          That is why we end up with a different solution (Contact location, traj) 
+          Also in the same spirit, for the case of First level(Acc+L+Ldot) + Second level tracking (No matter the first step trakced or not)
+          the solutions are different from full NLP (with trakcing the first step, the diff is neglectable); because the nonconvexity is reduced.
+
+    - Summary: NLP is not ideal especailly for large scale ones.
+

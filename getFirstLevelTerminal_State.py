@@ -4,8 +4,8 @@ import pickle
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 
-def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 3):
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
+def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 10):
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/Uneven_005_ref/antfarm_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
 
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
@@ -50,9 +50,9 @@ def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 3):
 
     return x_end_Level1,y_end_Level1,z_end_Level1,xdot_end_Level1,ydot_end_Level1,zdot_end_Level1,px_Level1,py_Level1,pz_Level1,Lx_end_Level1,Ly_end_Level1,Lz_end_Level1
 
-def GetFirstLevelTrajectory(RoundNum = 0, NumofLookAhead = 3):
+def GetFirstLevelTrajectory(RoundNum = 0, NumofLookAhead = 10):
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/Uneven_005_ref/antfarm_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
 
     with open(filename, 'rb') as f:
         data = pickle.load(f)
@@ -61,5 +61,11 @@ def GetFirstLevelTrajectory(RoundNum = 0, NumofLookAhead = 3):
     Trajectories = data["Trajectory_of_All_Rounds"]
 
     FirstLevelTraj = Trajectories[RoundNum][0:Level1_VarIndex["Ts"][1]+1]
+
+    # plt.plot(FirstLevelTraj)
+    # plt.plot(Trajectories[RoundNum])
+    # plt.show()
+
+    print(FirstLevelTraj[-1],FirstLevelTraj[-2],FirstLevelTraj[-3])
 
     return FirstLevelTraj

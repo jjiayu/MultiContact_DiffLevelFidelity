@@ -14,13 +14,14 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/Uneven_Flat_Ref/10LookAhead_Trial0.p"
 
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/antfarm_ref/10LookAhead_Trial0.p"
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/uneven_flat/10LookAhead_Trial0.p"
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/Uneven_005_ref/antfarm_ref/" + '10LookAhead_Trial0.p'
 
     with open(filename, 'rb') as f:
         data = pickle.load(f)
 
     #Get Result Data
     Level1_VarIndex = data["VarIdx_of_All_Levels"]["Level1_Var_Index"]
+    Level2_VarIndex = data["VarIdx_of_All_Levels"]["Level2_Var_Index"]
     Trajectories = data["Trajectory_of_All_Rounds"]
     Px_result = list(np.concatenate(data["Px_fullres"],axis=None))
     Py_result = list(np.concatenate(data["Py_fullres"],axis=None))
@@ -177,6 +178,14 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
     Pz_seq = np.array(Pz_seq)
     SwitchingTimeVec = np.array(SwitchingTimeVec)
 
+    #For p_init in the second level
+    #Get the second level first
+    traj_secondlevel = Trajectories[StartStepNum][Level1_VarIndex["Ts"][1]+1:]
+
+    px_init_seq = traj_secondlevel[Level2_VarIndex["px_init"][0]:Level2_VarIndex["px_init"][1]+1]
+    py_init_seq = traj_secondlevel[Level2_VarIndex["py_init"][0]:Level2_VarIndex["py_init"][1]+1]
+    pz_init_seq = traj_secondlevel[Level2_VarIndex["pz_init"][0]:Level2_VarIndex["pz_init"][1]+1]
+
     #Convert to Numpy Array
 
     #plt.plot(zdot_traj)
@@ -206,7 +215,7 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
 
     #plt.show()
 
-    return  x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec
+    return  x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec, px_init_seq, py_init_seq, pz_init_seq
 
 
 def NLP_ref_trajectory_from_SecondLevel(StartStepNum = None, LookAheadSteps = None):

@@ -8,13 +8,12 @@ from NLP_Ref_Traj_Constructor import *
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_No_TerminalCost_AntfarmRef/5LookAhead_Trial0.p"
 
-NumLookAhead = 2
-RoundNum = 5
+NumLookAhead = 10
+RoundNum = 0
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_Tracking_SecondLevel/"+str(NumLookAhead)+"LookAhead_Trial0.p"
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/"+str(NumLookAhead)+"LookAhead_Trial0.p"
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/track_antfarm005_10steps_uneven_007/darpa_like_left_first_CoM_previous/"+str(NumLookAhead)+"LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TrackInvestigation_AntFarm/Tracking_CostOnly_Decoupled_from_The_FirstLevel_Integrator_Constraint(Dynamics)/" +str(NumLookAhead)+"LookAhead_Trial0.p"
-
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_10x_TerminalCost/Uneven_Tracking_Individual_Ones/antfarm_CoM_antfarm_ref_005Height/5LookAhead_Trial0.p"
 
 with open(filename, 'rb') as f:
@@ -35,7 +34,7 @@ traj_secondlevel = traj[Level1_VarIndex["Ts"][1]+1:]
 
 #-------------
 #Get ref traj
-x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec = NLP_ref_trajectory_construction(StartStepNum = RoundNum, LookAheadSteps = NumLookAhead)
+x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec,px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = RoundNum, LookAheadSteps = NumLookAhead)
 #x_traj, y_traj, z_traj, xdot_traj, ydot_traj, zdot_traj, FLx_traj, FLy_traj, FLz_traj, FRx_traj, FRy_traj, FRz_traj, Px_seq, Py_seq, Pz_seq, SwitchingTimeVec = NLP_ref_trajectory_from_SecondLevel(StartStepNum = RoundNum, LookAheadSteps = NumLookAhead)
 
 

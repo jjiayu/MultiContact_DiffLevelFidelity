@@ -39,6 +39,7 @@ ResultSavingFolder = sys.argv[8]
 #Clear the logging file
 #open("test.txt", "w").close()
 
+ProvideInitialSeed = False
 
 print("==================================================================")
 print("A new Round")
@@ -192,6 +193,7 @@ for roundNum in range(Nrounds):
 
     #Get Terminal State of the first level
     x_end_level1,y_end_level1,z_end_level1,xdot_end_level1,ydot_end_level1,zdot_end_level1,px_level1,py_level1,pz_level1,Lx_end_level1,Ly_end_level1,Lz_end_level1 = GetFirstLevelTerminalState(RoundNum = roundNum)
+    Level1_ref_traj = GetFirstLevelTrajectory(RoundNum = roundNum)
 
     if roundNum == 0:
 
@@ -222,7 +224,7 @@ for roundNum in range(Nrounds):
 
         #Get Reference Trajectory
         if ChosenSolver == "CoM":
-            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
             #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
 
             ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -247,7 +249,11 @@ for roundNum in range(Nrounds):
                 x_end_level1,y_end_level1,z_end_level1,
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
+                Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                Level1_ref_traj,
+                px_init_ref, py_init_ref, pz_init_ref),axis=None)
+
+
             
         else:
                 ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -266,12 +272,14 @@ for roundNum in range(Nrounds):
                 x_end_level1,y_end_level1,z_end_level1,
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
+                Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                Level1_ref_traj),axis=None)
 
         
         #For 1 step lookahead checking local minima only
         if NumofLookAhead  == 1 and InitSeedType == "random":
-            DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
+            if ProvideInitialSeed == True:
+                DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
 
 
         res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
@@ -286,20 +294,26 @@ for roundNum in range(Nrounds):
 
     elif roundNum > 0:
 
-        #Update Initial Condition
+        #Update Initial Condition --- from previous rounds
         x_res = x_opt[var_index_Level1["x"][0]:var_index_Level1["x"][1]+1]
         x_init = x_res[-1]
+        print("x_init:",x_init)
         y_res = x_opt[var_index_Level1["y"][0]:var_index_Level1["y"][1]+1]
         y_init = y_res[-1]
+        print("y_init:",y_init)
         z_res = x_opt[var_index_Level1["z"][0]:var_index_Level1["z"][1]+1]
         z_init = z_res[-1]
+        print("z_init:",z_init)
 
         Lx_res = x_opt[var_index_Level1["Lx"][0]:var_index_Level1["Lx"][1]+1]
         Lx_init = Lx_res[-1]
+        print("Lx_init:",Lx_init)
         Ly_res = x_opt[var_index_Level1["Ly"][0]:var_index_Level1["Ly"][1]+1]
         Ly_init = Ly_res[-1]
+        print("Ly_init:",Ly_init)
         Lz_res = x_opt[var_index_Level1["Lz"][0]:var_index_Level1["Lz"][1]+1]
         Lz_init = Lz_res[-1]
+        print("Lz_init:",Lz_init)
 
         Ldotx_res = x_opt[var_index_Level1["Ldotx"][0]:var_index_Level1["Ldotx"][1]+1]
         Ldotx_init = Ldotx_res[-1]
@@ -310,10 +324,51 @@ for roundNum in range(Nrounds):
 
         xdot_res  = x_opt[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
         xdot_init = xdot_res[-1]
+        print("xdot_init:",xdot_init)
         ydot_res  = x_opt[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
         ydot_init = ydot_res[-1]
+        print("xdot_init:",ydot_init)
         zdot_res  = x_opt[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
         zdot_init = zdot_res[-1]
+        print("zdot_init:",zdot_init)
+
+        # #----------------------------------
+        # x_res = Level1_ref_traj[var_index_Level1["x"][0]:var_index_Level1["x"][1]+1]
+        # x_init = x_res[0]
+        # print("x_init:",x_init)
+        # y_res = Level1_ref_traj[var_index_Level1["y"][0]:var_index_Level1["y"][1]+1]
+        # y_init = y_res[0]
+        # print("y_init:",y_init)
+        # z_res = Level1_ref_traj[var_index_Level1["z"][0]:var_index_Level1["z"][1]+1]
+        # z_init = z_res[0]
+        # print("z_init:",z_init)
+        # Lx_res = Level1_ref_traj[var_index_Level1["Lx"][0]:var_index_Level1["Lx"][1]+1]
+        # Lx_init = Lx_res[0]
+        # print("Lx_init:",Lx_init)
+        # Ly_res = Level1_ref_traj[var_index_Level1["Ly"][0]:var_index_Level1["Ly"][1]+1]
+        # Ly_init = Ly_res[0]
+        # print("Ly_init:",Ly_init)
+        # Lz_res = Level1_ref_traj[var_index_Level1["Lz"][0]:var_index_Level1["Lz"][1]+1]
+        # Lz_init = Lz_res[0]
+        # print("Lz_init:",Lz_init)
+
+        # Ldotx_res = Level1_ref_traj[var_index_Level1["Ldotx"][0]:var_index_Level1["Ldotx"][1]+1]
+        # Ldotx_init = Ldotx_res[0]
+        # Ldoty_res = Level1_ref_traj[var_index_Level1["Ldoty"][0]:var_index_Level1["Ldoty"][1]+1]
+        # Ldoty_init = Ldoty_res[0]
+        # Ldotz_res = Level1_ref_traj[var_index_Level1["Ldotz"][0]:var_index_Level1["Ldotz"][1]+1]
+        # Ldotz_init = Ldotz_res[0]
+
+        # xdot_res  = Level1_ref_traj[var_index_Level1["xdot"][0]:var_index_Level1["xdot"][1]+1]
+        # xdot_init = xdot_res[0]
+        # ydot_res  = Level1_ref_traj[var_index_Level1["ydot"][0]:var_index_Level1["ydot"][1]+1]
+        # ydot_init = ydot_res[0]
+        # zdot_res  = Level1_ref_traj[var_index_Level1["zdot"][0]:var_index_Level1["zdot"][1]+1]
+        # zdot_init = zdot_res[0]
+
+        print("Terrain Tangent X:", TerrainTangentsX[roundNum-1][0])
+        print("Terrain Tangent Y:", TerrainTangentsY[roundNum-1][0])
+        print("Terrain Norm:", TerrainNorms[roundNum-1][0])
 
         if SwingLeftFirst == 1:
             if roundNum%2 == 0:#Even (The First phase)
@@ -406,7 +461,7 @@ for roundNum in range(Nrounds):
 
         #Get Reference Trajectory
         if ChosenSolver == "CoM":
-            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
             #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
 
             ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -431,7 +486,9 @@ for roundNum in range(Nrounds):
                 x_end_level1,y_end_level1,z_end_level1,
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
+                Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                Level1_ref_traj,
+                px_init_ref, py_init_ref, pz_init_ref),axis=None)
             
         else:
                 ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
@@ -450,7 +507,8 @@ for roundNum in range(Nrounds):
                 x_end_level1,y_end_level1,z_end_level1,
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1),axis=None)
+                Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                Level1_ref_traj),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator
@@ -460,7 +518,8 @@ for roundNum in range(Nrounds):
             
             #For 1 step lookahead checking local minima only
             if NumofLookAhead  == 1:
-                DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
+                if ProvideInitialSeed == True:
+                    DecisionVars_init = GetFirstLevelTrajectory(RoundNum = roundNum)
 
             res = solver(x0=DecisionVars_init, p = ParaList, lbx = DecisionVars_lb, ubx = DecisionVars_ub, lbg = glb, ubg = gub)
             x_opt = res["x"]

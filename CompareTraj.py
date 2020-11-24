@@ -21,18 +21,20 @@ filename = '5LookAhead_Trial0.p'
 #fullpath = folderpath + 'flat_NLP_previous/' + filename
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
-fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Large_DoubleSupportPhase/Knitro_antfarm_firstLevel_left_start_NLP_previous/" + '10LookAhead_Trial0.p'
-fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_CoM_previous/" + '5LookAhead_Trial0.p'
+fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/NLP_007_round1/antfarm_firstLevel_left_start_NLP_previous/" + '10LookAhead_Trial0.p'
+fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/TrackingSecondLevel_antfarm_005_10StepLookahead/antfarm_firstLevel_left_start_CoM_previous/" + '10LookAhead_Trial0.p'
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
+#up_and_down_left_first_NLP_previous
+#antfarm_firstLevel_left_start_NLP_previous
+#darpa_like_left_first_NLP_previous
 
 fullpath = fullpath1
 
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
-query_traj = "ydot_result"
+query_traj = "z_result"
 
 startStepNum = 0
 EndStepNum = 14
-
 
 with open(fullpath, 'rb') as f:
     data = pickle.load(f)
@@ -93,6 +95,18 @@ px_List = []
 py_List = []
 pz_List = []
 
+FLx_res = []
+FLy_res = []
+FLz_res = []
+
+FRx_res = []
+FRy_res = []
+FRz_res = []
+
+Fx_res = []
+Fy_res = []
+Fz_res = []
+
 Ts_List = []
 
 timeseries = []
@@ -150,6 +164,18 @@ for roundIdx in range(len(Trajectories)):
     FR2z_traj = traj[Level1_VarIndex["FR2z"][0]:Level1_VarIndex["FR2z"][1]+1]
     FR3z_traj = traj[Level1_VarIndex["FR3z"][0]:Level1_VarIndex["FR3z"][1]+1]
     FR4z_traj = traj[Level1_VarIndex["FR4z"][0]:Level1_VarIndex["FR4z"][1]+1]
+
+    FLx_traj = FL1x_traj + FL2x_traj + FL3x_traj + FL4x_traj
+    FLy_traj = FL1y_traj + FL2y_traj + FL3y_traj + FL4y_traj
+    FLz_traj = FL1z_traj + FL2z_traj + FL3z_traj + FL4z_traj
+
+    FRx_traj = FR1x_traj + FR2x_traj + FR3x_traj + FR4x_traj
+    FRy_traj = FR1y_traj + FR2y_traj + FR3y_traj + FR4y_traj
+    FRz_traj = FR1z_traj + FR2z_traj + FR3z_traj + FR4z_traj
+
+    Fx_traj = FLx_traj + FRx_traj
+    Fy_traj = FLy_traj + FRy_traj
+    Fz_traj = FLz_traj + FRz_traj
 
     px_res = traj[Level1_VarIndex["px"][0]:Level1_VarIndex["px"][1]+1]
     py_res = traj[Level1_VarIndex["py"][0]:Level1_VarIndex["py"][1]+1]
@@ -333,6 +359,18 @@ for roundIdx in range(len(Trajectories)):
         FR4y_res.append(FR4y_traj)
         FR4z_res.append(FR4z_traj)
 
+        FLx_res.append(FLx_traj)
+        FLy_res.append(FLy_traj)
+        FLz_res.append(FLz_traj)
+
+        FRx_res.append(FRx_traj)
+        FRy_res.append(FRy_traj)
+        FRz_res.append(FRz_traj)
+
+        Fx_res.append(Fx_traj)
+        Fy_res.append(Fy_traj)
+        Fz_res.append(Fz_traj)
+
         timeseries.append(timeline)
     else:
         x_result.append(x_traj)
@@ -384,6 +422,18 @@ for roundIdx in range(len(Trajectories)):
         FR4x_res.append(FR4x_traj)
         FR4y_res.append(FR4y_traj)
         FR4z_res.append(FR4z_traj)
+
+        FLx_res.append(FLx_traj)
+        FLy_res.append(FLy_traj)
+        FLz_res.append(FLz_traj)
+
+        FRx_res.append(FRx_traj)
+        FRy_res.append(FRy_traj)
+        FRz_res.append(FRz_traj)
+        
+        Fx_res.append(Fx_traj)
+        Fy_res.append(Fy_traj)
+        Fz_res.append(Fz_traj)
 
 px_List = np.concatenate((px_List),axis=None)
 py_List = np.concatenate((py_List),axis=None)
@@ -449,6 +499,15 @@ NLP_Traj = {"timeseries":timeseries,
             "FR4x_result":FR4x_res,
             "FR4y_result":FR4y_res,
             "FR4z_result":FR4z_res,
+            "FLx_result":FLx_res,
+            "FLy_result":FLy_res,
+            "FLz_result":FLz_res,
+            "FRx_result":FRx_res,
+            "FRy_result":FRy_res,
+            "FRz_result":FRz_res,
+            "Fx_result":Fx_res,
+            "Fy_result":Fy_res,
+            "Fz_result":Fz_res,
 }
 
 
@@ -522,9 +581,22 @@ FR2z_res  = []
 FR3z_res = []
 FR4z_res = []
 
+FLx_res = []
+FLy_res = []
+FLz_res = []
+
+FRx_res = []
+FRy_res = []
+FRz_res = []
+
+Fx_res = []
+Fy_res = []
+Fz_res = []
+
 px_List = []
 py_List = []
 pz_List = []
+
 
 Ts_List = []
 
@@ -581,6 +653,18 @@ for roundIdx in range(len(Trajectories)):
     FR2z_traj = traj[Level1_VarIndex["FR2z"][0]:Level1_VarIndex["FR2z"][1]+1]
     FR3z_traj = traj[Level1_VarIndex["FR3z"][0]:Level1_VarIndex["FR3z"][1]+1]
     FR4z_traj = traj[Level1_VarIndex["FR4z"][0]:Level1_VarIndex["FR4z"][1]+1]
+
+    FLx_traj = FL1x_traj + FL2x_traj + FL3x_traj + FL4x_traj
+    FLy_traj = FL1y_traj + FL2y_traj + FL3y_traj + FL4y_traj
+    FLz_traj = FL1z_traj + FL2z_traj + FL3z_traj + FL4z_traj
+
+    FRx_traj = FR1x_traj + FR2x_traj + FR3x_traj + FR4x_traj
+    FRy_traj = FR1y_traj + FR2y_traj + FR3y_traj + FR4y_traj
+    FRz_traj = FR1z_traj + FR2z_traj + FR3z_traj + FR4z_traj
+
+    Fx_traj = FLx_traj + FRx_traj
+    Fy_traj = FLy_traj + FRy_traj
+    Fz_traj = FLz_traj + FRz_traj
 
     px_res = traj[Level1_VarIndex["px"][0]:Level1_VarIndex["px"][1]+1]
     py_res = traj[Level1_VarIndex["py"][0]:Level1_VarIndex["py"][1]+1]
@@ -761,6 +845,18 @@ for roundIdx in range(len(Trajectories)):
         FR4y_res.append(FR4y_traj)
         FR4z_res.append(FR4z_traj)
 
+        FLx_res.append(FLx_traj)
+        FLy_res.append(FLy_traj)
+        FLz_res.append(FLz_traj)
+
+        FRx_res.append(FRx_traj)
+        FRy_res.append(FRy_traj)
+        FRz_res.append(FRz_traj)
+
+        Fx_res.append(Fx_traj)
+        Fy_res.append(Fy_traj)
+        Fz_res.append(Fz_traj)
+
         timeseries.append(timeline)
     else:
         x_result.append(x_traj)
@@ -812,6 +908,18 @@ for roundIdx in range(len(Trajectories)):
         FR4x_res.append(FR4x_traj)
         FR4y_res.append(FR4y_traj)
         FR4z_res.append(FR4z_traj)
+
+        FLx_res.append(FLx_traj)
+        FLy_res.append(FLy_traj)
+        FLz_res.append(FLz_traj)
+
+        FRx_res.append(FRx_traj)
+        FRy_res.append(FRy_traj)
+        FRz_res.append(FRz_traj)
+
+        Fx_res.append(Fx_traj)
+        Fy_res.append(Fy_traj)
+        Fz_res.append(Fz_traj)
 
     #print("z_traj",z_traj)
 
@@ -876,6 +984,15 @@ CoM_Traj = {"timeseries":timeseries,
             "FR4x_result":FR4x_res,
             "FR4y_result":FR4y_res,
             "FR4z_result":FR4z_res,
+            "FLx_result":FLx_res,
+            "FLy_result":FLy_res,
+            "FLz_result":FLz_res,
+            "FRx_result":FRx_res,
+            "FRy_result":FRy_res,
+            "FRz_result":FRz_res,
+            "Fx_result":Fx_res,
+            "Fy_result":Fy_res,
+            "Fz_result":Fz_res,
 }
 
 #print(CoM_Traj["x_result"][8])

@@ -22,7 +22,11 @@ from sl1m.planner_scenarios.talos.constraints import *
 #FUNCTION: Build a single step NLP problem
 #Parameters:
 #   m: robot mass, default value set as the one of Talos
-def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, ParameterList = None, CentralY = False):
+def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_Cost = True, TerminalCost = False, AngularDynamics = True,ParameterList = None, CentralY = False):
+    
+    print("ConservativeEnd: ",ConservativeEnd)
+    print("Tracking_Cost: ",Tracking_Cost)
+    print("TerminalCost: ",TerminalCost)
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
@@ -187,6 +191,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
     Lx_Level1_end = ParameterList["Lx_Level1_end"]
     Ly_Level1_end = ParameterList["Ly_Level1_end"]
     Lz_Level1_end = ParameterList["Lz_Level1_end"]
+
+    Level1_RefTraj = ParameterList["FirstLevel_Traj"]
 
     ##First Round Flag (If yes, we have an initial double support phase, if not, we don't have an initial double support phase)
     #ParaFirstRoundFlag = ParameterList["FirstRoundFlag"]
@@ -508,18 +514,18 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
         glb.append(np.array([0]))
         gub.append(np.array([0]))
 
-        # #   Contacts
-        # g.append(px[0]-px_Level1)
-        # glb.append(np.array([0]))
-        # gub.append(np.array([0]))
+        #   Contacts
+        g.append(px[0]-px_Level1)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
 
-        # g.append(py[0]-py_Level1)
-        # glb.append(np.array([0]))
-        # gub.append(np.array([0]))
+        g.append(py[0]-py_Level1)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
 
-        # g.append(pz[0]-pz_Level1)
-        # glb.append(np.array([0]))
-        # gub.append(np.array([0]))
+        g.append(pz[0]-pz_Level1)
+        glb.append(np.array([0]))
+        gub.append(np.array([0]))
 
         #  Terminal Angular Momentum x-axis
         g.append(Lx[-1]-Lx_Level1_end)
@@ -550,52 +556,6 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
     #g.append(Ldotz[-1]-Ldotz_end)
     #glb.append(np.array([0]))
     #gub.append(np.array([0]))
-
-    # #---------------------
-    # #Terminal Conditions
-    # g.append(x[-1]-0.7578)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(y[-1]-3.7915e-02)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(z[-1]-0.7658)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(xdot[-1]-0.3647)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(ydot[-1]-0.1572)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(zdot[-1]-0.0218)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(Lx[-1]+1.1823e-03)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(Ly[-1]+1.1943e-04)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(Lz[-1]-1.6479e-10)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(px[0]-0.9267)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
-
-    # g.append(py[0]-0.148)
-    # glb.append(np.array([0]))
-    # gub.append(np.array([0]))
 
     #Loop over all Phases (Knots)
     for Nph in range(Nphase):
@@ -633,7 +593,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
             #   Angular Momentum
             if k<N_K-1: #N_K-1 the enumeration of the last knot, k<N_K-1 the one before the last knot
                 Ldot_current = ca.vertcat(Ldotx[k],Ldoty[k],Ldotz[k])
-                Ldot_next = ca.vertcat(Ldotx[k+1],Ldotx[k+1],Ldotx[k+1])
+                Ldot_next = ca.vertcat(Ldotx[k+1],Ldoty[k+1],Ldotz[k+1])
             #-------------------------------------------
 
             #-------------------------------------------
@@ -658,8 +618,10 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 #|                  |
                 #P4----------------P2
 
-                if k<N_K-1: #double check the knot number is valid
-                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = None, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                if AngularDynamics == True:
+                    if k<N_K-1: #double check the knot number is valid
+                        g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = None, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                        
                     # g.append(L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
                     #                                        ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
                     #                                        ca.cross((PL_init-0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL3_k) + 
@@ -671,8 +633,6 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                     # #g.append(Ldot_next-Ldot_current-h*(ca.cross((PL_init+np.array([0.11,0.06,0])-CoM_k),FL1_k)+ca.cross((PL_init+np.array([0.11,-0.06,0])-CoM_k),FL2_k)+ca.cross((PL_init+np.array([-0.11,0.06,0])-CoM_k),FL3_k)+ca.cross((PL_init+np.array([-0.11,-0.06,0])-CoM_k),FL4_k)+ca.cross((PR_init+np.array([0.11,0.06,0])-CoM_k),FR1_k)+ca.cross((PR_init+np.array([0.11,-0.06,0])-CoM_k),FR2_k)+ca.cross((PR_init+np.array([-0.11,0.06,0])-CoM_k),FR3_k)+ca.cross((PR_init+np.array([-0.11,-0.06,0])-CoM_k),FR4_k)))
                     # glb.append(np.array([0,0,0]))
                     # gub.append(np.array([0,0,0]))
-                else:
-                    print("Initial Double Stage - Angular Dynamics Constraint - Knot number exceeds limit")
                 
                 #Unilateral Force Constraints for all Suppport foot
                 g, glb, gub = Unilateral_Constraints(g = g, glb = glb, gub = gub, F_k = FL1_k, TerrainNorm = PL_init_Norm)
@@ -706,9 +666,10 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
 
-                #Angular Dynamics (Right Support)
-                if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, P = PR_init, P_TangentX = PR_init_TangentX, P_TangentY = PR_init_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
+                # #Angular Dynamics (Right Support)
+                if AngularDynamics == True:
+                    if k<N_K-1:
+                        g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, P = PR_init, P_TangentX = PR_init_TangentX, P_TangentY = PR_init_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
 
                     # g.append(ca.if_else(ParaLeftSwingFlag, L_next - L_current - h*(ca.cross((PR_init+0.11*PR_init_TangentX+0.06*PR_init_TangentY-CoM_k),FR1_k) + 
                     #                                                                      ca.cross((PR_init+0.11*PR_init_TangentX-0.06*PR_init_TangentY-CoM_k),FR2_k) + 
@@ -725,9 +686,10 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(np.full((len(k_CoM_Left),),0))
 
-                #Angular Dynamics (Left Support)
-                if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, P = PL_init, P_TangentX = PL_init_TangentX, P_TangentY = PL_init_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
+                # #Angular Dynamics (Left Support)
+                if AngularDynamics == True:
+                    if k<N_K-1:
+                        g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, P = PL_init, P_TangentX = PL_init_TangentX, P_TangentY = PL_init_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
 
                     # g.append(ca.if_else(ParaRightSwingFlag, L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
                     #                                                                       ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
@@ -795,8 +757,9 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 PL_k_TangentX = SurfTangentsX[0:3]
                 PL_k_TangentY = SurfTangentsY[0:3]
                 
-                if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_k, PL_TangentX = PL_k_TangentX, PL_TangentY = PL_k_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+                if AngularDynamics == True:   
+                    if k<N_K-1:
+                        g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_k, PL_TangentX = PL_k_TangentX, PL_TangentY = PL_k_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
 
                     # g.append(ca.if_else(ParaLeftSwingFlag, L_next - L_current - h*(ca.cross((PL_k+0.11*PL_k_TangentX+0.06*PL_k_TangentY-CoM_k),FL1_k) + 
                     #                                                                      ca.cross((PL_k+0.11*PL_k_TangentX-0.06*PL_k_TangentY-CoM_k),FL2_k) + 
@@ -827,9 +790,10 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 PR_k_Norm = SurfNorms[0:3]
                 PR_k_TangentX = SurfTangentsX[0:3]
                 PR_k_TangentY = SurfTangentsY[0:3]
-                
-                if k<N_K-1:
-                    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_k, PR_TangentX = PR_k_TangentX, PR_TangentY = PR_k_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
+
+                if AngularDynamics == True:
+                    if k<N_K-1:
+                        g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = PR_k, PR_TangentX = PR_k_TangentX, PR_TangentY = PR_k_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
 
                     # g.append(ca.if_else(ParaRightSwingFlag, L_next - L_current - h*(ca.cross((PL_init+0.11*PL_init_TangentX+0.06*PL_init_TangentY-CoM_k),FL1_k) + 
                     #                                                                       ca.cross((PL_init+0.11*PL_init_TangentX-0.06*PL_init_TangentY-CoM_k),FL2_k) + 
@@ -899,8 +863,8 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL3_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
                 g, glb, gub = FrictionCone(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, F_k = FL4_k, TerrainTangentX = PL_init_TangentX, TerrainTangentY = PL_init_TangentY, TerrainNorm = PL_init_Norm, miu = miu)
 
-            #-------------------------------------
-            #Dynamics Constraint
+            # #-------------------------------------
+            # #Dynamics Constraint
             if k < N_K - 1: #N_k - 1 the enumeration of the last knot, -1 the knot before the last knot
                 #First-order Dynamics x-axis
                 g.append(x[k+1] - x[k] - h*xdot[k])
@@ -969,16 +933,32 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                 #glb.append(np.array([0]))
                 #gub.append(np.array([0]))
             
-            #Add Cost Terms
-            if k < N_K - 1:
-                #with angular momentum
-                #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #No Angular momentum
-                #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #With Angular momentum rate
-                #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
-                #With Angular momentum and angular momentum together
-                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+            if Tracking_Cost == False:
+                #Add Cost Terms
+                if k < N_K - 1:
+                    #with angular momentum
+                    J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                    #No Angular momentum
+                    #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                    #With Angular momentum rate
+                    #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                    #With Angular momentum and angular momentum together
+                    #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+
+    if TerminalCost == True:
+        weight = 1000
+        J = J + weight*(x[-1] - x_Level1_end)**2
+        J = J + weight*(y[-1] - y_Level1_end)**2
+        J = J + weight*(z[-1] - z_Level1_end)**2
+        J = J + weight*(xdot[-1] - xdot_Level1_end)**2
+        J = J + weight*(ydot[-1] - ydot_Level1_end)**2
+        J = J + weight*(zdot[-1] - zdot_Level1_end)**2
+        J = J + weight*(px[0] - px_Level1)**2
+        J = J + weight*(py[0] - py_Level1)**2
+        J = J + weight*(pz[0] - pz_Level1)**2
+        J = J + weight*(Lx[-1] - Lx_Level1_end)**2
+        J = J + weight*(Ly[-1] - Ly_Level1_end)**2
+        J = J + weight*(Lz[-1] - Lz_Level1_end)**2
 
     #Relative Foot Constraints
     #   For init phase
@@ -1174,6 +1154,123 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Parameter
                  "pz":pz_index,
                  "Ts":Ts_index,
     }
+
+    #Ref trajectory tracking cost
+    #Get ref traj
+    x_ref = Level1_RefTraj[x_index[0]:x_index[1]+1]
+    y_ref = Level1_RefTraj[y_index[0]:y_index[1]+1]
+    z_ref = Level1_RefTraj[z_index[0]:z_index[1]+1]
+    xdot_ref = Level1_RefTraj[xdot_index[0]:xdot_index[1]+1]
+    ydot_ref = Level1_RefTraj[ydot_index[0]:ydot_index[1]+1]
+    zdot_ref = Level1_RefTraj[zdot_index[0]:zdot_index[1]+1]
+    Lx_ref = Level1_RefTraj[Lx_index[0]:Lx_index[1]+1]
+    Ly_ref = Level1_RefTraj[Ly_index[0]:Ly_index[1]+1]
+    Lz_ref = Level1_RefTraj[Lz_index[0]:Lz_index[1]+1]
+    Ldotx_ref = Level1_RefTraj[Ldotx_index[0]:Ldotx_index[1]+1]
+    Ldoty_ref = Level1_RefTraj[Ldoty_index[0]:Ldoty_index[1]+1]
+    Ldotz_ref = Level1_RefTraj[Ldotz_index[0]:Ldotz_index[1]+1]
+    FL1x_ref = Level1_RefTraj[FL1x_index[0]:FL1x_index[1]+1]
+    FL1y_ref = Level1_RefTraj[FL1y_index[0]:FL1y_index[1]+1]
+    FL1z_ref = Level1_RefTraj[FL1z_index[0]:FL1z_index[1]+1]
+    FL2x_ref = Level1_RefTraj[FL2x_index[0]:FL2x_index[1]+1]
+    FL2y_ref = Level1_RefTraj[FL2y_index[0]:FL2y_index[1]+1]
+    FL2z_ref = Level1_RefTraj[FL2z_index[0]:FL2z_index[1]+1]
+    FL3x_ref = Level1_RefTraj[FL3x_index[0]:FL3x_index[1]+1]
+    FL3y_ref = Level1_RefTraj[FL3y_index[0]:FL3y_index[1]+1]
+    FL3z_ref = Level1_RefTraj[FL3z_index[0]:FL3z_index[1]+1]
+    FL4x_ref = Level1_RefTraj[FL4x_index[0]:FL4x_index[1]+1]
+    FL4y_ref = Level1_RefTraj[FL4y_index[0]:FL4y_index[1]+1]
+    FL4z_ref = Level1_RefTraj[FL4z_index[0]:FL4z_index[1]+1]
+    FR1x_ref = Level1_RefTraj[FR1x_index[0]:FR1x_index[1]+1]
+    FR1y_ref = Level1_RefTraj[FR1y_index[0]:FR1y_index[1]+1]
+    FR1z_ref = Level1_RefTraj[FR1z_index[0]:FR1z_index[1]+1]
+    FR2x_ref = Level1_RefTraj[FR2x_index[0]:FR2x_index[1]+1]
+    FR2y_ref = Level1_RefTraj[FR2y_index[0]:FR2y_index[1]+1]
+    FR2z_ref = Level1_RefTraj[FR2z_index[0]:FR2z_index[1]+1]
+    FR3x_ref = Level1_RefTraj[FR3x_index[0]:FR3x_index[1]+1]
+    FR3y_ref = Level1_RefTraj[FR3y_index[0]:FR3y_index[1]+1]
+    FR3z_ref = Level1_RefTraj[FR3z_index[0]:FR3z_index[1]+1]
+    FR4x_ref = Level1_RefTraj[FR4x_index[0]:FR4x_index[1]+1]
+    FR4y_ref = Level1_RefTraj[FR4y_index[0]:FR4y_index[1]+1]
+    FR4z_ref = Level1_RefTraj[FR4z_index[0]:FR4z_index[1]+1]
+
+    px_ref = Level1_RefTraj[px_index[0]:px_index[1]+1]
+    py_ref = Level1_RefTraj[py_index[0]:py_index[1]+1]
+    pz_ref = Level1_RefTraj[pz_index[0]:pz_index[1]+1]
+
+    Ts_ref = Level1_RefTraj[Ts_index[0]:Ts_index[1]+1]
+
+    if Tracking_Cost == True:
+        #Track Variables
+        for Nph in range(Nphase):
+            #Decide Number of Knots
+            if Nph == Nphase-1:  #The last Knot belongs to the Last Phase
+                Nk_ThisPhase = Nk_Local+1
+            else:
+                Nk_ThisPhase = Nk_Local  
+                
+            for Local_k_Count in range(Nk_ThisPhase):
+                #Get knot number across the entire time line
+                k = Nph*Nk_Local + Local_k_Count
+                
+                #Track Forces
+                ForceScale = 1000
+                J = J + ((FL1x[k] - FL1x_ref[k])/ForceScale)**2 + ((FL1y[k] - FL1y_ref[k])/ForceScale)**2 + ((FL1z[k] - FL1z_ref[k])/ForceScale)**2
+                J = J + ((FL2x[k] - FL2x_ref[k])/ForceScale)**2 + ((FL2y[k] - FL2y_ref[k])/ForceScale)**2 + ((FL2z[k] - FL2z_ref[k])/ForceScale)**2
+                J = J + ((FL3x[k] - FL3x_ref[k])/ForceScale)**2 + ((FL3y[k] - FL3y_ref[k])/ForceScale)**2 + ((FL3z[k] - FL3z_ref[k])/ForceScale)**2
+                J = J + ((FL4x[k] - FL4x_ref[k])/ForceScale)**2 + ((FL4y[k] - FL4y_ref[k])/ForceScale)**2 + ((FL4z[k] - FL4z_ref[k])/ForceScale)**2
+
+                J = J + ((FR1x[k] - FR1x_ref[k])/ForceScale)**2 + ((FR1y[k] - FR1y_ref[k])/ForceScale)**2 + ((FR1z[k] - FR1z_ref[k])/ForceScale)**2
+                J = J + ((FR2x[k] - FR2x_ref[k])/ForceScale)**2 + ((FR2y[k] - FR2y_ref[k])/ForceScale)**2 + ((FR2z[k] - FR2z_ref[k])/ForceScale)**2
+                J = J + ((FR3x[k] - FR3x_ref[k])/ForceScale)**2 + ((FR3y[k] - FR3y_ref[k])/ForceScale)**2 + ((FR3z[k] - FR3z_ref[k])/ForceScale)**2
+                J = J + ((FR4x[k] - FR4x_ref[k])/ForceScale)**2 + ((FR4y[k] - FR4y_ref[k])/ForceScale)**2 + ((FR4z[k] - FR4z_ref[k])/ForceScale)**2
+
+                #Track angular momentum
+                J = J + 100*(Lx[k] - Lx_ref[k])**2 + 100*(Ly[k] - Ly_ref[k])**2 + 100*(Lz[k] - Lz_ref[k])**2
+
+                #Track angular momentum rate
+                J = J + 10*(Ldotx[k] - Ldotx_ref[k])**2 + 10*(Ldoty[k] - Ldoty_ref[k])**2 + 10*(Ldotz[k] - Ldotz_ref[k])**2
+
+                #Track CoM position
+                J = J + 100*(x[k]-x_ref[k])**2 + 100*(y[k]-y_ref[k])**2 + 100*(z[k]-z_ref[k])**2
+
+                #Track CoMdot
+                J = J + 100*(xdot[k]-xdot_ref[k])**2 + 100*(ydot[k]-ydot_ref[k])**2 + 100*(zdot[k]-zdot_ref[k])**2
+
+        #Track Timings
+        J = J + 1000*(Ts[0] - Ts_ref[0])**2 + 1000*(Ts[1] - Ts_ref[1])**2 + 1000*(Ts[2] - Ts_ref[2])**2
+
+        #Track Contact Locations
+        J = J + 1000*(px[0] - px_ref[0])**2 + 1000*(py[0] - py_ref[0])**2 + 1000*(pz[0] - pz_ref[0])**2
+        
+        # #Fix Contact Timing
+        # g.append(Ts[0]-Ts_ref[0])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+        
+        # g.append(Ts[1]-Ts_ref[1])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        # g.append(Ts[2]-Ts_ref[2])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        # #Fix Contact Location
+        # g.append(px[0]-px_ref[0])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+        
+        # g.append(py[0]-py_ref[0])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        # g.append(pz[0]-pz_ref[0])
+        # glb.append(np.array([0]))
+        # gub.append(np.array([0]))
+
+        #for refIdx in range(len(DecisionVars_lb)):
+        #    J = J + 1000*(DecisionVars[refIdx] - Level1_RefTraj[refIdx])**2
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
@@ -2251,13 +2348,13 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, Stat
             #Add Cost Terms
             if k < N_K - 1:
                 #with angular momentum
-                #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #with angular momentum rate
                 #J = J + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #No Angular momentum
                 #J = J + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
                 #With Angular momentum and angular momentum together
-                J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
+                #J = J + h*Lx[k]**2 + h*Ly[k]**2 + h*Lz[k]**2 + h*Ldotx[k]**2 + h*Ldoty[k]**2 + h*Ldotz[k]**2 + h*(FL1x[k]/m+FL2x[k]/m+FL3x[k]/m+FL4x[k]/m+FR1x[k]/m+FR2x[k]/m+FR3x[k]/m+FR4x[k]/m)**2 + h*(FL1y[k]/m+FL2y[k]/m+FL3y[k]/m+FL4y[k]/m+FR1y[k]/m+FR2y[k]/m+FR3y[k]/m+FR4y[k]/m)**2 + h*(FL1z[k]/m+FL2z[k]/m+FL3z[k]/m+FL4z[k]/m+FR1z[k]/m+FR2z[k]/m+FR3z[k]/m+FR4z[k]/m - G)**2
 
     #-------------------------------------
     #Relative Footstep Constraint
@@ -4052,6 +4149,10 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
     Py_seq_ref = ParameterList["Py_seq_ref"]
     Pz_seq_ref = ParameterList["Pz_seq_ref"]
 
+    px_init_ref = ParameterList["px_init_ref"]
+    py_init_ref = ParameterList["py_init_ref"]
+    pz_init_ref = ParameterList["pz_init_ref"]
+
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Variables and Bounds, Parameters
     #   CoM Position x-axis
@@ -4738,38 +4839,43 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             #-------------------
             #Tracking Traj Cost
             #for x position
-            J = J + (x[k]-x_ref[k])**2
+            J = J + 10*(x[k]-x_ref[k])**2
             #for y position
-            J = J + (y[k]-y_ref[k])**2
+            J = J + 10*(y[k]-y_ref[k])**2
             #for z position
-            J = J + (z[k]-z_ref[k])**2
+            J = J + 10*(z[k]-z_ref[k])**2
             #for xdot 
-            J = J + (xdot[k]-xdot_ref[k])**2
+            J = J + 10*(xdot[k]-xdot_ref[k])**2
             #for ydot
-            J = J + (ydot[k]-ydot_ref[k])**2
+            J = J + 10*(ydot[k]-ydot_ref[k])**2
             #for zdot
-            J = J + (zdot[k]-zdot_ref[k])**2
-            # ##for FLx
-            # J = J + (FLx[k]-FLx_ref[k])**2
-            # ##for FLy
-            # J = J + (FLy[k]-FLy_ref[k])**2
-            # ##for FLz
-            # J = J + (FLz[k]-FLz_ref[k])**2
-            # ##for FRx
-            # J = J + (FRx[k]-FRx_ref[k])**2
-            # ##for FRy
-            # J = J + (FRy[k]-FRy_ref[k])**2
-            # ##for FRz
-            # J = J + (FRz[k]-FRz_ref[k])**2
+            J = J + 10*(zdot[k]-zdot_ref[k])**2
+            ##for FLx
+            J = J + ((FLx[k]-FLx_ref[k])/100)**2
+            ##for FLy
+            J = J + ((FLy[k]-FLy_ref[k])/100)**2
+            ##for FLz
+            J = J + ((FLz[k]-FLz_ref[k])/100)**2
+            ##for FRx
+            J = J + ((FRx[k]-FRx_ref[k])/100)**2
+            ##for FRy
+            J = J + ((FRy[k]-FRy_ref[k])/100)**2
+            ##for FRz
+            J = J + ((FRz[k]-FRz_ref[k])/100)**2
     #----------------------------------
-    # #Cost Term for Tracking Constact Locations
-    # for step_Count in range(len(px)):
-    #     #For Px
-    #     J = J + (px[step_Count]-Px_seq_ref[step_Count])**2
-    #     #For py
-    #     J = J + (py[step_Count]-Py_seq_ref[step_Count])**2
-    #     #For pz
-    #     J = J + (pz[step_Count]-Pz_seq_ref[step_Count])**2
+    #Cost Term for Tracking Constact Locations
+
+    J = J + 10*(px_init - px_init_ref)**2
+    J = J + 10*(py_init - py_init_ref)**2
+    J = J + 10*(pz_init - pz_init_ref)**2
+
+    for step_Count in range(len(px)):
+        #For Px
+        J = J + 10*(px[step_Count]-Px_seq_ref[step_Count])**2
+        #For py
+        J = J + 10*(py[step_Count]-Py_seq_ref[step_Count])**2
+        #For pz
+        J = J + 10*(pz[step_Count]-Pz_seq_ref[step_Count])**2
 
     # # #--------------
     # # #Initial Condition Constraint (Align with Second Level)
@@ -7003,7 +7109,7 @@ def CoM_Dynamics_Ponton_Cost(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #Build Solver in accordance to the set up of first level second levels
-def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, m = 95, NumSurfaces = None):
+def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, m = 95, NumSurfaces = None, TerminalCost = False):
 
     #Check if the First Level is selected properly
     assert FirstLevel != None, "First Level is Not Selected."
@@ -7126,6 +7232,13 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     py_Level1 = ca.SX.sym('py_Level1')
     pz_Level1 = ca.SX.sym('pz_Level1')
 
+    Level1_Traj = ca.SX.sym('Level1_Traj', 798)
+
+    #For second level init contact
+    px_init_ref = ca.SX.sym('px_init_ref')
+    py_init_ref = ca.SX.sym('py_init_ref')
+    pz_init_ref = ca.SX.sym('pz_init_ref')
+
     ##   FirstRound Indicators (if yes, we have an initial double support phase, if not, then we dont have an initial double support phase)
     #FirstRoundFlag = ca.SX.sym('FirstRoundFlag')
     #   Collect all Parameters
@@ -7195,7 +7308,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                     "pz_Level1":pz_Level1,
                     "Lx_Level1_end":Lx_Level1_end,
                     "Ly_Level1_end":Ly_Level1_end,
-                    "Lz_Level1_end":Lz_Level1_end,                    
+                    "Lz_Level1_end":Lz_Level1_end,    
+                    "FirstLevel_Traj":Level1_Traj,
+                    "px_init_ref":px_init_ref,
+                    "py_init_ref":py_init_ref,
+                    "pz_init_ref":pz_init_ref,
         }
         #            "FirstRoundFlag":FirstRoundFlag,
         #Collect all Parameters
@@ -7220,7 +7337,11 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                         x_Level1_end,y_Level1_end,z_Level1_end,
                         xdot_Level1_end,ydot_Level1_end,zdot_Level1_end,
                         px_Level1,py_Level1,pz_Level1,
-                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end)
+                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end,
+                        Level1_Traj,
+                        px_init_ref,py_init_ref,pz_init_ref)
+
+        print(paras.shape)
     else: 
         ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
                     "RightSwingFlag":ParaRightSwingFlag,
@@ -7270,6 +7391,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                     "Lx_Level1_end":Lx_Level1_end,
                     "Ly_Level1_end":Ly_Level1_end,
                     "Lz_Level1_end":Lz_Level1_end,
+                    "FirstLevel_Traj":Level1_Traj,
         }
         #            "FirstRoundFlag":FirstRoundFlag,
         #Collect all Parameters
@@ -7288,7 +7410,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                         x_Level1_end,y_Level1_end,z_Level1_end,
                         xdot_Level1_end,ydot_Level1_end,zdot_Level1_end,
                         px_Level1,py_Level1,pz_Level1,
-                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end)
+                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end,
+                        Level1_Traj)
 
     #-----------------------------------------------------------------------------------------------------------------
     #Identify the Fidelity Type of the whole framework, Used to tell the First Level to set Constraints Accordingly
@@ -7319,6 +7442,10 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = Mixure(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
     #!!!!!Connect the Terminal state of the first Level with the Second Level
 
+    #If NLP second level, then we need to have a terminal cost
+    if SecondLevel == "NLP_SecondLevel":
+        TerminalCost = True
+
     #Set-up Terminal Cost Here and Sum over all costs
     if SecondLevel == None: #No second Level
         #   Collect the variables, terminal cost set as the end of the single first level
@@ -7332,7 +7459,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         
         #------
         #Terminal Cost
-        J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+        if TerminalCost == True:
+            J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
         #---------
 
     else:#With Second level
@@ -7350,7 +7478,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         
         #---------
         #Terminal Cost
-        J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+        if TerminalCost == True:
+            J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
         #----------
 
         #J = J + 100*(x_Level2[-1]-x_end)**2
@@ -7482,14 +7611,23 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     #-----------------------------------------------------------------------------------------------------------------------
     #   Build Solvers
     #Build Solver
-    opts = {}
-    #opts["knitro.presolve"] = 0
-    # opts["knitro.feastol"] = 1e-3
-    # opts["knitro.opttol"] = 1e-1
-    # opts["knitro.OptTolAbs"] = 1e-1
-    
     prob = {'x': DecisionVars, 'f': J, 'g': g, 'p': paras}
+    opts = {}
+    # opts["knitro.presolve"] = 1
+    # opts["knitro.honorbnds"] = 0
+    # opts["knitro.OutLev"] = 2
+    opts["knitro.bar_directinterval"] = 0
     solver = ca.nlpsol('solver', 'knitro', prob,opts)
+    #Good Setup of Knitro
+    # opts["knitro.presolve"] = 1
+    # opts["knitro.honorbnds"] = 0
+    # opts["knitro.OutLev"] = 2
+    # opts["knitro.bar_directinterval"] = 0
+
+    # opts["ipopt.bound_push"] = 1e-7
+    # opts["ipopt.bound_frac"] = 1e-7
+    # solver = ca.nlpsol('solver', 'ipopt', prob,opts)
+
     #solver = ca.nlpsol('solver', 'ipopt', prob)
 
     return solver, DecisionVars_lb, DecisionVars_ub, glb, gub, var_index
