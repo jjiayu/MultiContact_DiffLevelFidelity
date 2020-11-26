@@ -253,10 +253,12 @@ for roundNum in range(Nrounds):
                 Level1_ref_traj,
                 px_init_ref, py_init_ref, pz_init_ref),axis=None)
 
-
-            
         else:
-                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+            x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            
+            print("SwitchingTimeDuration: ",SwitchingTimeVec_nlplevel2_ref)
+
+            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
                 x_init,y_init,z_init,
                 xdot_init,ydot_init,zdot_init,
                 Lx_init,Ly_init,Lz_init,
@@ -273,7 +275,22 @@ for roundNum in range(Nrounds):
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
                 Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj),axis=None)
+                Level1_ref_traj,
+                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
+                xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
+                Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
+                Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
+                FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
+                FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
+                FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
+                FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
+                FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
+                FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
+                FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
+                FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
+                SwitchingTimeVec_nlplevel2_ref,
+                Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
+                px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
 
         
         #For 1 step lookahead checking local minima only
@@ -491,7 +508,8 @@ for roundNum in range(Nrounds):
                 px_init_ref, py_init_ref, pz_init_ref),axis=None)
             
         else:
-                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+            x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
                 x_init,y_init,z_init,
                 xdot_init,ydot_init,zdot_init,
                 Lx_init,Ly_init,Lz_init,
@@ -508,7 +526,22 @@ for roundNum in range(Nrounds):
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
                 Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj),axis=None)
+                Level1_ref_traj,
+                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
+                xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
+                Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
+                Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
+                FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
+                FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
+                FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
+                FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
+                FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
+                FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
+                FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
+                FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
+                SwitchingTimeVec_nlplevel2_ref,
+                Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
+                px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator
