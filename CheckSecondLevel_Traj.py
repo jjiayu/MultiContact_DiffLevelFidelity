@@ -8,11 +8,11 @@ from NLP_Ref_Traj_Constructor import *
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_No_TerminalCost_AntfarmRef/5LookAhead_Trial0.p"
 
-NumLookAhead = 10
-RoundNum = 0
+NumLookAhead = 6
+RoundNum = 2
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_CoM_Tracking_SecondLevel/"+str(NumLookAhead)+"LookAhead_Trial0.p"
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/track_antfarm005_10steps_uneven_007/darpa_like_left_first_CoM_previous/"+str(NumLookAhead)+"LookAhead_Trial0.p"
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/TrackingSecondLevel_antfarm_005_10StepLookahead/up_and_down_left_first_CoM_previous/"+str(NumLookAhead)+"LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/TrackInvestigation_AntFarm/Tracking_CostOnly_Decoupled_from_The_FirstLevel_Integrator_Constraint(Dynamics)/" +str(NumLookAhead)+"LookAhead_Trial0.p"
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_10x_TerminalCost/Uneven_Tracking_Individual_Ones/antfarm_CoM_antfarm_ref_005Height/5LookAhead_Trial0.p"
 
@@ -59,20 +59,20 @@ FRz_secondlevel = traj_secondlevel[Level2_VarIndex["FRz"][0]:Level2_VarIndex["FR
 
 print(SwitchingTimeVec)
 
-print(np.sum(x_secondlevel-x_traj))
-print(np.sum(y_secondlevel-y_traj))
-print(np.sum(z_secondlevel-z_traj))
-print(np.sum(xdot_secondlevel-xdot_traj))
-print(np.sum(ydot_secondlevel-ydot_traj))
-print(np.sum(zdot_secondlevel-zdot_traj))
+print("diff x:", np.sum(x_secondlevel-x_traj))
+print("diff y:",np.sum(y_secondlevel-y_traj))
+print("diff z:",np.sum(z_secondlevel-z_traj))
+print("diff xdot:",np.sum(xdot_secondlevel-xdot_traj))
+print("diff ydot:",np.sum(ydot_secondlevel-ydot_traj))
+print("diff zdot:",np.sum(zdot_secondlevel-zdot_traj))
 
-print(np.sum(FLx_secondlevel-FLx_traj))
-print(np.sum(FLy_secondlevel-FLy_traj))
-print(np.sum(FLz_secondlevel-FLz_traj))
+print("diff FLx:",np.sum(FLx_secondlevel-FLx_traj))
+print("diff FLy:",np.sum(FLy_secondlevel-FLy_traj))
+print("diff FLz:",np.sum(FLz_secondlevel-FLz_traj))
 
-print(np.sum(FRx_secondlevel-FRx_traj))
-print(np.sum(FRy_secondlevel-FRy_traj))
-print(np.sum(FRz_secondlevel-FRz_traj))
+print("diff FRx:",np.sum(FRx_secondlevel-FRx_traj))
+print("diff FRy:",np.sum(FRy_secondlevel-FRy_traj))
+print("diff FRz:",np.sum(FRz_secondlevel-FRz_traj))
 
 plt.plot(x_secondlevel,y_secondlevel,label='SecondLevel')
 plt.plot(x_traj,y_traj,label = "ref_traj")

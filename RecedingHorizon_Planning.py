@@ -222,11 +222,8 @@ for roundNum in range(Nrounds):
         HalfSpaceSeq = np.concatenate(HalfSpaceSeq,axis=None)
         #print(HalfSpaceSeq)
 
-        #Get Reference Trajectory
-        if ChosenSolver == "CoM":
-            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
-            #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
-
+        #For single step only
+        if NumofLookAhead == 1:
             ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
                 x_init,y_init,z_init,
                 xdot_init,ydot_init,zdot_init,
@@ -240,59 +237,83 @@ for roundNum in range(Nrounds):
                 TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
                 PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
                 PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-                x_traj_ref,y_traj_ref,z_traj_ref,
-                xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
-                FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
-                FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
-                SwitchingTimeVec_ref,
-                Px_seq_ref,Py_seq_ref,Pz_seq_ref,
                 x_end_level1,y_end_level1,z_end_level1,
                 xdot_end_level1,ydot_end_level1,zdot_end_level1,
                 px_level1,py_level1,pz_level1,
                 Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj,
-                px_init_ref, py_init_ref, pz_init_ref),axis=None)
-
+                Level1_ref_traj),axis=None)    
         else:
-            x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+            #Get Reference Trajectory
+            if ChosenSolver == "CoM":
+                x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+                #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                    x_init,y_init,z_init,
+                    xdot_init,ydot_init,zdot_init,
+                    Lx_init,Ly_init,Lz_init,
+                    Ldotx_init,Ldoty_init,Ldotz_init,
+                    PLx_init,PLy_init,PLz_init,
+                    PRx_init,PRy_init,PRz_init,
+                    x_end,y_end,z_end,
+                    xdot_end,ydot_end,zdot_end,
+                    HalfSpaceSeq,
+                    TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                    PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                    PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                    x_traj_ref,y_traj_ref,z_traj_ref,
+                    xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+                    FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+                    FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+                    SwitchingTimeVec_ref,
+                    Px_seq_ref,Py_seq_ref,Pz_seq_ref,
+                    x_end_level1,y_end_level1,z_end_level1,
+                    xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                    px_level1,py_level1,pz_level1,
+                    Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                    Level1_ref_traj,
+                    px_init_ref, py_init_ref, pz_init_ref),axis=None)
+
+            else:
+                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+                
+                print("SwitchingTimeDuration: ",SwitchingTimeVec_nlplevel2_ref)
+
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                    x_init,y_init,z_init,
+                    xdot_init,ydot_init,zdot_init,
+                    Lx_init,Ly_init,Lz_init,
+                    Ldotx_init,Ldoty_init,Ldotz_init,
+                    PLx_init,PLy_init,PLz_init,
+                    PRx_init,PRy_init,PRz_init,
+                    x_end,y_end,z_end,
+                    xdot_end,ydot_end,zdot_end,
+                    HalfSpaceSeq,
+                    TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                    PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                    PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                    x_end_level1,y_end_level1,z_end_level1,
+                    xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                    px_level1,py_level1,pz_level1,
+                    Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                    Level1_ref_traj,
+                    x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
+                    xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
+                    Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
+                    Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
+                    FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
+                    FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
+                    FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
+                    FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
+                    FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
+                    FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
+                    FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
+                    FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
+                    SwitchingTimeVec_nlplevel2_ref,
+                    Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
+                    px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
+
             
-            print("SwitchingTimeDuration: ",SwitchingTimeVec_nlplevel2_ref)
-
-            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
-                x_init,y_init,z_init,
-                xdot_init,ydot_init,zdot_init,
-                Lx_init,Ly_init,Lz_init,
-                Ldotx_init,Ldoty_init,Ldotz_init,
-                PLx_init,PLy_init,PLz_init,
-                PRx_init,PRy_init,PRz_init,
-                x_end,y_end,z_end,
-                xdot_end,ydot_end,zdot_end,
-                HalfSpaceSeq,
-                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
-                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-                x_end_level1,y_end_level1,z_end_level1,
-                xdot_end_level1,ydot_end_level1,zdot_end_level1,
-                px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj,
-                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
-                xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
-                Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
-                Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
-                FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
-                FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
-                FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
-                FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
-                FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
-                FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
-                FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
-                FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
-                SwitchingTimeVec_nlplevel2_ref,
-                Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
-                px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
-
-        
         #For 1 step lookahead checking local minima only
         if NumofLookAhead  == 1 and InitSeedType == "random":
             if ProvideInitialSeed == True:
@@ -476,72 +497,93 @@ for roundNum in range(Nrounds):
         ##FirstRoundFlag
         #FirstRoundFlag = 0
 
-        #Get Reference Trajectory
-        if ChosenSolver == "CoM":
-            x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
-            #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+        #For single step only
+        if NumofLookAhead == 1:
+            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                x_init,y_init,z_init,
+                xdot_init,ydot_init,zdot_init,
+                Lx_init,Ly_init,Lz_init,
+                Ldotx_init,Ldoty_init,Ldotz_init,
+                PLx_init,PLy_init,PLz_init,
+                PRx_init,PRy_init,PRz_init,
+                x_end,y_end,z_end,
+                xdot_end,ydot_end,zdot_end,
+                HalfSpaceSeq,
+                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                x_end_level1,y_end_level1,z_end_level1,
+                xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                px_level1,py_level1,pz_level1,
+                Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                Level1_ref_traj),axis=None)  
+        else: 
+            #Get Reference Trajectory
+            if ChosenSolver == "CoM":
+                x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref, px_init_ref, py_init_ref, pz_init_ref = NLP_ref_trajectory_construction(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+                #x_traj_ref, y_traj_ref, z_traj_ref, xdot_traj_ref, ydot_traj_ref, zdot_traj_ref, FLx_traj_ref, FLy_traj_ref, FLz_traj_ref, FRx_traj_ref, FRy_traj_ref, FRz_traj_ref, Px_seq_ref, Py_seq_ref, Pz_seq_ref, SwitchingTimeVec_ref = NLP_ref_trajectory_from_SecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
 
-            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
-                x_init,y_init,z_init,
-                xdot_init,ydot_init,zdot_init,
-                Lx_init,Ly_init,Lz_init,
-                Ldotx_init,Ldoty_init,Ldotz_init,
-                PLx_init,PLy_init,PLz_init,
-                PRx_init,PRy_init,PRz_init,
-                x_end,y_end,z_end,
-                xdot_end,ydot_end,zdot_end,
-                HalfSpaceSeq,
-                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
-                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-                x_traj_ref,y_traj_ref,z_traj_ref,
-                xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
-                FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
-                FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
-                SwitchingTimeVec_ref,
-                Px_seq_ref,Py_seq_ref,Pz_seq_ref,
-                x_end_level1,y_end_level1,z_end_level1,
-                xdot_end_level1,ydot_end_level1,zdot_end_level1,
-                px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj,
-                px_init_ref, py_init_ref, pz_init_ref),axis=None)
-            
-        else:
-            x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
-            ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
-                x_init,y_init,z_init,
-                xdot_init,ydot_init,zdot_init,
-                Lx_init,Ly_init,Lz_init,
-                Ldotx_init,Ldoty_init,Ldotz_init,
-                PLx_init,PLy_init,PLz_init,
-                PRx_init,PRy_init,PRz_init,
-                x_end,y_end,z_end,
-                xdot_end,ydot_end,zdot_end,
-                HalfSpaceSeq,
-                TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
-                PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
-                PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
-                x_end_level1,y_end_level1,z_end_level1,
-                xdot_end_level1,ydot_end_level1,zdot_end_level1,
-                px_level1,py_level1,pz_level1,
-                Lx_end_level1,Ly_end_level1,Lz_end_level1,
-                Level1_ref_traj,
-                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
-                xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
-                Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
-                Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
-                FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
-                FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
-                FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
-                FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
-                FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
-                FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
-                FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
-                FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
-                SwitchingTimeVec_nlplevel2_ref,
-                Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
-                px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                    x_init,y_init,z_init,
+                    xdot_init,ydot_init,zdot_init,
+                    Lx_init,Ly_init,Lz_init,
+                    Ldotx_init,Ldoty_init,Ldotz_init,
+                    PLx_init,PLy_init,PLz_init,
+                    PRx_init,PRy_init,PRz_init,
+                    x_end,y_end,z_end,
+                    xdot_end,ydot_end,zdot_end,
+                    HalfSpaceSeq,
+                    TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                    PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                    PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                    x_traj_ref,y_traj_ref,z_traj_ref,
+                    xdot_traj_ref,ydot_traj_ref,zdot_traj_ref,
+                    FLx_traj_ref,FLy_traj_ref,FLz_traj_ref,
+                    FRx_traj_ref,FRy_traj_ref,FRz_traj_ref,
+                    SwitchingTimeVec_ref,
+                    Px_seq_ref,Py_seq_ref,Pz_seq_ref,
+                    x_end_level1,y_end_level1,z_end_level1,
+                    xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                    px_level1,py_level1,pz_level1,
+                    Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                    Level1_ref_traj,
+                    px_init_ref, py_init_ref, pz_init_ref),axis=None)
+                
+            else:
+                x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, SwitchingTimeVec_nlplevel2_ref, px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref = ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = roundNum, LookAheadSteps = NumofLookAhead)
+                ParaList = np.concatenate((LeftSwingFlag,RightSwingFlag,
+                    x_init,y_init,z_init,
+                    xdot_init,ydot_init,zdot_init,
+                    Lx_init,Ly_init,Lz_init,
+                    Ldotx_init,Ldoty_init,Ldotz_init,
+                    PLx_init,PLy_init,PLz_init,
+                    PRx_init,PRy_init,PRz_init,
+                    x_end,y_end,z_end,
+                    xdot_end,ydot_end,zdot_end,
+                    HalfSpaceSeq,
+                    TerrainTangentsX[roundNum],TerrainTangentsY[roundNum],TerrainNorms[roundNum],
+                    PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                    PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                    x_end_level1,y_end_level1,z_end_level1,
+                    xdot_end_level1,ydot_end_level1,zdot_end_level1,
+                    px_level1,py_level1,pz_level1,
+                    Lx_end_level1,Ly_end_level1,Lz_end_level1,
+                    Level1_ref_traj,
+                    x_nlplevel2_ref, y_nlplevel2_ref, z_nlplevel2_ref, 
+                    xdot_nlplevel2_ref, ydot_nlplevel2_ref, zdot_nlplevel2_ref, 
+                    Lx_nlplevel2_ref, Ly_nlplevel2_ref, Lz_nlplevel2_ref, 
+                    Ldotx_nlplevel2_ref, Ldoty_nlplevel2_ref, Ldotz_nlplevel2_ref, 
+                    FL1x_nlplevel2_ref, FL1y_nlplevel2_ref, FL1z_nlplevel2_ref, 
+                    FL2x_nlplevel2_ref, FL2y_nlplevel2_ref, FL2z_nlplevel2_ref, 
+                    FL3x_nlplevel2_ref, FL3y_nlplevel2_ref, FL3z_nlplevel2_ref, 
+                    FL4x_nlplevel2_ref, FL4y_nlplevel2_ref, FL4z_nlplevel2_ref, 
+                    FR1x_nlplevel2_ref, FR1y_nlplevel2_ref, FR1z_nlplevel2_ref, 
+                    FR2x_nlplevel2_ref, FR2y_nlplevel2_ref, FR2z_nlplevel2_ref, 
+                    FR3x_nlplevel2_ref, FR3y_nlplevel2_ref, FR3z_nlplevel2_ref, 
+                    FR4x_nlplevel2_ref, FR4y_nlplevel2_ref, FR4z_nlplevel2_ref, 
+                    SwitchingTimeVec_nlplevel2_ref,
+                    Px_seq_nlplevel2_ref, Py_seq_nlplevel2_ref, Pz_seq_nlplevel2_ref, 
+                    px_init_seq_nlplevel2_ref, py_init_seq_nlplevel2_ref, pz_init_seq_nlplevel2_ref),axis=None)
 
         if InitSeedType == "random":
             #Shuffle the Random Seed Generator

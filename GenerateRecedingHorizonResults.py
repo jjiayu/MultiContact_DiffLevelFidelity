@@ -17,7 +17,7 @@ ShowFigure =  'True'
 
 NumofRound = 14
 
-MinNumLookAhead = 4
+MinNumLookAhead = 2
 MaxNumLookAhead = 10
 
 NumofTrials = 1

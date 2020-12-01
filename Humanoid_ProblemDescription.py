@@ -966,9 +966,9 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_
         J = J + weight*(px[0] - px_Level1)**2
         J = J + weight*(py[0] - py_Level1)**2
         J = J + weight*(pz[0] - pz_Level1)**2
-        J = J + weight*(Lx[-1] - Lx_Level1_end)**2
-        J = J + weight*(Ly[-1] - Ly_Level1_end)**2
-        J = J + weight*(Lz[-1] - Lz_Level1_end)**2
+        # J = J + weight*(Lx[-1] - Lx_Level1_end)**2
+        # J = J + weight*(Ly[-1] - Ly_Level1_end)**2
+        # J = J + weight*(Lz[-1] - Lz_Level1_end)**2
 
     #Relative Foot Constraints
     #   For init phase
@@ -5432,10 +5432,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.3, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+    PhaseDurationVec = [0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
 
-    #best for now
-    #[0.3, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
+    #Good set of timing vector with 0.55 bounds on ponton terms
+    #[0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
 
     #   Number of Phases
     Nphase = len(GaitPattern)
@@ -5475,10 +5475,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     z_lowest = 0.7
     z_highest = 0.8
     #Ponton's Variables
-    p_lb =-0.6
-    p_ub = 0.6
-    q_lb = -0.6
-    q_ub = 0.6
+    p_lb =-0.55
+    p_ub = 0.55
+    q_lb = -0.55
+    q_ub = 0.55
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -9393,7 +9393,7 @@ def CoM_Dynamics_Ponton_Cost_Old_Gait_Pattern(m = 95, Nk_Local = 7, Nsteps = 1, 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #Build Solver in accordance to the set up of first level second levels
-def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, Decouple = False, TerminalCost = True, NLPSecondLevelTracking = False, m = 95, NumSurfaces = None):
+def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, Decouple = False, TerminalCost = False, NLPSecondLevelTracking = False, m = 95, NumSurfaces = None):
 
     #Check if the First Level is selected properly
     assert FirstLevel != None, "First Level is Not Selected."
@@ -9690,6 +9690,76 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
                         Lx_Level1_end,Ly_Level1_end,Lz_Level1_end,
                         Level1_Traj,
                         px_init_ref,py_init_ref,pz_init_ref)
+    elif SecondLevel == None:
+        ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
+                    "RightSwingFlag":ParaRightSwingFlag,
+                    "x_init":x_init,
+                    "y_init":y_init,
+                    "z_init":z_init,
+                    "xdot_init":xdot_init,
+                    "ydot_init":ydot_init,
+                    "zdot_init":zdot_init,
+                    "Lx_init":Lx_init,
+                    "Ly_init":Ly_init,
+                    "Lz_init":Lz_init,
+                    "Ldotx_init":Ldotx_init,
+                    "Ldoty_init":Ldoty_init,
+                    "Ldotz_init":Ldotz_init,
+                    "PLx_init":PLx_init,
+                    "PLy_init":PLy_init,
+                    "PLz_init":PLz_init,
+                    "PRx_init":PRx_init,
+                    "PRy_init":PRy_init,
+                    "PRz_init":PRz_init,
+                    "x_end":x_end,
+                    "y_end":y_end,
+                    "z_end":z_end,
+                    "xdot_end":xdot_end,
+                    "ydot_end":ydot_end,
+                    "zdot_end":zdot_end,
+                    "SurfParas":SurfParas,
+                    "SurfTangentsX":SurfTangentsX,
+                    "SurfTangentsY":SurfTangentsY,
+                    "SurfNorms":SurfNorms,
+                    "PL_init_TangentX":PL_init_TangentX,
+                    "PL_init_TangentY":PL_init_TangentY,
+                    "PL_init_Norm":PL_init_Norm,
+                    "PR_init_TangentX":PR_init_TangentX,
+                    "PR_init_TangentY":PR_init_TangentY,
+                    "PR_init_Norm":PR_init_Norm,
+                    "x_Level1_end":x_Level1_end,
+                    "y_Level1_end":y_Level1_end,
+                    "z_Level1_end":z_Level1_end,
+                    "xdot_Level1_end":xdot_Level1_end,
+                    "ydot_Level1_end":ydot_Level1_end,
+                    "zdot_Level1_end":zdot_Level1_end,
+                    "px_Level1":px_Level1,
+                    "py_Level1":py_Level1, 
+                    "pz_Level1":pz_Level1,
+                    "Lx_Level1_end":Lx_Level1_end,
+                    "Ly_Level1_end":Ly_Level1_end,
+                    "Lz_Level1_end":Lz_Level1_end,    
+                    "FirstLevel_Traj":Level1_Traj,
+        }
+        #            "FirstRoundFlag":FirstRoundFlag,
+        #Collect all Parameters
+        paras = ca.vertcat(ParaLeftSwingFlag,ParaRightSwingFlag,
+                        x_init,y_init,z_init,
+                        xdot_init,ydot_init,zdot_init,
+                        Lx_init,Ly_init,Lz_init,
+                        Ldotx_init,Ldoty_init,Ldotz_init,
+                        PLx_init,PLy_init,PLz_init,
+                        PRx_init,PRy_init,PRz_init,
+                        x_end,y_end,z_end,
+                        xdot_end,ydot_end,zdot_end,
+                        SurfParas,SurfTangentsX,SurfTangentsY,SurfNorms,
+                        PL_init_TangentX,PL_init_TangentY,PL_init_Norm,
+                        PR_init_TangentX,PR_init_TangentY,PR_init_Norm,
+                        x_Level1_end,y_Level1_end,z_Level1_end,
+                        xdot_Level1_end,ydot_Level1_end,zdot_Level1_end,
+                        px_Level1,py_Level1,pz_Level1,
+                        Lx_Level1_end,Ly_Level1_end,Lz_Level1_end,
+                        Level1_Traj)
     else: 
         ParaList = {"LeftSwingFlag":ParaLeftSwingFlag,
                     "RightSwingFlag":ParaRightSwingFlag,
