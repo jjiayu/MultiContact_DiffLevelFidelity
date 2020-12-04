@@ -14,7 +14,8 @@ def NLP_ref_trajectory_construction(StartStepNum = None, LookAheadSteps = None):
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotions/10x_TerminalCost/Uneven_Flat_Ref/10LookAhead_Trial0.p"
 
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/antfarm_ref/10LookAhead_Trial0.p"
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/Uneven_005_ref/antfarm_ref/" + '10LookAhead_Trial0.p'
+    #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_patches/" + '10LookAhead_Trial0.p'
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/DeformedTraj/" + '10LookAhead_Trial0.p'
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + '10LookAhead_Trial0.p'
     
     with open(filename, 'rb') as f:
@@ -248,7 +249,11 @@ def ref_trajectory_construction_for_NLPSecondLevel(StartStepNum = None, LookAhea
     #Define how many lookahead steps we have 
     #LookAheadSteps = 5
 
+    
     #Get Step Index for the reference trajectory
+    if StartStepNum > 10:
+        StartStepNum = 10
+
     stepIndex = range(StartStepNum+1,StartStepNum+LookAheadSteps)
     #for elem in stepIndex:
     #    print(elem)

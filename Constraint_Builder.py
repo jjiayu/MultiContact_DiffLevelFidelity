@@ -111,6 +111,52 @@ def Ponton_Concex_Constraint(g = None, glb = None, gub = None, SwingLegIndicator
 
     return g, glb, gub
 
+def Ponton_Concex_Constraint_SinglePoint(g = None, glb = None, gub = None, SwingLegIndicator = None, x_p_bar = None,x_q_bar = None, y_p_bar = None,y_q_bar = None, z_p_bar = None,z_q_bar = None, l = None,f = None):
+    l_length = 1.5
+    f_length = 400*4
+    a_cvx = np.array([-l[2]/l_length,l[1]/l_length])
+    d_cvx = np.array([f[1]/f_length,f[2]/f_length])
+    b_cvx = np.array([l[2]/l_length,-l[0]/l_length])
+    e_cvx = np.array([f[0]/f_length,f[2]/f_length])
+    c_cvx = np.array([-l[1]/l_length,l[0]/l_length])
+    f_cvx = np.array([f[0]/f_length,f[1]/f_length])
+
+    x_p = a_cvx + d_cvx
+    x_q = a_cvx - d_cvx
+
+    y_p = b_cvx + e_cvx
+    y_q = b_cvx - e_cvx
+
+    z_p = c_cvx + f_cvx
+    z_q = c_cvx - f_cvx
+
+    g.append(ca.if_else(SwingLegIndicator,x_p_bar-x_p@x_p,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    g.append(ca.if_else(SwingLegIndicator,x_q_bar-x_q@x_q,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    g.append(ca.if_else(SwingLegIndicator,y_p_bar-y_p@y_p,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    g.append(ca.if_else(SwingLegIndicator,y_q_bar-y_q@y_q,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    g.append(ca.if_else(SwingLegIndicator,z_p_bar-z_p@z_p,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    g.append(ca.if_else(SwingLegIndicator,z_q_bar-z_q@z_q,np.array([1])))
+    glb.append(np.array([0]))
+    gub.append(np.array([np.inf]))
+
+    return g, glb, gub
+
+
 #Unilateral Constraints
 #Activate a Unilateral Constraint with given Terrain Norm based on the SwingLegIndicator
 def Unilateral_Constraints(g = None, glb = None, gub = None, SwingLegIndicator = None, F_k = None, TerrainNorm = None):

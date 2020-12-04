@@ -1,0 +1,45 @@
+Hi Steve,
+
+I still prefer to only submit Ponton's work to humanoid, because the tracking cost is a different story and need more work.
+Combining them introduces further complexity.
+Sethu was mentioning yesterday with Ponton and Tracking cost (generalisation), and mixed-integer, I can make a thesis, so, let us make trakcing cost (Value function) story porperly and then submit.
+
+The main worry is whether Ponton's work is enough for a publication or not, given Wensing and also Ponton's work.
+
+Now I have drafted a list of contribution, I am wondering how you think about them:
+
+So, first, the context (very short intro/motivation)
+- Context: 
+ 1) We focus on receding horizong planning (solving optimal control problems) in Multi-contact scenarios
+ 2) Even with the simplest model --- Centroidal model --- is non-convex, which makes the planner pohibited for online (re)-planning.
+
+Then contribution:
+- Contributions:
+
+1) To push towards online receding horizon planning in Multi-contact scenarios, we present a single optimal control fomulation that incorporates two levels of model fidelities over the lookahead horizon.
+   In the first level, the horizon accounts for a single step motion that will be applied to the robot. To guarantee the best physical corectness possible, we employ the original Centroidal model in the first level.
+   In the second level which accounts for the future lookahead, we introduce a convex model based on Ponton's work to represent the system dyanamics.
+
+2) We demonstrate for a set of Multi-contact scenarios (uneven terrains), our framework can succesfully generate locomotion plans in a receding horizon fashion with same or slightly more number of lookaheads needed for full NLP formualtion.
+
+3) We demonstrate our formulation is 2x-3x faster (peak 3.8x --- can we exaggerate to 4x?) than the full NLP formualtion
+
+4) Our motion plans are validated via an inverse dynamics controller (TSID)
+
+Concerns:
+ - I think the main point is to highlight the aspects we are better than wensing. I think I expressed them in 2) and 3), maybe 4)?:
+    - For 2):
+        - We do have a more (complicated maybe?) but definitely different scenrio : Multi-contact (3D) and we focus on humanoid while Wensing is a plannar humanoid but full body on the flat with unexpected forces.
+        - We do have better success rate: only for antfarm, to make the our framework succeeds, the minimum lookahead requred is 4, while NLP needs 2. For other scenarios, both our framework and full NLP just need 2 step lookahead.
+        - We are slightly faster than Wensing: for antfarm and up and down, the average computation time gain is 2.2x, peak can be 2.9x, almost 3x) For the darpa (the peak can be 3.8x). For Wensing's work, for the case with same success rate with NLP, the average computation time gain is 2x, and peak is 2.5x
+        - We validate our motion via TSID. I am not sure how strong it is, but Wensing's model is imaginary, it cannot be validated.
+
+ - The main worry for me is how to differentiate technically the appraoch from Wensing and Ponton in 1):
+    - Wensing states the proposal of the hierarchy is his contribution. I try to be compliant: I use the word "present" to just decribe what we did but don't mention we are the first to come up with this idea. This is to avoid over-claim.
+    - Comparing to Ponton, we are actually very similar. Yes, we are based on his work. Techincally speaking, the only difference to him is we just remove the angular dynamics constraint (L[k+1] = L[k] + h*Ldot[k])
+    - In summary, since wensing took the proposal of the idea, the technical contribution of our work sounds liimted. I am worry this can be a reason to kill our paper. So, please let me know your opinion on this.
+
+Sorry, the last concern is making me quite worried. Sethu was suggesting to work on contributions and we can discuss on Monday. 
+But I am quite keen to see if we can meet today or tomorrow to discuss the contribution.
+
+Thanks a lot for your time and help.
