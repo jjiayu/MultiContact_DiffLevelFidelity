@@ -67,7 +67,7 @@ def Angular_Momentum_Rate_Swing(g = None, glb = None, gub = None, SwingLegIndica
 
 #Ponton's Convexfication Constraint
 def Ponton_Concex_Constraint(g = None, glb = None, gub = None, SwingLegIndicator = None, x_p_bar = None,x_q_bar = None, y_p_bar = None,y_q_bar = None, z_p_bar = None,z_q_bar = None, l = None,f = None):
-    l_length = 1.5
+    l_length = 1.5 #1.45 can increase the success rate on antfarm
     f_length = 400
     a_cvx = np.array([-l[2]/l_length,l[1]/l_length])
     d_cvx = np.array([f[1]/f_length,f[2]/f_length])

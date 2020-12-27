@@ -291,6 +291,7 @@ def getQuaternion(Patch):
     elif p1[2] == p4[2] and p2[2] == p3[2] and (not p1[2]-p2[2] == 0) and (not p4[2]-p3[2]==0):
         #print("tilt arond Y axis")
         tiltAngle = np.arctan2(p2[2]-p1[2],p1[0]-p2[0])
+        #print(tiltAngle)
         r = R.from_euler('y', tiltAngle, degrees=False) 
         quat = r.as_quat()
         #TerrainTangentX = r.as_matrix()@TerrainTangentX
@@ -298,6 +299,7 @@ def getQuaternion(Patch):
     #Case 3, tilt around X axis    
     elif p1[2] == p2[2] and p3[2] == p4[2] and (not p2[2]-p3[2] == 0) and (not p1[2]-p4[2]==0):
         tiltAngle = np.arctan2(p1[2]-p4[2],p1[1]-p4[1])
+        #print(tiltAngle)
         r = R.from_euler('x', tiltAngle, degrees=False) 
         quat = r.as_quat()
         #TerrainTangentY = r.as_matrix()@TerrainTangentY

@@ -4236,13 +4236,13 @@ def CoM_Dynamics_Four_Points(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = N
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True, StaticStop = False, ParameterList = None, CentralY = False):
+def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True, TrackingCost = False, StaticStop = False, ParameterList = None, CentralY = False):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.3, 0.5, 0.3]*(Nsteps)
+    PhaseDurationVec = [0.4, 0.7, 0.4]*(Nsteps)
 
     #print(PhaseDurationVec)
 
@@ -4275,7 +4275,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
     py_lower_limit = 0.04
     #Lowest Z
     z_lowest = 0.7
-    z_highest = 0.85
+    z_highest = 0.8
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -4594,8 +4594,10 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
         #    h = tauStepLength*Nphase*(Ts[Nph]-Ts[Nph-1]) 
 
         #Fixed Time Step
-        #h = (PhaseDurationVec[Nph])/Nk_Local
-        h = (SwitchingTimeVec_ref[Nph])/Nk_Local
+        if TrackingCost == False:
+            h = (PhaseDurationVec[Nph])/Nk_Local
+        elif TrackingCost == True:
+            h = (SwitchingTimeVec_ref[Nph])/Nk_Local
         
         for Local_k_Count in range(Nk_ThisPhase):
             #Get knot number across the entire time line
@@ -5068,50 +5070,54 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
             #----------------------
             #Add Cost Terms
             #Original Cost
-            #if k < N_K - 1:
-            #    #Acc Only
-            #    J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2
+            if TrackingCost == False:
+                if k < N_K - 1:
+                   #Acc Only
+                   J = J + h*(FLx[k]/m+FRx[k]/m)**2 + h*(FLy[k]/m+FRy[k]/m)**2 + h*(FLz[k]/m+FRz[k]/m - G)**2
 
-            #-------------------
-            #Tracking Traj Cost
-            #for x position
-            J = J + 10*(x[k]-x_ref[k])**2
-            #for y position
-            J = J + 10*(y[k]-y_ref[k])**2
-            #for z position
-            J = J + 10*(z[k]-z_ref[k])**2
-            #for xdot 
-            J = J + 10*(xdot[k]-xdot_ref[k])**2
-            #for ydot
-            J = J + 10*(ydot[k]-ydot_ref[k])**2
-            #for zdot
-            J = J + 10*(zdot[k]-zdot_ref[k])**2
-            ##for FLx
-            J = J + ((FLx[k]-FLx_ref[k])/100)**2
-            ##for FLy
-            J = J + ((FLy[k]-FLy_ref[k])/100)**2
-            ##for FLz
-            J = J + ((FLz[k]-FLz_ref[k])/100)**2
-            ##for FRx
-            J = J + ((FRx[k]-FRx_ref[k])/100)**2
-            ##for FRy
-            J = J + ((FRy[k]-FRy_ref[k])/100)**2
-            ##for FRz
-            J = J + ((FRz[k]-FRz_ref[k])/100)**2
-    #----------------------------------
-    #Cost Term for Tracking Constact Locations
+            if TrackingCost == True:
+                #-------------------
+                #Tracking Traj Cost
+                #for x position
+                J = J + 10*(x[k]-x_ref[k])**2
+                #for y position
+                J = J + 10*(y[k]-y_ref[k])**2
+                #for z position
+                J = J + 10*(z[k]-z_ref[k])**2
+                #for xdot 
+                J = J + 10*(xdot[k]-xdot_ref[k])**2
+                #for ydot
+                J = J + 10*(ydot[k]-ydot_ref[k])**2
+                #for zdot
+                J = J + 10*(zdot[k]-zdot_ref[k])**2
+                ##for FLx
+                J = J + ((FLx[k]-FLx_ref[k])/100)**2
+                ##for FLy
+                J = J + ((FLy[k]-FLy_ref[k])/100)**2
+                ##for FLz
+                J = J + ((FLz[k]-FLz_ref[k])/100)**2
+                ##for FRx
+                J = J + ((FRx[k]-FRx_ref[k])/100)**2
+                ##for FRy
+                J = J + ((FRy[k]-FRy_ref[k])/100)**2
+                ##for FRz
+                J = J + ((FRz[k]-FRz_ref[k])/100)**2
+    
+    if TrackingCost == True:
+        #----------------------------------
+        #Cost Term for Tracking Constact Locations
 
-    J = J + 10*(px_init - px_init_ref)**2
-    J = J + 10*(py_init - py_init_ref)**2
-    J = J + 10*(pz_init - pz_init_ref)**2
+        J = J + 10*(px_init - px_init_ref)**2
+        J = J + 10*(py_init - py_init_ref)**2
+        J = J + 10*(pz_init - pz_init_ref)**2
 
-    for step_Count in range(len(px)):
-        #For Px
-        J = J + 10*(px[step_Count]-Px_seq_ref[step_Count])**2
-        #For py
-        J = J + 10*(py[step_Count]-Py_seq_ref[step_Count])**2
-        #For pz
-        J = J + 10*(pz[step_Count]-Pz_seq_ref[step_Count])**2
+        for step_Count in range(len(px)):
+            #For Px
+            J = J + 10*(px[step_Count]-Px_seq_ref[step_Count])**2
+            #For py
+            J = J + 10*(py[step_Count]-Py_seq_ref[step_Count])**2
+            #For pz
+            J = J + 10*(pz[step_Count]-Pz_seq_ref[step_Count])**2
 
     # # #--------------
     # # #Initial Condition Constraint (Align with Second Level)
@@ -5425,7 +5431,7 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False):
+def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.55):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
@@ -5474,10 +5480,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     z_lowest = 0.7
     z_highest = 0.8
     #Ponton's Variables
-    p_lb =-0.55
-    p_ub = 0.55
-    q_lb = -0.55
-    q_ub = 0.55
+    p_lb =-PontonTerm_bounds
+    p_ub = PontonTerm_bounds
+    q_lb = -PontonTerm_bounds
+    q_ub = PontonTerm_bounds
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -7472,7 +7478,7 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False):
+def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.55):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
@@ -7521,10 +7527,10 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
     z_lowest = 0.7
     z_highest = 0.8
     #Ponton's Variables
-    p_lb =-0.55
-    p_ub = 0.55
-    q_lb = -0.55
-    q_ub = 0.55
+    p_lb =-PontonTerm_bounds
+    p_ub = PontonTerm_bounds
+    q_lb = -PontonTerm_bounds
+    q_ub = PontonTerm_bounds
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -10683,7 +10689,7 @@ def CoM_Dynamics_Ponton_Cost_Old_Gait_Pattern(m = 95, Nk_Local = 7, Nsteps = 1, 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #Build Solver in accordance to the set up of first level second levels
-def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, PontonSinglePoint = True, Decouple = False, TerminalCost = True, NLPSecondLevelTracking = False, m = 95, NumSurfaces = None):
+def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, PontonSinglePoint = False, Decouple = False, TerminalCost = True, NLPSecondLevelTracking = False, m = 95, NumSurfaces = None):
 
     #Check if the First Level is selected properly
     assert FirstLevel != None, "First Level is Not Selected."
@@ -11200,8 +11206,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         var_index_Level2 = []
     elif SecondLevel == "CoM_Dynamics":
         #var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton_Cost(m = m,  ParameterList = ParaList, Nsteps = NumSurfaces-1)#Here is the total number of steps
-        var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_SinglePoint(m = m,  ParameterList = ParaList, Nsteps = NumSurfaces-1)#Here is the total number of steps
-        #var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Four_Points(m = m,  ParameterList = ParaList, Nsteps = NumSurfaces-1)#Here is the total number of steps
+        #var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_SinglePoint(m = m,  ParameterList = ParaList, Nsteps = NumSurfaces-1)#Here is the total number of steps
+        var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Four_Points(m = m,  ParameterList = ParaList, Nsteps = NumSurfaces-1)#Here is the total number of steps
     elif SecondLevel == "NLP_SecondLevel":
         var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = NLP_SecondLevel(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
     elif SecondLevel == "Ponton":

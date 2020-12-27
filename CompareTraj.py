@@ -22,7 +22,7 @@ filename = '5LookAhead_Trial0.p'
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
 fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/NLP_007_round1/antfarm_firstLevel_left_start_NLP_previous/" + '10LookAhead_Trial0.p'
-fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/NLP_007_round1/darpa_like_left_first_NLP_previous/" + '10LookAhead_Trial0.p'
+fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/Ponton_007_SinglePoint/antfarm_firstLevel_left_start_Ponton_previous/" + '10LookAhead_Trial0.p'
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
 #up_and_down_left_first_NLP_previous
 #antfarm_firstLevel_left_start_NLP_previous
@@ -31,7 +31,7 @@ fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Barrule_fixed/NL
 fullpath = fullpath1
 
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
-query_traj = "ydot_result"
+query_traj = "Ly_result"
 
 startStepNum = 0
 EndStepNum = 14
