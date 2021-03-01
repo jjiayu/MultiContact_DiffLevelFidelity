@@ -21,7 +21,7 @@ from sl1m.planner_scenarios.talos.constraints import *
 #FUNCTION: Build a single step NLP problem
 #Parameters:
 #   m: robot mass, default value set as the one of Talos
-def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_Cost = False, TerminalCost = False, AngularDynamics = True, FullyConvex = False, ParameterList = None, CentralY = False):
+def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = False, Tracking_Cost = False, TerminalCost = False, AngularDynamics = True, FullyConvex = False, ParameterList = None, CentralY = False):
     
     #when FullyConvex = True, set Angular Dynamics = True to compute L, otherwise just to have computation time
 
@@ -38,7 +38,7 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_
     #   Number of Steps
     Nstep = 1
     #   Number of Knots per Phase - how many intervals do we have for a single phase; 10 intervals need 11 knots/ticks
-    Nk_Local= 7
+    #Nk_Local= 7
     #   Compute Number of Total knots/ticks, but the enumeration start from 0 to N_K-1
     N_K = Nk_Local*Nphase + 1 #+1 the last knots to finalize the plan
     #   Robot mass
@@ -1084,12 +1084,12 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_
         for phase_cnt in range(Nphase):
             if GaitPattern[phase_cnt] == 'InitialDouble':
                 g.append(Ts[phase_cnt])
-                glb.append(np.array([0.1])) #0.1 - 0.3
+                glb.append(np.array([0.1])) #old:0.1 - 0.3
                 gub.append(np.array([0.3]))
             elif GaitPattern[phase_cnt] == 'Swing':
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1]) #0.6-1
-                glb.append(np.array([0.5])) #0.5-0.7
-                gub.append(np.array([0.7])) #0.4 - 0.9
+                glb.append(np.array([0.8])) #old - 0.5-0.7
+                gub.append(np.array([1.2])) 
             elif GaitPattern[phase_cnt] == 'DoubleSupport':
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])#0.05-0.3
                 glb.append(np.array([0.1]))
@@ -1180,93 +1180,93 @@ def NLP_SingleStep(m = 95, StandAlong = True, ConservativeEnd = False, Tracking_
                  "Ts":Ts_index,
     }
 
-    #Ref trajectory tracking cost
-    #Get ref traj
-    x_ref = Level1_RefTraj[x_index[0]:x_index[1]+1]
-    y_ref = Level1_RefTraj[y_index[0]:y_index[1]+1]
-    z_ref = Level1_RefTraj[z_index[0]:z_index[1]+1]
-    xdot_ref = Level1_RefTraj[xdot_index[0]:xdot_index[1]+1]
-    ydot_ref = Level1_RefTraj[ydot_index[0]:ydot_index[1]+1]
-    zdot_ref = Level1_RefTraj[zdot_index[0]:zdot_index[1]+1]
-    Lx_ref = Level1_RefTraj[Lx_index[0]:Lx_index[1]+1]
-    Ly_ref = Level1_RefTraj[Ly_index[0]:Ly_index[1]+1]
-    Lz_ref = Level1_RefTraj[Lz_index[0]:Lz_index[1]+1]
-    Ldotx_ref = Level1_RefTraj[Ldotx_index[0]:Ldotx_index[1]+1]
-    Ldoty_ref = Level1_RefTraj[Ldoty_index[0]:Ldoty_index[1]+1]
-    Ldotz_ref = Level1_RefTraj[Ldotz_index[0]:Ldotz_index[1]+1]
-    FL1x_ref = Level1_RefTraj[FL1x_index[0]:FL1x_index[1]+1]
-    FL1y_ref = Level1_RefTraj[FL1y_index[0]:FL1y_index[1]+1]
-    FL1z_ref = Level1_RefTraj[FL1z_index[0]:FL1z_index[1]+1]
-    FL2x_ref = Level1_RefTraj[FL2x_index[0]:FL2x_index[1]+1]
-    FL2y_ref = Level1_RefTraj[FL2y_index[0]:FL2y_index[1]+1]
-    FL2z_ref = Level1_RefTraj[FL2z_index[0]:FL2z_index[1]+1]
-    FL3x_ref = Level1_RefTraj[FL3x_index[0]:FL3x_index[1]+1]
-    FL3y_ref = Level1_RefTraj[FL3y_index[0]:FL3y_index[1]+1]
-    FL3z_ref = Level1_RefTraj[FL3z_index[0]:FL3z_index[1]+1]
-    FL4x_ref = Level1_RefTraj[FL4x_index[0]:FL4x_index[1]+1]
-    FL4y_ref = Level1_RefTraj[FL4y_index[0]:FL4y_index[1]+1]
-    FL4z_ref = Level1_RefTraj[FL4z_index[0]:FL4z_index[1]+1]
-    FR1x_ref = Level1_RefTraj[FR1x_index[0]:FR1x_index[1]+1]
-    FR1y_ref = Level1_RefTraj[FR1y_index[0]:FR1y_index[1]+1]
-    FR1z_ref = Level1_RefTraj[FR1z_index[0]:FR1z_index[1]+1]
-    FR2x_ref = Level1_RefTraj[FR2x_index[0]:FR2x_index[1]+1]
-    FR2y_ref = Level1_RefTraj[FR2y_index[0]:FR2y_index[1]+1]
-    FR2z_ref = Level1_RefTraj[FR2z_index[0]:FR2z_index[1]+1]
-    FR3x_ref = Level1_RefTraj[FR3x_index[0]:FR3x_index[1]+1]
-    FR3y_ref = Level1_RefTraj[FR3y_index[0]:FR3y_index[1]+1]
-    FR3z_ref = Level1_RefTraj[FR3z_index[0]:FR3z_index[1]+1]
-    FR4x_ref = Level1_RefTraj[FR4x_index[0]:FR4x_index[1]+1]
-    FR4y_ref = Level1_RefTraj[FR4y_index[0]:FR4y_index[1]+1]
-    FR4z_ref = Level1_RefTraj[FR4z_index[0]:FR4z_index[1]+1]
+    # #Ref trajectory tracking cost
+    # #Get ref traj
+    # x_ref = Level1_RefTraj[x_index[0]:x_index[1]+1]
+    # y_ref = Level1_RefTraj[y_index[0]:y_index[1]+1]
+    # z_ref = Level1_RefTraj[z_index[0]:z_index[1]+1]
+    # xdot_ref = Level1_RefTraj[xdot_index[0]:xdot_index[1]+1]
+    # ydot_ref = Level1_RefTraj[ydot_index[0]:ydot_index[1]+1]
+    # zdot_ref = Level1_RefTraj[zdot_index[0]:zdot_index[1]+1]
+    # Lx_ref = Level1_RefTraj[Lx_index[0]:Lx_index[1]+1]
+    # Ly_ref = Level1_RefTraj[Ly_index[0]:Ly_index[1]+1]
+    # Lz_ref = Level1_RefTraj[Lz_index[0]:Lz_index[1]+1]
+    # Ldotx_ref = Level1_RefTraj[Ldotx_index[0]:Ldotx_index[1]+1]
+    # Ldoty_ref = Level1_RefTraj[Ldoty_index[0]:Ldoty_index[1]+1]
+    # Ldotz_ref = Level1_RefTraj[Ldotz_index[0]:Ldotz_index[1]+1]
+    # FL1x_ref = Level1_RefTraj[FL1x_index[0]:FL1x_index[1]+1]
+    # FL1y_ref = Level1_RefTraj[FL1y_index[0]:FL1y_index[1]+1]
+    # FL1z_ref = Level1_RefTraj[FL1z_index[0]:FL1z_index[1]+1]
+    # FL2x_ref = Level1_RefTraj[FL2x_index[0]:FL2x_index[1]+1]
+    # FL2y_ref = Level1_RefTraj[FL2y_index[0]:FL2y_index[1]+1]
+    # FL2z_ref = Level1_RefTraj[FL2z_index[0]:FL2z_index[1]+1]
+    # FL3x_ref = Level1_RefTraj[FL3x_index[0]:FL3x_index[1]+1]
+    # FL3y_ref = Level1_RefTraj[FL3y_index[0]:FL3y_index[1]+1]
+    # FL3z_ref = Level1_RefTraj[FL3z_index[0]:FL3z_index[1]+1]
+    # FL4x_ref = Level1_RefTraj[FL4x_index[0]:FL4x_index[1]+1]
+    # FL4y_ref = Level1_RefTraj[FL4y_index[0]:FL4y_index[1]+1]
+    # FL4z_ref = Level1_RefTraj[FL4z_index[0]:FL4z_index[1]+1]
+    # FR1x_ref = Level1_RefTraj[FR1x_index[0]:FR1x_index[1]+1]
+    # FR1y_ref = Level1_RefTraj[FR1y_index[0]:FR1y_index[1]+1]
+    # FR1z_ref = Level1_RefTraj[FR1z_index[0]:FR1z_index[1]+1]
+    # FR2x_ref = Level1_RefTraj[FR2x_index[0]:FR2x_index[1]+1]
+    # FR2y_ref = Level1_RefTraj[FR2y_index[0]:FR2y_index[1]+1]
+    # FR2z_ref = Level1_RefTraj[FR2z_index[0]:FR2z_index[1]+1]
+    # FR3x_ref = Level1_RefTraj[FR3x_index[0]:FR3x_index[1]+1]
+    # FR3y_ref = Level1_RefTraj[FR3y_index[0]:FR3y_index[1]+1]
+    # FR3z_ref = Level1_RefTraj[FR3z_index[0]:FR3z_index[1]+1]
+    # FR4x_ref = Level1_RefTraj[FR4x_index[0]:FR4x_index[1]+1]
+    # FR4y_ref = Level1_RefTraj[FR4y_index[0]:FR4y_index[1]+1]
+    # FR4z_ref = Level1_RefTraj[FR4z_index[0]:FR4z_index[1]+1]
 
-    px_ref = Level1_RefTraj[px_index[0]:px_index[1]+1]
-    py_ref = Level1_RefTraj[py_index[0]:py_index[1]+1]
-    pz_ref = Level1_RefTraj[pz_index[0]:pz_index[1]+1]
+    # px_ref = Level1_RefTraj[px_index[0]:px_index[1]+1]
+    # py_ref = Level1_RefTraj[py_index[0]:py_index[1]+1]
+    # pz_ref = Level1_RefTraj[pz_index[0]:pz_index[1]+1]
 
-    Ts_ref = Level1_RefTraj[Ts_index[0]:Ts_index[1]+1]
+    # Ts_ref = Level1_RefTraj[Ts_index[0]:Ts_index[1]+1]
 
-    if Tracking_Cost == True:
-        #Track Variables
-        for Nph in range(Nphase):
-            #Decide Number of Knots
-            if Nph == Nphase-1:  #The last Knot belongs to the Last Phase
-                Nk_ThisPhase = Nk_Local+1
-            else:
-                Nk_ThisPhase = Nk_Local  
+    # if Tracking_Cost == True:
+    #     #Track Variables
+    #     for Nph in range(Nphase):
+    #         #Decide Number of Knots
+    #         if Nph == Nphase-1:  #The last Knot belongs to the Last Phase
+    #             Nk_ThisPhase = Nk_Local+1
+    #         else:
+    #             Nk_ThisPhase = Nk_Local  
                 
-            for Local_k_Count in range(Nk_ThisPhase):
-                #Get knot number across the entire time line
-                k = Nph*Nk_Local + Local_k_Count
+    #         for Local_k_Count in range(Nk_ThisPhase):
+    #             #Get knot number across the entire time line
+    #             k = Nph*Nk_Local + Local_k_Count
                 
-                #Track Forces
-                ForceScale = 1000
-                J = J + ((FL1x[k] - FL1x_ref[k])/ForceScale)**2 + ((FL1y[k] - FL1y_ref[k])/ForceScale)**2 + ((FL1z[k] - FL1z_ref[k])/ForceScale)**2
-                J = J + ((FL2x[k] - FL2x_ref[k])/ForceScale)**2 + ((FL2y[k] - FL2y_ref[k])/ForceScale)**2 + ((FL2z[k] - FL2z_ref[k])/ForceScale)**2
-                J = J + ((FL3x[k] - FL3x_ref[k])/ForceScale)**2 + ((FL3y[k] - FL3y_ref[k])/ForceScale)**2 + ((FL3z[k] - FL3z_ref[k])/ForceScale)**2
-                J = J + ((FL4x[k] - FL4x_ref[k])/ForceScale)**2 + ((FL4y[k] - FL4y_ref[k])/ForceScale)**2 + ((FL4z[k] - FL4z_ref[k])/ForceScale)**2
+    #             #Track Forces
+    #             ForceScale = 1000
+    #             J = J + ((FL1x[k] - FL1x_ref[k])/ForceScale)**2 + ((FL1y[k] - FL1y_ref[k])/ForceScale)**2 + ((FL1z[k] - FL1z_ref[k])/ForceScale)**2
+    #             J = J + ((FL2x[k] - FL2x_ref[k])/ForceScale)**2 + ((FL2y[k] - FL2y_ref[k])/ForceScale)**2 + ((FL2z[k] - FL2z_ref[k])/ForceScale)**2
+    #             J = J + ((FL3x[k] - FL3x_ref[k])/ForceScale)**2 + ((FL3y[k] - FL3y_ref[k])/ForceScale)**2 + ((FL3z[k] - FL3z_ref[k])/ForceScale)**2
+    #             J = J + ((FL4x[k] - FL4x_ref[k])/ForceScale)**2 + ((FL4y[k] - FL4y_ref[k])/ForceScale)**2 + ((FL4z[k] - FL4z_ref[k])/ForceScale)**2
 
-                J = J + ((FR1x[k] - FR1x_ref[k])/ForceScale)**2 + ((FR1y[k] - FR1y_ref[k])/ForceScale)**2 + ((FR1z[k] - FR1z_ref[k])/ForceScale)**2
-                J = J + ((FR2x[k] - FR2x_ref[k])/ForceScale)**2 + ((FR2y[k] - FR2y_ref[k])/ForceScale)**2 + ((FR2z[k] - FR2z_ref[k])/ForceScale)**2
-                J = J + ((FR3x[k] - FR3x_ref[k])/ForceScale)**2 + ((FR3y[k] - FR3y_ref[k])/ForceScale)**2 + ((FR3z[k] - FR3z_ref[k])/ForceScale)**2
-                J = J + ((FR4x[k] - FR4x_ref[k])/ForceScale)**2 + ((FR4y[k] - FR4y_ref[k])/ForceScale)**2 + ((FR4z[k] - FR4z_ref[k])/ForceScale)**2
+    #             J = J + ((FR1x[k] - FR1x_ref[k])/ForceScale)**2 + ((FR1y[k] - FR1y_ref[k])/ForceScale)**2 + ((FR1z[k] - FR1z_ref[k])/ForceScale)**2
+    #             J = J + ((FR2x[k] - FR2x_ref[k])/ForceScale)**2 + ((FR2y[k] - FR2y_ref[k])/ForceScale)**2 + ((FR2z[k] - FR2z_ref[k])/ForceScale)**2
+    #             J = J + ((FR3x[k] - FR3x_ref[k])/ForceScale)**2 + ((FR3y[k] - FR3y_ref[k])/ForceScale)**2 + ((FR3z[k] - FR3z_ref[k])/ForceScale)**2
+    #             J = J + ((FR4x[k] - FR4x_ref[k])/ForceScale)**2 + ((FR4y[k] - FR4y_ref[k])/ForceScale)**2 + ((FR4z[k] - FR4z_ref[k])/ForceScale)**2
 
-                #Track angular momentum
-                J = J + 100*(Lx[k] - Lx_ref[k])**2 + 100*(Ly[k] - Ly_ref[k])**2 + 100*(Lz[k] - Lz_ref[k])**2
+    #             #Track angular momentum
+    #             J = J + 100*(Lx[k] - Lx_ref[k])**2 + 100*(Ly[k] - Ly_ref[k])**2 + 100*(Lz[k] - Lz_ref[k])**2
 
-                #Track angular momentum rate
-                J = J + 10*(Ldotx[k] - Ldotx_ref[k])**2 + 10*(Ldoty[k] - Ldoty_ref[k])**2 + 10*(Ldotz[k] - Ldotz_ref[k])**2
+    #             #Track angular momentum rate
+    #             J = J + 10*(Ldotx[k] - Ldotx_ref[k])**2 + 10*(Ldoty[k] - Ldoty_ref[k])**2 + 10*(Ldotz[k] - Ldotz_ref[k])**2
 
-                #Track CoM position
-                J = J + 100*(x[k]-x_ref[k])**2 + 100*(y[k]-y_ref[k])**2 + 100*(z[k]-z_ref[k])**2
+    #             #Track CoM position
+    #             J = J + 100*(x[k]-x_ref[k])**2 + 100*(y[k]-y_ref[k])**2 + 100*(z[k]-z_ref[k])**2
 
-                #Track CoMdot
-                J = J + 100*(xdot[k]-xdot_ref[k])**2 + 100*(ydot[k]-ydot_ref[k])**2 + 100*(zdot[k]-zdot_ref[k])**2
+    #             #Track CoMdot
+    #             J = J + 100*(xdot[k]-xdot_ref[k])**2 + 100*(ydot[k]-ydot_ref[k])**2 + 100*(zdot[k]-zdot_ref[k])**2
 
-        #Track Timings
-        J = J + 1000*(Ts[0] - Ts_ref[0])**2 + 1000*(Ts[1] - Ts_ref[1])**2 + 1000*(Ts[2] - Ts_ref[2])**2
+    #     #Track Timings
+    #     J = J + 1000*(Ts[0] - Ts_ref[0])**2 + 1000*(Ts[1] - Ts_ref[1])**2 + 1000*(Ts[2] - Ts_ref[2])**2
 
-        #Track Contact Locations
-        J = J + 1000*(px[0] - px_ref[0])**2 + 1000*(py[0] - py_ref[0])**2 + 1000*(pz[0] - pz_ref[0])**2
+    #     #Track Contact Locations
+    #     J = J + 1000*(px[0] - px_ref[0])**2 + 1000*(py[0] - py_ref[0])**2 + 1000*(pz[0] - pz_ref[0])**2
         
         # #Fix Contact Timing
         # g.append(Ts[0]-Ts_ref[0])
@@ -2770,7 +2770,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
         if GaitPattern[phase_cnt] == 'InitialDouble':
             if phase_cnt == 0:
                 g.append(Ts[phase_cnt] - 0)
-                glb.append(np.array([0.1])) #0.1-0.3
+                glb.append(np.array([0.1])) #old 0.1-0.3
                 gub.append(np.array([0.3]))
             else:
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
@@ -2779,8 +2779,8 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
 
         elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.5]))
-            gub.append(np.array([0.7]))
+            glb.append(np.array([0.8]))
+            gub.append(np.array([1.2]))
 
             #if phase_cnt == 0:
             #    g.append(Ts[phase_cnt]-0)#0.6-1
@@ -2794,7 +2794,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
         elif GaitPattern[phase_cnt] == 'DoubleSupport':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1]) #0.1-0.9
             glb.append(np.array([0.1]))
-            gub.append(np.array([0.3])) #0.1-0.3
+            gub.append(np.array([0.3])) #old - 0.1-0.3
 
     #-----------------------------------------------------------------------------------------------------------------------
     #Get Variable Index - !!!This is the pure Index, when try to get the array using other routines, we need to add "+1" at the last index due to Python indexing conventions
@@ -5437,8 +5437,8 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
-
+    PhaseDurationVec = [0.2, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+    #PhaseDurationVec = [0.2, 0.8, 0.2]*(Nsteps) + [0.2, 0.8, 0.2]*(Nsteps-1)
     #Good set of timing vector with 0.55 bounds on ponton terms
     #[0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
 
@@ -7484,8 +7484,12 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
-
+    PhaseDurationVec = [0.2, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+    #PhaseDurationVec = [0.2, 0.8, 0.2]*(Nsteps) + [0.2, 0.8, 0.0]*(Nsteps-1)
+    #PhaseDurationVec = [0.025, 0.8, 0.025]*(Nsteps) + [0.025, 0.8, 0.025]*(Nsteps-1)
+    #PhaseDurationVec = [0.3, 0.6, 0.3]*(Nsteps) + [0.3, 0.6, 0.3]*(Nsteps-1)
+    #PhaseDurationVec = [0.3, 0.7, 0.3]*(Nsteps) + [0.3, 0.7, 0.3]*(Nsteps-1)
+    #PhaseDurationVec = [0.3, 0.6, 0.3]*(Nsteps) + [0.3, 0.6, 0.3]*(Nsteps-1)
     #Good set of timing vector with 0.55 bounds on ponton terms
     #[0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
 
@@ -11212,9 +11216,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = NLP_SecondLevel(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
     elif SecondLevel == "Ponton":
         if PontonSinglePoint == False:
-            var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
+           var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
         elif PontonSinglePoint == True:
-            var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton_SinglePoint(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
+           var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton_SinglePoint(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
         #var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = CoM_Dynamics_Ponton_Cost_Old_Gait_Pattern(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
     elif SecondLevel == "Mixure":
         var_Level2, var_lb_Level2, var_ub_Level2, J_Level2, g_Level2, glb_Level2, gub_Level2, var_index_Level2 = Mixure(m = m, ParameterList = ParaList, Nsteps = NumSurfaces-1)
