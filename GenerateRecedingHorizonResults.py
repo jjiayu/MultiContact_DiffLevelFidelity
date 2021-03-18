@@ -13,14 +13,14 @@ InitSeedType = sys.argv[2]
 
 ChosenSolver = sys.argv[3]
 
-ShowFigure =  'False'
+ShowFigure =  'True'
 
 NumofRound = 14
 
-MinNumLookAhead = 2
-MaxNumLookAhead = 3
+MinNumLookAhead = 4
+MaxNumLookAhead = 4
 
-NumofTrials = 10
+NumofTrials = 1
 
 ResultFolder = TerrainName + '_' + ChosenSolver + '_' + InitSeedType
 

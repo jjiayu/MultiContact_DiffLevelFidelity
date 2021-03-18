@@ -4,8 +4,8 @@ import pickle
 import matplotlib.pyplot as plt #Matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 
-def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 10):
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_patches/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
+def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 6):
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/darpa_like_left_first_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
 
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
@@ -50,8 +50,8 @@ def GetFirstLevelTerminalState(RoundNum = 0, NumofLookAhead = 10):
 
     return x_end_Level1,y_end_Level1,z_end_Level1,xdot_end_Level1,ydot_end_Level1,zdot_end_Level1,px_Level1,py_Level1,pz_Level1,Lx_end_Level1,Ly_end_Level1,Lz_end_Level1
 
-def GetFirstLevelTrajectory(RoundNum = 0, NumofLookAhead = 10):
-    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_patches/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
+def GetFirstLevelTrajectory(RoundNum = 0, NumofLookAhead = 6):
+    filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/darpa_like_left_first_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/antfarm_firstLevel_left_start_NLP_previous/" + str(NumofLookAhead) + "LookAhead_Trial0.p"
 
     #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/RefMotion/Knitro/flat_ref/" + str(NumofLookAhead) + "LookAhead_Trial0.p"

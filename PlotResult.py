@@ -452,6 +452,11 @@ def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init 
         Ts_res = x_opt[var_index["Ts"][0]:var_index["Ts"][1]+1]
         Ts_res = np.array(Ts_res)
 
+        PontonTerms = x_opt[var_index["Ts"][1]+1:]
+        PontonTerms = np.array(PontonTerms)
+
+        np.set_printoptions(threshold=10000)
+
         if PrintSecondLevel == True:
             print("Second Level Results:")
             print('x_res: ',x_res)
@@ -464,6 +469,7 @@ def PlotSingleOptimiation_and_PrintResult(x_opt = None, var_index=None, PL_init 
             print('py_res: ',py_res)
             print('pz_res: ',pz_res)
             print('Ts_res: ',Ts_res)
+            print('Ponton Terms: ',PontonTerms)
 
 
     if PlotBothLevel == True:

@@ -13,7 +13,7 @@ from Constraint_Builder import *
 #from constraints import * 
 from sl1m.problem_definition import *
 
-from sl1m.planner_scenarios.talos.constraints import *
+from sl1m.planner_scenarios.talos.constraints_shift import *
 
 #Import NLP motion reference
 #from NLP_Reference_Traj import *
@@ -66,6 +66,7 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
     else:
         L_bound = 2.5
         Ldot_bound = 3.5
+    
     Lub = L_bound
     Llb = -L_bound
     Ldotub = Ldot_bound
@@ -74,8 +75,13 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
     #Minimum y-axis foot location
     py_lower_limit = 0.04
     #Lowest z
-    z_lowest = 0.7
-    z_highest = 0.8
+    z_lowest = -2
+    z_highest = 2
+
+    #CoM Height with respect to Footstep Location
+    CoM_z_to_Foot_min = 0.7
+    CoM_z_to_Foot_max = 0.8
+
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
     #kinematicConstraints = genKinematicConstraints(left_foot_constraints,right_foot_constraints)
@@ -96,7 +102,6 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
     #q_rf_in_lf = relativeConstraints[0][1] #named lf in rf, but representing rf in lf
     #Q_lf_in_rf = relativeConstraints[1][0] #named rf in lf, but representing lf in rf
     #q_lf_in_rf = relativeConstraints[1][1] #named rf in lf, but representing lf in rf
-
 
     #-----------------------------------------------------------------------------------------------------------------------
 
@@ -373,8 +378,8 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
 
         pytemp = ca.SX.sym('py'+str(stepIdx+1))
         py.append(pytemp)
-        py_lb.append(np.array([-1]))
-        py_ub.append(np.array([1]))
+        py_lb.append(np.array([-2]))
+        py_ub.append(np.array([2]))
 
         #   Foot steps are all staying on the ground
         pztemp = ca.SX.sym('pz'+str(stepIdx+1))
@@ -615,6 +620,16 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 g.append(K_CoM_Right@(CoM_k-PR_init)-ca.DM(k_CoM_Right))
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
+
+                #   CoM Height Constraint (Right foot)
+                g.append(CoM_k[2]-PR_init[2])
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Left foot)
+                g.append(CoM_k[2]-PL_init[2])
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
                 
                 #Angular Dynamics
                 #Definition of Contact Points of a foot
@@ -672,6 +687,11 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
 
+                #   CoM Height Constraint (Right Foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PR_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
                 # #Angular Dynamics (Right Support)
                 if AngularDynamics == True:
                     if k<N_K-1:
@@ -691,6 +711,11 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 g.append(ca.if_else(ParaRightSwingFlag, K_CoM_Left@(CoM_k-PL_init)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(np.full((len(k_CoM_Left),),0))
+
+                #   CoM Height Constraint (Left Foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PL_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
 
                 # #Angular Dynamics (Left Support)
                 if AngularDynamics == True:
@@ -757,6 +782,17 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 g.append(ca.if_else(ParaLeftSwingFlag, K_CoM_Left@(CoM_k-PL_k)-ca.DM(k_CoM_Left), np.full((len(k_CoM_Left),),-1)))
                 glb.append(np.full((len(k_CoM_Left),),-np.inf))
                 gub.append(np.full((len(k_CoM_Left),),0))
+
+                #   CoM Height Constraint (Init (Right) foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PR_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Left foot Moving Foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PL_k[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
                 #Angular Dynamics (Double Support)
                 #Terrain Tangent and Norm
                 PL_k_Norm = SurfNorms[0:3]
@@ -790,6 +826,16 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 g.append(ca.if_else(ParaRightSwingFlag,K_CoM_Right@(CoM_k-PR_k)-ca.DM(k_CoM_Right),np.full((len(k_CoM_Right),),-1)))
                 glb.append(np.full((len(k_CoM_Right),),-np.inf))
                 gub.append(np.full((len(k_CoM_Right),),0))
+
+                #   CoM Height Constraint (Init (Left) foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PL_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Right foot Moving Foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PR_k[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
 
                 #Angular Dynamics (Double Support)
                 #Terrain Tangent and Norm
@@ -965,9 +1011,9 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
         J = J + weight*(px[0] - px_Level1)**2
         J = J + weight*(py[0] - py_Level1)**2
         J = J + weight*(pz[0] - pz_Level1)**2
-        # J = J + weight*(Lx[-1] - Lx_Level1_end)**2
-        # J = J + weight*(Ly[-1] - Ly_Level1_end)**2
-        # J = J + weight*(Lz[-1] - Lz_Level1_end)**2
+        J = J + weight*(Lx[-1] - Lx_Level1_end)**2
+        J = J + weight*(Ly[-1] - Ly_Level1_end)**2
+        J = J + weight*(Lz[-1] - Lz_Level1_end)**2
 
     #Relative Foot Constraints
     #   For init phase
@@ -1088,7 +1134,7 @@ def NLP_SingleStep(m = 95, Nk_Local= 7,StandAlong = True, ConservativeEnd = Fals
                 gub.append(np.array([0.3]))
             elif GaitPattern[phase_cnt] == 'Swing':
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1]) #0.6-1
-                glb.append(np.array([0.8])) #old - 0.5-0.7
+                glb.append(np.array([0.8])) #old - 0.8-1.2
                 gub.append(np.array([1.2])) 
             elif GaitPattern[phase_cnt] == 'DoubleSupport':
                 g.append(Ts[phase_cnt]-Ts[phase_cnt-1])#0.05-0.3
@@ -1342,8 +1388,11 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
     #Minimum y-axis foot location
     py_lower_limit = 0.04
     #Lowest Z
-    z_lowest = 0.7
-    z_highest = 0.8
+    z_lowest = -2
+    z_highest = 2
+    #CoM Height with respect to Footstep Location
+    CoM_z_to_Foot_min = 0.7
+    CoM_z_to_Foot_max = 0.8
     #-----------------------------------------------------------------------------------------------------------------------
     #-----------------------------------------------------------------------------------------------------------------------
     #Kinematics Constraint for Talos
@@ -1857,6 +1906,17 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_init)
                 #CoM in Right (PR_init)
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = PR_init)
+                
+                #   CoM Height Constraint (Left p_init foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Right foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PR_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
                 #Angular Dynamics
                 if AngularDynamics == True:
                     if k<N_K-1:
@@ -1893,6 +1953,17 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = PL_init)
                 #CoM in the Right foot
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_init)
+                
+                #   CoM Height Constraint (Left PL_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PL_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Right p_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+                
                 #Agnular Dynamics
                 if AngularDynamics == True:
                     if k<N_K-1:
@@ -1956,6 +2027,17 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -1991,6 +2073,16 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+                        
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2026,6 +2118,16 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+                        
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2061,6 +2163,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2112,6 +2223,11 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
                         #Angular Dynamics (Left Stance)
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2140,6 +2256,10 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics(Right Stance)
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2169,6 +2289,10 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics (Right Stance)
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2197,6 +2321,10 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics (Left Stance)
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2254,6 +2382,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2293,6 +2430,16 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2332,6 +2479,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2370,6 +2526,15 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         #Angular Dynamics
                         if AngularDynamics == True:
                             if k<N_K-1:
@@ -2779,7 +2944,7 @@ def NLP_SecondLevel(m = 95, Nk_Local = 7, Nsteps = 1, Tracking_Cost = False, Ang
 
         elif GaitPattern[phase_cnt] == 'Swing':
             g.append(Ts[phase_cnt]-Ts[phase_cnt-1])
-            glb.append(np.array([0.8]))
+            glb.append(np.array([0.8])) #0.8-1.2
             gub.append(np.array([1.2]))
 
             #if phase_cnt == 0:
@@ -5431,13 +5596,17 @@ def CoM_Dynamics_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, StandAlong = True
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.55):
+def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.6):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.2, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+    #PhaseDurationVec = [0.4, 0.6, 0.4]*(Nsteps) + [0.4, 0.6, 0.4]*(Nsteps-1)
+
+    PhaseDurationVec = [0.3, 0.8, 0.3]*(Nsteps) + [0.3, 0.8, 0.3]*(Nsteps-1)
+
+    #PhaseDurationVec = [0.4, 0.6, 0.4]*(Nsteps) + [0.4, 0.6, 0.4]*(Nsteps-1)
     #PhaseDurationVec = [0.2, 0.8, 0.2]*(Nsteps) + [0.2, 0.8, 0.2]*(Nsteps-1)
     #Good set of timing vector with 0.55 bounds on ponton terms
     #[0.2, 0.4, 0.2]*(Nsteps) + [0.2, 0.4, 0.2]*(Nsteps-1)
@@ -5477,8 +5646,11 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     #Minimum y-axis foot location
     py_lower_limit = 0.04
     #Lowest Z
-    z_lowest = 0.7
-    z_highest = 0.8
+    z_lowest = -2
+    z_highest = 2
+    #CoM Height with respect to Footstep Location
+    CoM_z_to_Foot_min = 0.7
+    CoM_z_to_Foot_max = 0.85
     #Ponton's Variables
     p_lb =-PontonTerm_bounds
     p_ub = PontonTerm_bounds
@@ -6106,6 +6278,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_init)
                 #CoM in Right (PR_init)
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = PR_init)
+                #   CoM Height Constraint (Left p_init foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+                #   CoM Height Constraint (Right foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PR_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+                
                 ##Angular Dynamics (Ponton)
                 #if k<N_K-1:
                 #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_init, PL_TangentX = p_init_TangentX, PL_TangentY = p_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6172,6 +6353,14 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = PL_init)
                 #CoM in the Right foot
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_init)
+                #   CoM Height Constraint (Left PL_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PL_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+                #   CoM Height Constraint (Right p_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
                 ##Agnular Dynamics (Ponton)
                 #if k<N_K-1:
                 #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = p_init, PR_TangentX = p_init_TangentX, PR_TangentY = p_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6266,6 +6455,14 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6332,6 +6529,14 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6398,6 +6603,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
                         ##Angular Dynamics (Ponton)_
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6464,6 +6678,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6546,6 +6769,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Left Stance) (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
@@ -6614,6 +6841,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics(Right Stance)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
@@ -6685,6 +6916,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Right Stance)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
@@ -6755,7 +6990,10 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
-
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Left Stance) (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
@@ -6853,6 +7091,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6923,6 +7170,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -6993,6 +7249,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -7063,6 +7328,15 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -7428,6 +7702,54 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
     py_index = (px_index[1]+1,px_index[1]+Nsteps)
     pz_index = (py_index[1]+1,py_index[1]+Nsteps)
     Ts_index = (pz_index[1]+1,pz_index[1]+Nphase)
+    cL1x_p_index = (Ts_index[1]+1,Ts_index[1]+N_K)
+    cL1x_q_index = (cL1x_p_index[1]+1,cL1x_p_index[1]+N_K)
+    cL1y_p_index = (cL1x_q_index[1]+1,cL1x_q_index[1]+N_K)
+    cL1y_q_index = (cL1y_p_index[1]+1,cL1y_p_index[1]+N_K)
+    cL1z_p_index = (cL1y_q_index[1]+1,cL1y_q_index[1]+N_K)
+    cL1z_q_index = (cL1z_p_index[1]+1,cL1z_p_index[1]+N_K)
+    cL2x_p_index = (cL1z_q_index[1]+1,cL1z_q_index[1]+N_K)
+    cL2x_q_index = (cL2x_p_index[1]+1,cL2x_p_index[1]+N_K)
+    cL2y_p_index = (cL2x_q_index[1]+1,cL2x_q_index[1]+N_K)
+    cL2y_q_index = (cL2y_p_index[1]+1,cL2y_p_index[1]+N_K)
+    cL2z_p_index = (cL2y_q_index[1]+1,cL2y_q_index[1]+N_K)
+    cL2z_q_index = (cL2z_p_index[1]+1,cL2z_p_index[1]+N_K)
+    cL3x_p_index = (cL2z_q_index[1]+1,cL2z_q_index[1]+N_K)
+    cL3x_q_index = (cL3x_p_index[1]+1,cL3x_p_index[1]+N_K)
+    cL3y_p_index = (cL3x_q_index[1]+1,cL3x_q_index[1]+N_K)
+    cL3y_q_index = (cL3y_p_index[1]+1,cL3y_p_index[1]+N_K)
+    cL3z_p_index = (cL3y_q_index[1]+1,cL3y_q_index[1]+N_K)
+    cL3z_q_index = (cL3z_p_index[1]+1,cL3z_p_index[1]+N_K)
+    cL4x_p_index = (cL3z_q_index[1]+1,cL3z_q_index[1]+N_K)
+    cL4x_q_index = (cL4x_p_index[1]+1,cL4x_p_index[1]+N_K)
+    cL4y_p_index = (cL4x_q_index[1]+1,cL4x_q_index[1]+N_K)
+    cL4y_q_index = (cL4y_p_index[1]+1,cL4y_p_index[1]+N_K)
+    cL4z_p_index = (cL4y_q_index[1]+1,cL4y_q_index[1]+N_K)
+    cL4z_q_index = (cL4z_p_index[1]+1,cL4z_p_index[1]+N_K)
+    cR1x_p_index = (cL4z_q_index[1]+1,cL4z_q_index[1]+N_K)
+    cR1x_q_index = (cR1x_p_index[1]+1,cR1x_p_index[1]+N_K)
+    cR1y_p_index = (cR1x_q_index[1]+1,cR1x_q_index[1]+N_K)
+    cR1y_q_index = (cR1y_p_index[1]+1,cR1y_p_index[1]+N_K)
+    cR1z_p_index = (cR1y_q_index[1]+1,cR1y_q_index[1]+N_K)
+    cR1z_q_index = (cR1z_p_index[1]+1,cR1z_p_index[1]+N_K)
+    cR2x_p_index = (cR1z_q_index[1]+1,cR1z_q_index[1]+N_K)
+    cR2x_q_index = (cR2x_p_index[1]+1,cR2x_p_index[1]+N_K)
+    cR2y_p_index = (cR2x_q_index[1]+1,cR2x_q_index[1]+N_K)
+    cR2y_q_index = (cR2y_p_index[1]+1,cR2y_p_index[1]+N_K)
+    cR2z_p_index = (cR2y_q_index[1]+1,cR2y_q_index[1]+N_K)
+    cR2z_q_index = (cR2z_p_index[1]+1,cR2z_p_index[1]+N_K)
+    cR3x_p_index = (cR2z_q_index[1]+1,cR2z_q_index[1]+N_K)
+    cR3x_q_index = (cR3x_p_index[1]+1,cR3x_p_index[1]+N_K)
+    cR3y_p_index = (cR3x_q_index[1]+1,cR3x_q_index[1]+N_K)
+    cR3y_q_index = (cR3y_p_index[1]+1,cR3y_p_index[1]+N_K)
+    cR3z_p_index = (cR3y_q_index[1]+1,cR3y_q_index[1]+N_K)
+    cR3z_q_index = (cR3z_p_index[1]+1,cR3z_p_index[1]+N_K)
+    cR4x_p_index = (cR3z_q_index[1]+1,cR3z_q_index[1]+N_K)
+    cR4x_q_index = (cR4x_p_index[1]+1,cR4x_p_index[1]+N_K)
+    cR4y_p_index = (cR4x_q_index[1]+1,cR4x_q_index[1]+N_K)
+    cR4y_q_index = (cR4y_p_index[1]+1,cR4y_p_index[1]+N_K)
+    cR4z_p_index = (cR4y_q_index[1]+1,cR4y_q_index[1]+N_K)
+    cR4z_q_index = (cR4z_p_index[1]+1,cR4z_p_index[1]+N_K)
 
     var_index = {"x":x_index,
                  "y":y_index,
@@ -7472,19 +7794,74 @@ def CoM_Dynamics_Ponton(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, 
                  "py":py_index,
                  "pz":pz_index,
                  "Ts":Ts_index,
+                 "cL1x_p":cL1x_p_index,
+                 "cL1x_q":cL1x_q_index,
+                 "cL1y_p":cL1y_p_index,
+                 "cL1y_q":cL1y_q_index,
+                 "cL1z_p":cL1z_p_index,
+                 "cL1z_q":cL1z_q_index,
+                 "cL2x_p":cL2x_p_index,
+                 "cL2x_q":cL2x_q_index,
+                 "cL2y_p":cL2y_p_index,
+                 "cL2y_q":cL2y_q_index,
+                 "cL2z_p":cL2z_p_index,
+                 "cL2z_q":cL2z_q_index,
+                 "cL3x_p":cL3x_p_index,
+                 "cL3x_q":cL3x_q_index,
+                 "cL3y_p":cL3y_p_index,
+                 "cL3y_q":cL3y_q_index,
+                 "cL3z_p":cL3z_p_index,
+                 "cL3z_q":cL3z_q_index,
+                 "cL4x_p":cL4x_p_index,
+                 "cL4x_q":cL4x_q_index,
+                 "cL4y_p":cL4y_p_index,
+                 "cL4y_q":cL4y_q_index,
+                 "cL4z_p":cL4z_p_index,
+                 "cL4z_q":cL4z_q_index,
+                 "cR1x_p":cR1x_p_index,
+                 "cR1x_q":cR1x_q_index,
+                 "cR1y_p":cR1y_p_index,
+                 "cR1y_q":cR1y_q_index,
+                 "cR1y_q":cR1y_q_index,
+                 "cR1z_p":cR1z_p_index,
+                 "cR1z_q":cR1z_q_index,
+                 "cR2x_p":cR2x_p_index,
+                 "cR2x_q":cR2x_q_index,
+                 "cR2y_p":cR2y_p_index,
+                 "cR2y_q":cR2y_q_index,
+                 "cR2z_p":cR2z_p_index,
+                 "cR2z_q":cR2z_q_index,
+                 "cR3x_p":cR3x_p_index,
+                 "cR3x_q":cR3x_q_index,
+                 "cR3y_p":cR3y_p_index,
+                 "cR3y_q":cR3y_q_index,
+                 "cR3z_p":cR3z_p_index,
+                 "cR3z_q":cR3z_q_index,
+                 "cR4x_p":cR4x_p_index,
+                 "cR4x_q":cR4x_q_index,
+                 "cR4y_p":cR4y_p_index,
+                 "cR4y_q":cR4y_q_index,
+                 "cR4z_p":cR4z_p_index,
+                 "cR4z_q":cR4z_q_index,
     }
 
     #print(DecisionVars[var_index["px_init"][0]:var_index["px_init"][1]+1])
 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
-def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.55):
+def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterList = None, StaticStop = False, NumPatches = None, CentralY = False, PontonTerm_bounds = 0.6):
     #-----------------------------------------------------------------------------------------------------------------------
     #Define Parameters
     #   Gait Pattern, Each action is followed up by a double support phase
     GaitPattern = ["InitialDouble","Swing","DoubleSupport"] + ["InitialDouble", "Swing","DoubleSupport"]*(Nsteps-1) #,'RightSupport','DoubleSupport','LeftSupport','DoubleSupport'
 
-    PhaseDurationVec = [0.2, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+    #PhaseDurationVec = [0.2, 0.5, 0.2]*(Nsteps) + [0.2, 0.5, 0.2]*(Nsteps-1)
+
+    #PhaseDurationVec = [0.2, 1.0, 0.2]*(Nsteps) + [0.2, 1.0, 0.2]*(Nsteps-1)
+
+    PhaseDurationVec = [0.3, 0.8, 0.3]*(Nsteps) + [0.3, 0.8, 0.3]*(Nsteps-1)
+    
+    #PhaseDurationVec = [0.2, 1.0, 0.2]*(Nsteps) + [0.2, 1.0, 0.2]*(Nsteps-1)
     #PhaseDurationVec = [0.2, 0.8, 0.2]*(Nsteps) + [0.2, 0.8, 0.0]*(Nsteps-1)
     #PhaseDurationVec = [0.025, 0.8, 0.025]*(Nsteps) + [0.025, 0.8, 0.025]*(Nsteps-1)
     #PhaseDurationVec = [0.3, 0.6, 0.3]*(Nsteps) + [0.3, 0.6, 0.3]*(Nsteps-1)
@@ -7528,8 +7905,11 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
     #Minimum y-axis foot location
     py_lower_limit = 0.04
     #Lowest Z
-    z_lowest = 0.7
-    z_highest = 0.8
+    z_lowest = -2
+    z_highest = 2
+    #CoM Height with respect to Footstep Location
+    CoM_z_to_Foot_min = 0.7
+    CoM_z_to_Foot_max = 0.85
     #Ponton's Variables
     p_lb =-PontonTerm_bounds
     p_ub = PontonTerm_bounds
@@ -7935,6 +8315,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_init)
                 #CoM in Right (PR_init)
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = PR_init)
+                #   CoM Height Constraint (Left p_init foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Right foot)
+                g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-PR_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
                 ##Angular Dynamics (Ponton)
                 #if k<N_K-1:
                 #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_init, PL_TangentX = p_init_TangentX, PL_TangentY = p_init_TangentY, PR = PR_init, PR_TangentX = PR_init_TangentX, PR_TangentY = PR_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -7965,6 +8354,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = PL_init)
                 #CoM in the Right foot
                 g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_init)
+                #   CoM Height Constraint (Left PL_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-PL_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
+
+                #   CoM Height Constraint (Right p_init foot)
+                g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_init[2],np.array([CoM_z_to_Foot_min+0.05])))
+                glb.append(np.array([CoM_z_to_Foot_min]))
+                gub.append(np.array([CoM_z_to_Foot_max]))
                 ##Agnular Dynamics (Ponton)
                 #if k<N_K-1:
                 #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = PL_init, PL_TangentX = PL_init_TangentX, PL_TangentY = PL_init_TangentY, PR = p_init, PR_TangentX = p_init_TangentX, PR_TangentY = p_init_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8023,6 +8421,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8053,6 +8460,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8083,6 +8499,16 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_previous)
                         #CoM in the Right (p_current)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_current)
+                        #   CoM Height Constraint (Left p_previous foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_current foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
                         ##Angular Dynamics (Ponton)_
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_previous, PL_TangentX = p_previous_TangentX, PL_TangentY = p_previous_TangentY, PR = p_current, PR_TangentX = p_current_TangentX, PR_TangentY = p_current_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8113,6 +8539,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_current)
                         #CoM in the Right (p_previous)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_previous)
+                        #   CoM Height Constraint (Left p_current foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_current[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_previous foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_previous[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_current, PL_TangentX = p_current_TangentX, PL_TangentY = p_current_TangentY, PR = p_previous, PR_TangentX = p_previous_TangentX, PR_TangentY = p_previous_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8159,6 +8594,10 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Left Stance) (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
@@ -8188,6 +8627,10 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics(Right Stance)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
@@ -8219,6 +8662,10 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         #Kinematics Constraint
                         #CoM in the Right (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stance)
+                        #   CoM Height Constraint (Right p_stance foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Right Stance)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FR1_k, F2_k = FR2_k, F3_k = FR3_k, F4_k = FR4_k)
@@ -8249,7 +8696,10 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         #Kinematics Constraint
                         #CoM in the Left (p_stance)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stance)
-
+                        #   CoM Height Constraint (Left p_stance foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stance[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Left Stance) (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_Swing(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, P = p_stance, P_TangentX = p_stance_TangentX, P_TangentY = p_stance_TangentY, CoM_k = CoM_k, F1_k = FL1_k, F2_k = FL2_k, F3_k = FL3_k, F4_k = FL4_k)
@@ -8308,6 +8758,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8342,6 +8801,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8376,6 +8844,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_land)
                         #CoM in the Right (p_stationary)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_stationary)
+                        #   CoM Height Constraint (Left p_land foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_stationary foot)
+                        g.append(ca.if_else(ParaLeftSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaLeftSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_land, PL_TangentX = p_land_TangentX, PL_TangentY = p_land_TangentY, PR = p_stationary, PR_TangentX = p_stationary_TangentX, PR_TangentY = p_stationary_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8410,6 +8887,15 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Left, k_polytope = k_CoM_Left, CoM_k = CoM_k, p = p_stationary)
                         #CoM in the Right (p_land)
                         g, glb, gub = CoM_Kinematics(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, K_polytope = K_CoM_Right, k_polytope = k_CoM_Right, CoM_k = CoM_k, p = p_land)
+                        #   CoM Height Constraint (Left p_stationary foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_stationary[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
+
+                        #   CoM Height Constraint (Right p_land foot)
+                        g.append(ca.if_else(ParaRightSwingFlag,CoM_k[2]-p_land[2],np.array([CoM_z_to_Foot_min+0.05])))
+                        glb.append(np.array([CoM_z_to_Foot_min]))
+                        gub.append(np.array([CoM_z_to_Foot_max]))
                         ##Angular Dynamics (Ponton)
                         #if k<N_K-1:
                         #    g, glb, gub = Angular_Momentum_Rate_DoubleSupport(g = g, glb = glb, gub = gub, SwingLegIndicator = ParaRightSwingFlag, Ldot_next = Ldot_next, Ldot_current = Ldot_current, h = h, PL = p_stationary, PL_TangentX = p_stationary_TangentX, PL_TangentY = p_stationary_TangentY, PR = p_land, PR_TangentX = p_land_TangentX, PR_TangentY = p_land_TangentY, CoM_k = CoM_k, FL1_k = FL1_k, FL2_k = FL2_k, FL3_k = FL3_k, FL4_k = FL4_k, FR1_k = FR1_k, FR2_k = FR2_k, FR3_k = FR3_k, FR4_k = FR4_k)
@@ -8723,6 +9209,18 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
     py_index = (px_index[1]+1,px_index[1]+Nsteps)
     pz_index = (py_index[1]+1,py_index[1]+Nsteps)
     Ts_index = (pz_index[1]+1,pz_index[1]+Nphase)
+    cLx_p_index = (Ts_index[1]+1,Ts_index[1]+N_K)
+    cLx_q_index = (cLx_p_index[1]+1,cLx_p_index[1]+N_K)
+    cLy_p_index = (cLx_q_index[1]+1,cLx_q_index[1]+N_K)
+    cLy_q_index = (cLy_p_index[1]+1,cLy_p_index[1]+N_K)
+    cLz_p_index = (cLy_q_index[1]+1,cLy_q_index[1]+N_K)
+    cLz_q_index = (cLz_p_index[1]+1,cLz_p_index[1]+N_K)
+    cRx_p_index = (cLz_q_index[1]+1,cLz_q_index[1]+N_K)
+    cRx_q_index = (cRx_p_index[1]+1,cRx_p_index[1]+N_K)
+    cRy_p_index = (cRx_q_index[1]+1,cRx_q_index[1]+N_K)
+    cRy_q_index = (cRy_p_index[1]+1,cRy_p_index[1]+N_K)
+    cRz_p_index = (cRy_q_index[1]+1,cRy_q_index[1]+N_K)
+    cRz_q_index = (cRz_p_index[1]+1,cRz_p_index[1]+N_K)
 
     var_index = {"x":x_index,
                  "y":y_index,
@@ -8767,7 +9265,20 @@ def CoM_Dynamics_Ponton_SinglePoint(m = 95, Nk_Local = 7, Nsteps = 1, ParameterL
                  "py":py_index,
                  "pz":pz_index,
                  "Ts":Ts_index,
+                 "cLx_p":cLx_p_index,
+                 "cLx_q":cLx_q_index,
+                 "cLy_p":cLy_p_index,
+                 "cLy_q":cLy_q_index,
+                 "cLz_p":cLz_p_index,
+                 "cLz_q":cLz_q_index,
+                 "cRx_p":cRx_p_index,
+                 "cRx_q":cRx_q_index,
+                 "cRy_p":cRy_p_index,
+                 "cRy_q":cRy_q_index,
+                 "cRz_p":cRz_p_index,
+                 "cRz_q":cRz_q_index,
     }
+
 
     #print(DecisionVars[var_index["px_init"][0]:var_index["px_init"][1]+1])
 
@@ -10693,6 +11204,7 @@ def CoM_Dynamics_Ponton_Cost_Old_Gait_Pattern(m = 95, Nk_Local = 7, Nsteps = 1, 
     return DecisionVars, DecisionVars_lb, DecisionVars_ub, J, g, glb, gub, var_index
 
 #Build Solver in accordance to the set up of first level second levels
+#When doing way-points tracking, TerminalCost need to be False
 def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = None, PontonSinglePoint = False, Decouple = False, TerminalCost = True, NLPSecondLevelTracking = False, m = 95, NumSurfaces = None):
 
     #Check if the First Level is selected properly
@@ -11245,7 +11757,8 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #------
         #Terminal Cost
         if TerminalCost == True:
-            J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+            #J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 + 10*(z_Level1[-1]-z_end)**2
+            J = J + 10*(x_Level1[-1]-x_end)**2 + 10*(y_Level1[-1]-y_end)**2 #+ 10*(z_Level1[-1]-z_end)**2
         #---------
 
     else:#With Second level
@@ -11265,9 +11778,9 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
         #Terminal Cost
         if TerminalCost == True:
             if SecondLevel == "Ponton":
-                J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+                J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 #+ 10*(z_Level2[-1]-z_end)**2
             else:
-                J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 + 10*(z_Level2[-1]-z_end)**2
+                J = J + 10*(x_Level2[-1]-x_end)**2 + 10*(y_Level2[-1]-y_end)**2 #+ 10*(z_Level2[-1]-z_end)**2
         #----------
 
         #J = J + 100*(x_Level2[-1]-x_end)**2
@@ -11412,7 +11925,7 @@ def BuildSolver(FirstLevel = None, ConservativeFirstStep = True, SecondLevel = N
     opts = {}
     #opts["knitro.presolve"] = 0
     #opts["knitro.honorbnds"] = 0
-    # opts["knitro.OutLev"] = 2
+    #opts["knitro.OutLev"] = 2
     opts["knitro.bar_directinterval"] = 0
     solver = ca.nlpsol('solver', 'knitro', prob,opts)
     #Good Setup of Knitro

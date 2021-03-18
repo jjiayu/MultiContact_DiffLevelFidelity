@@ -27,7 +27,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Old_Results/Result_Ref_Traj_Tracking/Tracking_CoM_CoMdot_ContactPosition/Flat_Uneven_Ref/antfarm_firstLevel_left_start_CoM_previous/5LookAhead_Trial0.p"
 
-filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/darpa_like_left_first_Ponton_previous/" + '2LookAhead_Trial0.p'
+filename = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/darpa_like_left_first_NLP_previous/" + '4LookAhead_Trial0.p'
 
 #up_and_down_left_first_NLP_previous
 #antfarm_firstLevel_left_start_NLP_previous

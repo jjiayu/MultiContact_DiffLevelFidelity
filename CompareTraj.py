@@ -21,8 +21,8 @@ filename = '5LookAhead_Trial0.p'
 #fullpath = folderpath + 'flat_NLP_previous/' + filename
 
 #fullpath = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Result_Ref_Traj_Tracking/full_NLP_Solutions/up_and_down_left_first_NLP_previous/" + filename
-fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Final_055PontonLimit0205Phase/antfarm_firstLevel_left_start_PontonFull_previous/" + '3LookAhead_Trial0.p'
-fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Final_055PontonLimit0205Phase/antfarm_firstLevel_left_start_PontonSingle_previous/" + '3LookAhead_Trial0.p'
+fullpath1 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Terrain06/darpa_like_left_first_NLP_previous/" + '2LookAhead_Trial0.p'
+fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Terrain07/darpa_like_left_first_NLP_previous/" + '2LookAhead_Trial0.p'
 #fullpath = "/home/jiayu/Desktop/Ponton_Result/RFCoMPolyLFRelaPloy/antfarm_firstLevel_left_start_NLP_previous/" + filename
 #up_and_down_left_first_NLP_previous
 #antfarm_firstLevel_left_start_NLP_previous
@@ -31,7 +31,7 @@ fullpath2 = "/home/jiayu/Desktop/MultiContact_DiffLevelFidelity/Final_055PontonL
 fullpath = fullpath1
 
 #fullpath = folderpath + 'up_and_down_left_first_NLP_previous/' + filename
-query_traj = "ydot_result"
+query_traj = "y_result"
 
 startStepNum = 0
 EndStepNum = 14
@@ -1019,6 +1019,33 @@ plt.xlabel('Time')
 plt.ylabel(query_traj)
 
 plt.title(filename + ' - ' + query_traj)
+
+plt.show()
+
+
+for traj_idx in range(startStepNum,EndStepNum):
+    if traj_idx%2 == 0:
+        if traj_idx == 0:
+            if traj_idx <= len(NLP_Traj["x_result"])-1:
+                plt.plot(NLP_Traj["x_result"][traj_idx],NLP_Traj[query_traj][traj_idx],color = 'r', label='NLP',linestyle='dashed')
+            if traj_idx <= len(CoM_Traj["x_result"])-1:
+                plt.plot(CoM_Traj["x_result"][traj_idx],CoM_Traj[query_traj][traj_idx],color = 'b', label='CoM',linestyle='dashed')
+        else:
+            if traj_idx <= len(NLP_Traj["x_result"])-1:
+                plt.plot(NLP_Traj["x_result"][traj_idx],NLP_Traj[query_traj][traj_idx],color = 'r',linestyle='dashed')
+            if traj_idx <= len(CoM_Traj["x_result"])-1:
+                plt.plot(CoM_Traj["x_result"][traj_idx],CoM_Traj[query_traj][traj_idx],color = 'b', linestyle='dashed')
+    else:
+        if traj_idx <= len(CoM_Traj["x_result"])-1:
+            plt.plot(CoM_Traj["x_result"][traj_idx],CoM_Traj[query_traj][traj_idx],color = 'b')
+        if traj_idx <= len(NLP_Traj["x_result"])-1:
+            plt.plot(NLP_Traj["x_result"][traj_idx],NLP_Traj[query_traj][traj_idx],color = 'r')
+
+plt.xlabel('x_result')
+plt.ylabel(query_traj)
+
+plt.title(filename + ' - ' + query_traj)
+
 
 #plt.xlim(0,12.8)
 
